@@ -78,12 +78,16 @@ export const updateTodo = async (req, res) => {
     const { id } = req.params
     const { title, description, completed, priority, dueDate } = req.body
 
-    const existingTodo = await prisma.todo.findFirst({
-      where: { id, userId },
+    const existingTodo = await prisma.todo.findUnique({
+      where: { id },
     })
 
     if (!existingTodo) {
-      return sendError(res, 404, 'Todo item not found or unauthorized')
+      return sendError(res, 404, 'Todo item not found')
+    }
+
+    if (existingTodo.userId !== userId) {
+      return sendError(res, 403, 'Forbidden: You do not own this resource')
     }
 
     const updateData = {}
@@ -112,12 +116,16 @@ export const toggleTodo = async (req, res) => {
     const userId = req.user.userId
     const { id } = req.params
 
-    const existingTodo = await prisma.todo.findFirst({
-      where: { id, userId },
+    const existingTodo = await prisma.todo.findUnique({
+      where: { id },
     })
 
     if (!existingTodo) {
-      return sendError(res, 404, 'Todo item not found or unauthorized')
+      return sendError(res, 404, 'Todo item not found')
+    }
+
+    if (existingTodo.userId !== userId) {
+      return sendError(res, 403, 'Forbidden: You do not own this resource')
     }
 
     const nextState = !existingTodo.completed
@@ -141,12 +149,16 @@ export const deleteTodo = async (req, res) => {
     const userId = req.user.userId
     const { id } = req.params
 
-    const existingTodo = await prisma.todo.findFirst({
-      where: { id, userId },
+    const existingTodo = await prisma.todo.findUnique({
+      where: { id },
     })
 
     if (!existingTodo) {
-      return sendError(res, 404, 'Todo item not found or unauthorized')
+      return sendError(res, 404, 'Todo item not found')
+    }
+
+    if (existingTodo.userId !== userId) {
+      return sendError(res, 403, 'Forbidden: You do not own this resource')
     }
 
     await prisma.todo.delete({

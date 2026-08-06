@@ -22,6 +22,9 @@ export const fetchApi = async (endpoint, options = {}) => {
     const data = await response.json()
 
     if (!response.ok) {
+      if (response.status === 401) {
+        window.dispatchEvent(new Event('auth:unauthorized'))
+      }
       const error = new Error(data.error || 'An unexpected error occurred')
       error.status = response.status
       error.field = data.field

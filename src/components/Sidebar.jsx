@@ -23,7 +23,7 @@ export default function Sidebar() {
     <motion.aside 
       initial={{ x: -20, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
-      className="w-64 glass m-4 mr-0 rounded-[24px] flex flex-col justify-between hidden md:flex shrink-0 relative overflow-hidden"
+      className="w-64 apple-glass-panel m-4 mr-0 rounded-[32px] flex flex-col justify-between hidden md:flex shrink-0 relative overflow-hidden"
     >
       <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent pointer-events-none" />
       
@@ -57,23 +57,23 @@ export default function Sidebar() {
                 key={item.id}
                 onClick={() => navigate(item.path)}
                 className={cn(
-                  "relative w-full flex items-center justify-between px-3 py-3 rounded-2xl text-sm font-medium transition-all duration-300 group",
-                  isActive ? "text-primary-foreground" : "text-foreground/70 hover:text-foreground"
+                  "relative w-full flex items-center justify-between px-3 py-3 rounded-2xl text-sm tracking-wide transition-all duration-300 group",
+                  isActive ? "text-foreground font-bold" : "text-foreground/70 font-medium hover:text-foreground"
                 )}
               >
                 {isActive && (
                   <motion.div 
                     layoutId="activeNavIndicator"
-                    className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-2xl shadow-glow"
+                    className="absolute inset-0 apple-glass-active rounded-2xl"
                     transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                   />
                 )}
                 <div className="relative z-10 flex items-center space-x-3">
                   <div className={cn(
                     "p-1.5 rounded-xl transition-colors duration-300",
-                    isActive ? "bg-white/20" : "group-hover:bg-foreground/5"
+                    isActive ? "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary" : "group-hover:bg-foreground/5 text-foreground/70"
                   )}>
-                    <Icon className="h-5 w-5" strokeWidth={isActive ? 2 : 1.5} />
+                    <Icon className="h-5 w-5" strokeWidth={isActive ? 2.5 : 1.5} />
                   </div>
                   <span>{item.label}</span>
                 </div>
@@ -93,13 +93,13 @@ export default function Sidebar() {
           className="mt-auto pt-4"
         >
           {/* User Profile */}
-          <div className="flex items-center space-x-3 px-3 py-3 rounded-2xl hover:bg-white/5 border border-transparent hover:border-glass-border transition-all cursor-pointer group">
+          <div className="flex items-center space-x-3 px-3 py-3 rounded-2xl hover:bg-white/5 border border-transparent hover:border-white/20 dark:hover:border-white/10 transition-all cursor-pointer group">
             <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-primary to-accent shadow-sm flex items-center justify-center text-white font-bold shrink-0 ring-2 ring-background group-hover:shadow-glow transition-all">
               {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
             </div>
             <div className="flex flex-col min-w-0 text-left">
-              <span className="text-sm font-semibold truncate text-foreground group-hover:text-primary transition-colors">{user?.name || 'User'}</span>
-              <span className="text-xs text-muted-foreground truncate">{user?.email || 'user@taskflow.com'}</span>
+              <span className="text-sm font-semibold tracking-tight truncate text-foreground group-hover:text-primary transition-colors">{user?.name || 'User'}</span>
+              <span className="text-xs font-medium tracking-wide text-muted-foreground truncate">{user?.email || 'user@taskflow.com'}</span>
             </div>
           </div>
         </motion.div>

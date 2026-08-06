@@ -22,7 +22,7 @@ export default function TodoList({
         particleCount: 150,
         spread: 80,
         origin: { y: 0.6 },
-        colors: ['#ea580c', '#f97316', '#fb923c', '#ffffff']
+        colors: ['#7c3aed', '#a855f7', '#c084fc', '#ffffff']
       })
       setHasCelebrated(true)
     } else if (!allCompleted) {

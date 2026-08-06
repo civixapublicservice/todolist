@@ -98,7 +98,7 @@ export default function Dashboard() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="mt-8 glass-panel border border-glass-border p-8 text-center flex flex-col items-center justify-center min-h-[300px]"
+            className="mt-8 bg-card border border-border shadow-sm rounded-2xl p-8 text-center flex flex-col items-center justify-center min-h-[300px]"
           >
             <div className="text-6xl mb-4">🚀</div>
             <h3 className="text-xl font-bold text-foreground mb-2">Productivity is up!</h3>

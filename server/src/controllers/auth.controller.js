@@ -7,9 +7,15 @@ import { logActivity } from '../utils/activity.js'
 
 const getJwtSecret = () => process.env.JWT_SECRET || 'super-secret-jwt-key-production-quality-todo-app-2026'
 
+
 export const register = async (req, res) => {
   try {
     const { name, email, password } = req.body
+
+    if (!name || !name.trim()) return sendError(res, 400, 'Name is required', 'name')
+    
+
+
     const normalizedEmail = email.trim().toLowerCase()
 
     const existingUser = await prisma.user.findUnique({
@@ -59,6 +65,9 @@ export const register = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body
+
+
+
     const normalizedEmail = email.trim().toLowerCase()
 
     const user = await prisma.user.findUnique({
@@ -123,26 +132,14 @@ export const getCurrentUser = async (req, res) => {
   }
 }
 
-export const getAllUsers = async (req, res) => {
-  try {
-    const users = await prisma.user.findMany({
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        createdAt: true,
-      }
-    })
-    return res.json({ users })
-  } catch (error) {
-    console.error('GetAllUsers Error:', error)
-    return sendError(res, 500, 'Failed to fetch users')
-  }
-}
+
 
 export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body
+
+
+
     const normalizedEmail = email.trim().toLowerCase()
 
     const user = await prisma.user.findUnique({
@@ -180,6 +177,8 @@ export const resetPassword = async (req, res) => {
   try {
     const { token } = req.params
     const { password } = req.body
+
+
 
     const user = await prisma.user.findFirst({
       where: {

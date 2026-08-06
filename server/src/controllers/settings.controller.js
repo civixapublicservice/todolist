@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs'
 import { prisma } from '../config/db.js'
 import { sendError } from '../utils/errors.js'
 import { logActivity } from '../utils/activity.js'
+import { validatePasswordStrength } from '../middleware/validate.js'
 
 export const updateProfile = async (req, res) => {
   try {
@@ -64,8 +65,9 @@ export const changePassword = async (req, res) => {
       return sendError(res, 400, 'Current password is required', 'currentPassword')
     }
 
-    if (!newPassword || newPassword.length < 6) {
-      return sendError(res, 400, 'New password must be at least 6 characters long', 'newPassword')
+    const passwordError = validatePasswordStrength(newPassword)
+    if (passwordError) {
+      return sendError(res, 400, passwordError, 'newPassword')
     }
 
     const user = await prisma.user.findUnique({

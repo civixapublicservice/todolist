@@ -1,9 +1,8 @@
 import express from 'express';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../config/db.js';
 import { authenticateToken } from '../middleware/auth.js';
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 router.use(authenticateToken);
 
@@ -12,7 +11,7 @@ router.use(authenticateToken);
 router.get('/', async (req, res) => {
   try {
     const notifications = await prisma.notification.findMany({
-      where: { userId: req.user.id },
+      where: { userId: req.user.userId },
       orderBy: { createdAt: 'desc' },
       take: 20 // Limit to latest 20
     });
@@ -35,7 +34,7 @@ router.patch('/:id/read', async (req, res) => {
       return res.status(404).json({ message: 'Notification not found' });
     }
 
-    if (notification.userId !== req.user.id) {
+    if (notification.userId !== req.user.userId) {
       return res.status(403).json({ message: 'Not authorized' });
     }
 
@@ -59,7 +58,7 @@ router.post('/', async (req, res) => {
       data: {
         message,
         type: type || 'INFO',
-        userId: req.user.id
+        userId: req.user.userId
       }
     });
     res.status(201).json(notification);

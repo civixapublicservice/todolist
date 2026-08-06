@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { AlertCircle, Loader2, Mail, Lock, Eye, EyeOff, Sparkles } from 'lucide-react'
+import { Loader2, Mail, Lock } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
-import { validateEmail, validatePassword } from '../utils/validators'
-import { motion, AnimatePresence } from 'framer-motion'
-import { cn } from '../utils/cn'
+import { validateEmail } from '../utils/validators'
+import { motion } from 'framer-motion'
+import { toast } from 'sonner'
+import { Input } from '../components/ui/Input'
+import { Button } from '../components/ui/Button'
 
 export default function LoginPage() {
   const navigate = useNavigate()
@@ -12,24 +14,22 @@ export default function LoginPage() {
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [error, setError] = useState('')
   const [fieldErrors, setFieldErrors] = useState({})
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    setError('')
     setFieldErrors({})
 
     const emailErr = validateEmail(email)
-    const passwordErr = validatePassword(password)
-
-    if (emailErr || passwordErr) {
+    
+    if (emailErr || !password) {
       setFieldErrors({
         email: emailErr,
-        password: passwordErr,
+        password: !password ? 'Password is required' : null,
       })
+      if (emailErr) toast.error(emailErr)
+      else toast.error('Please enter your password')
       return
     }
 
@@ -37,9 +37,10 @@ export default function LoginPage() {
 
     try {
       await login(email, password)
+      toast.success('Successfully logged in')
       navigate('/', { replace: true })
     } catch (err) {
-      setError(err.message || 'Failed to login. Please check your credentials.')
+      toast.error(err.message || 'Failed to login. Please check your credentials.')
       if (err.field) {
         setFieldErrors((prev) => ({ ...prev, [err.field]: err.message }))
       }
@@ -49,121 +50,98 @@ export default function LoginPage() {
   }
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, type: 'spring', damping: 25 }}
-      className="w-full max-w-[420px] mx-auto relative z-30"
-    >
-      <div className="glass-card border border-glass-border rounded-3xl p-8 shadow-xl relative overflow-hidden">
-        {/* Decorative gradient blob */}
-        <div className="absolute -top-32 -right-32 w-64 h-64 bg-primary/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-accent/20 rounded-full blur-3xl pointer-events-none" />
+    <div className="w-full max-w-[400px] mx-auto relative z-20 flex flex-col items-center">
+      
+      {/* Floating Glowing Icon from Image 2 */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, type: 'spring', damping: 20 }}
+        className="relative z-30 -mb-10"
+      >
+        <div className="absolute inset-0 bg-white/20 blur-2xl rounded-full" />
+        <div className="relative h-20 w-20 rounded-[28px] bg-white/10 backdrop-blur-3xl border border-white/30 flex items-center justify-center shadow-[0_0_40px_rgba(255,255,255,0.1)]">
+          <div className="h-8 w-8 text-white">✨</div>
+        </div>
+      </motion.div>
 
-        <div className="flex flex-col space-y-3 text-center mb-8 relative z-10">
-          <div className="mx-auto bg-gradient-to-br from-primary/20 to-accent/20 w-16 h-16 rounded-2xl flex items-center justify-center mb-2 shadow-inner border border-primary/20">
-            <Sparkles className="h-8 w-8 text-primary" />
-          </div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">Welcome Back</h1>
-          <p className="text-sm font-medium text-muted-foreground">
-            Log in to your workspace to continue
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+        className="glass-auth flex flex-col items-center"
+      >
+        <div className="flex flex-col space-y-2 text-center mb-8 relative z-10 w-full mt-4">
+          <h1 className="text-[28px] font-bold tracking-tight text-white">Welcome to TaskFlow✨!</h1>
+          <p className="text-sm text-white/50 leading-relaxed px-4">
+            Credentials are only used to authenticate in TaskFlow. All saved data will be stored securely.
           </p>
         </div>
 
-        <AnimatePresence>
-          {error && (
-            <motion.div 
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="overflow-hidden mb-6"
-            >
-              <div className="flex items-center space-x-3 bg-destructive/10 border border-destructive/20 text-destructive p-3.5 rounded-xl text-sm font-medium">
-                <AlertCircle className="h-5 w-5 shrink-0" />
-                <span>{error}</span>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        <form onSubmit={handleSubmit} className="grid gap-5 relative z-10">
+        <form onSubmit={handleSubmit} className="w-full grid gap-4">
           <div className="grid gap-1.5">
-            <div className="relative group">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-muted-foreground group-focus-within:text-primary transition-colors">
-                <Mail className="h-5 w-5" />
-              </div>
-              <input
-                id="login-email"
-                type="email"
-                placeholder="awesome@user.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="flex w-full pl-12 pr-4 py-3.5 text-sm glass-input font-medium transition-all focus:border-primary focus:ring-1 focus:ring-primary/50 disabled:opacity-50"
-                disabled={isSubmitting}
-              />
-            </div>
-            {fieldErrors.email && (
-              <p className="text-xs text-destructive pl-4 font-medium">{fieldErrors.email}</p>
-            )}
+            <Input
+              id="login-email"
+              type="email"
+              variant="auth"
+              placeholder="name@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              disabled={isSubmitting}
+              error={fieldErrors.email}
+            />
           </div>
 
           <div className="grid gap-1.5">
-            <div className="relative group">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-muted-foreground group-focus-within:text-primary transition-colors">
-                <Lock className="h-5 w-5" />
-              </div>
-              <input
-                id="login-password"
-                type={showPassword ? 'text' : 'password'}
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="flex w-full pl-12 pr-12 py-3.5 text-sm glass-input font-medium transition-all focus:border-primary focus:ring-1 focus:ring-primary/50 disabled:opacity-50"
-                disabled={isSubmitting}
-              />
-              <button
-                type="button"
-                className="absolute right-3 top-3 h-8 w-8 text-muted-foreground hover:text-foreground transition-colors flex items-center justify-center rounded-lg hover:bg-white/10"
-                onClick={() => setShowPassword(!showPassword)}
-                title={showPassword ? 'Hide password' : 'Show password'}
-              >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            </div>
-            {fieldErrors.password && (
-              <p className="text-xs text-destructive pl-4 font-medium">{fieldErrors.password}</p>
-            )}
+            <Input
+              id="login-password"
+              type="password"
+              variant="auth"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={isSubmitting}
+              error={fieldErrors.password}
+            />
           </div>
 
-          <div className="flex justify-end pr-2">
-            <Link to="/forgot-password" className="text-xs font-semibold text-muted-foreground hover:text-primary transition-colors">
-              Forgot your password?
+          <div className="flex items-center justify-between mt-2 mb-4 px-1">
+            <div className="flex items-center space-x-2">
+              <input type="checkbox" id="remember" className="rounded border-white/20 bg-black/50 accent-[#a855f7]" />
+              <label htmlFor="remember" className="text-xs text-white/60">I agree to the Terms of service</label>
+            </div>
+            <Link to="/forgot-password" className="text-xs font-medium text-white/60 hover:text-white transition-colors">
+              Forgot?
             </Link>
           </div>
 
-          <button
+          <Button
             type="submit"
-            className="btn btn-primary w-full shadow-lg hover:shadow-xl hover:shadow-primary/20 py-3.5 text-base mt-2"
+            variant="gradient"
+            className="w-full"
             disabled={isSubmitting}
           >
             {isSubmitting ? (
               <>
                 <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                <span>Logging in...</span>
+                Signing in...
               </>
             ) : (
-              'Log In'
+              'SIGN IN'
             )}
-          </button>
+          </Button>
         </form>
 
-        <div className="flex items-center justify-center space-x-1.5 mt-8 text-sm font-medium relative z-10">
-          <span className="text-muted-foreground">Don't have an account?</span>
-          <Link to="/register" className="text-primary hover:text-accent transition-colors">
+        <div className="mt-8 text-center text-sm w-full border-t border-white/10 pt-6">
+          <span className="text-white/40">Don't have an account? </span>
+          <Link 
+            to="/register" 
+            className="font-medium text-[#d8b4fe] hover:text-white transition-colors"
+          >
             Sign up
           </Link>
         </div>
-      </div>
-    </motion.div>
+      </motion.div>
+    </div>
   )
 }

@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import { Moon, Sun, LogOut, CheckSquare, Bell, User, Settings as SettingsIcon } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import { useTheme } from '../hooks/useTheme'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '../utils/cn'
 import { getNotifications, markAllNotificationsAsRead, markNotificationAsRead } from '../services/notificationService'
@@ -11,10 +11,11 @@ export default function Header() {
   const { user, logout } = useAuth()
   const { isDark, toggleTheme } = useTheme()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   
   const [showUserDropdown, setShowUserDropdown] = useState(false)
   const [showNotifDropdown, setShowNotifDropdown] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '')
   
   const [notifications, setNotifications] = useState([])
   
@@ -50,6 +51,10 @@ export default function Header() {
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
+  useEffect(() => {
+    setSearchQuery(searchParams.get('q') || '')
+  }, [searchParams])
+
   const unreadCount = notifications.filter(n => !n.read).length
 
   const handleMarkAllRead = async () => {
@@ -73,14 +78,13 @@ export default function Header() {
 
   const handleSearchSubmit = (e) => {
     e.preventDefault()
-    if (searchQuery.trim()) {
-      navigate(`/tasks?q=${encodeURIComponent(searchQuery.trim())}`)
-    }
+    const query = searchQuery.trim()
+    navigate(query ? `/tasks?q=${encodeURIComponent(query)}` : `/tasks`)
   }
 
   return (
     <header className="h-20 flex items-center justify-between px-4 sm:px-6 lg:px-8 shrink-0 z-40 relative">
-      <div className="absolute inset-0 glass border-x-0 border-t-0 bg-glass-bg/60 backdrop-blur-md pointer-events-none" />
+      <div className="absolute inset-0 apple-glass-panel border-x-0 border-t-0 rounded-none pointer-events-none" />
       
       {/* Left side: Project Logo & Name (Mobile) */}
       <Link to="/" className="relative z-10 flex items-center space-x-3 transition-opacity hover:opacity-80 md:hidden">
@@ -105,7 +109,7 @@ export default function Header() {
             placeholder="Search... (Enter)"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="px-4 py-1.5 bg-foreground/5 hover:bg-foreground/10 focus:bg-foreground/10 border border-glass-border focus:border-primary/50 focus:ring-1 focus:ring-primary/50 rounded-full outline-none transition-all cursor-text min-w-[200px] text-sm text-foreground placeholder:text-muted-foreground"
+            className="apple-glass-input px-5 py-2 focus:ring-1 focus:ring-primary/50 rounded-full outline-none transition-all cursor-text min-w-[240px] text-sm font-medium tracking-wide text-foreground placeholder:text-muted-foreground"
           />
         </form>
 
@@ -128,10 +132,10 @@ export default function Header() {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
                 transition={{ duration: 0.15 }}
-                className="absolute right-0 mt-3 w-80 glass rounded-2xl shadow-float overflow-hidden z-50 origin-top-right border border-glass-border p-2"
+                className="absolute right-0 mt-3 w-80 apple-glass-dropdown rounded-3xl overflow-hidden z-50 origin-top-right p-2"
               >
                 <div className="px-4 py-3 border-b border-glass-border mb-2 flex items-center justify-between">
-                  <p className="text-sm font-semibold text-foreground">Notifications</p>
+                  <p className="text-sm font-semibold tracking-tight text-foreground">Notifications</p>
                   {unreadCount > 0 && (
                     <button 
                       onClick={handleMarkAllRead}
@@ -157,7 +161,7 @@ export default function Header() {
                           notif.read ? "text-muted-foreground hover:bg-foreground/5" : "bg-primary/5 text-foreground border border-primary/20 hover:bg-primary/10"
                         )}
                       >
-                        <p className="font-semibold text-xs mb-0.5">{notif.title}</p>
+                        <p className="font-medium text-xs tracking-wide mb-0.5">{notif.title}</p>
                         <p className="text-xs opacity-80">{notif.message}</p>
                       </div>
                     ))
@@ -207,11 +211,11 @@ export default function Header() {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
                 transition={{ duration: 0.15 }}
-                className="absolute right-0 mt-3 w-64 glass rounded-2xl shadow-float overflow-hidden z-50 origin-top-right border border-glass-border p-2"
+                className="absolute right-0 mt-3 w-64 apple-glass-dropdown rounded-3xl overflow-hidden z-50 origin-top-right p-2"
               >
                 <div className="px-4 py-3 border-b border-glass-border mb-2">
-                  <p className="text-sm font-semibold text-foreground truncate">{user?.name || 'User'}</p>
-                  <p className="text-xs text-muted-foreground truncate">{user?.email || 'user@taskflow.com'}</p>
+                  <p className="text-sm font-semibold tracking-tight text-foreground truncate">{user?.name || 'User'}</p>
+                  <p className="text-xs font-medium tracking-wide text-muted-foreground truncate">{user?.email || 'user@taskflow.com'}</p>
                 </div>
                 
                 <div className="space-y-1">

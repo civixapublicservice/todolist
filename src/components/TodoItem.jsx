@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Trash2, Edit2, Check, X, Calendar as CalendarIcon, Tag, CheckCircle2, Clock } from 'lucide-react'
+import { motion } from 'framer-motion'
 import { cn } from '../utils/cn'
 
 export default function TodoItem({
@@ -62,13 +63,20 @@ export default function TodoItem({
 
   if (isEditing) {
     return (
-      <div className="glass-card shadow-glow border border-primary/50 p-6 flex flex-col justify-between min-h-[260px] relative overflow-hidden bg-background/80">
+      <motion.div 
+        layout
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        className="glass-card shadow-glow border border-primary/50 p-6 flex flex-col justify-between min-h-[260px] relative overflow-hidden bg-background/80"
+      >
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent pointer-events-none" />
         <div className="flex flex-col gap-4 relative z-10">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-glass-border pb-3">
             <span className="text-sm font-semibold text-foreground bg-primary/10 px-2 py-1 rounded-md text-primary">Edit Task</span>
             <div className="flex items-center space-x-2">
               <select
+                aria-label="Edit Priority"
                 value={editPriority}
                 onChange={(e) => setEditPriority(e.target.value)}
                 className="block pl-3 pr-8 py-1.5 text-xs glass-input appearance-none min-w-[100px]"
@@ -79,6 +87,7 @@ export default function TodoItem({
               </select>
               <input
                 type="date"
+                aria-label="Edit Due Date"
                 value={editDueDate}
                 onChange={(e) => setEditDueDate(e.target.value)}
                 className="block px-2 py-1.5 text-xs glass-input"
@@ -89,6 +98,7 @@ export default function TodoItem({
           <div className="space-y-3">
             <input
               type="text"
+              aria-label="Edit Task Title"
               value={editTitle}
               onChange={(e) => setEditTitle(e.target.value)}
               className="block w-full px-3 py-2 text-sm glass-input font-medium"
@@ -97,6 +107,7 @@ export default function TodoItem({
               disabled={isUpdating}
             />
             <textarea
+              aria-label="Edit Task Description"
               value={editDescription}
               onChange={(e) => setEditDescription(e.target.value)}
               className="block w-full px-3 py-2 text-sm glass-input resize-none h-[60px]"
@@ -122,17 +133,24 @@ export default function TodoItem({
             {isUpdating ? 'Saving...' : 'Save'}
           </button>
         </div>
-      </div>
+      </motion.div>
     )
   }
 
   const progressPercent = todo.completed ? 100 : (todo.id.length % 5) * 20 + 20
 
   return (
-    <div className={cn(
-      "glass-card group relative flex flex-col justify-between min-h-[260px] cursor-default",
-      todo.completed ? "opacity-75 bg-muted/20" : ""
-    )}>
+    <motion.div 
+      layout
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      whileHover={{ y: -4 }}
+      className={cn(
+        "glass-card group relative flex flex-col justify-between min-h-[260px] cursor-default transition-all duration-300",
+        todo.completed ? "opacity-75 bg-muted/20" : ""
+      )}
+    >
       
       {todo.completed && (
         <div className="absolute inset-0 bg-white/5 backdrop-blur-[1px] rounded-[var(--radius-lg)] z-0 pointer-events-none" />
@@ -154,6 +172,7 @@ export default function TodoItem({
         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
           <button
             onClick={() => setIsEditing(true)}
+            aria-label="Edit task"
             className="p-1.5 text-muted-foreground hover:text-primary transition-colors rounded-lg hover:bg-white/10"
             title="Edit task"
           >
@@ -163,6 +182,7 @@ export default function TodoItem({
             onClick={() => {
               if (window.confirm('Delete this task?')) onDelete(todo.id)
             }}
+            aria-label="Delete task"
             className="p-1.5 text-muted-foreground hover:text-destructive transition-colors rounded-lg hover:bg-destructive/10"
             title="Delete task"
           >
@@ -208,6 +228,7 @@ export default function TodoItem({
               <span className={todo.completed ? "text-primary" : ""}>{todo.completed ? 'Done' : 'Active'}</span>
               <button 
                 onClick={() => onToggle(todo.id)}
+                aria-label={todo.completed ? "Mark as active" : "Mark as completed"}
                 className={cn(
                   "w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-300 shadow-sm hover:scale-110 active:scale-95",
                   todo.completed ? "bg-primary border-primary text-white shadow-glow" : "border-muted-foreground hover:border-primary hover:bg-primary/10"
@@ -229,6 +250,6 @@ export default function TodoItem({
         </div>
       </div>
 
-    </div>
+    </motion.div>
   )
 }

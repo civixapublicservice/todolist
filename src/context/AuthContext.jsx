@@ -24,6 +24,14 @@ export function AuthProvider({ children }) {
       }
     }
     initializeAuth()
+
+    const handleUnauthorized = () => {
+      logoutUser()
+      setUser(null)
+    }
+    
+    window.addEventListener('auth:unauthorized', handleUnauthorized)
+    return () => window.removeEventListener('auth:unauthorized', handleUnauthorized)
   }, [])
 
   const register = async (name, email, password) => {
