@@ -121,3 +121,20 @@ export const getCurrentUser = async (req, res) => {
     return sendError(res, 500, 'Failed to fetch user session')
   }
 }
+
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        createdAt: true,
+      }
+    })
+    return res.json({ users })
+  } catch (error) {
+    console.error('GetAllUsers Error:', error)
+    return sendError(res, 500, 'Failed to fetch users')
+  }
+}
