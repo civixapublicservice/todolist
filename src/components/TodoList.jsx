@@ -1,6 +1,6 @@
 import { CheckCircle2, Inbox } from 'lucide-react'
 import TodoItem from './TodoItem'
-import '../styles/todolist.css'
+
 
 export default function TodoList({
   todos,
@@ -9,55 +9,42 @@ export default function TodoList({
   onUpdate,
   isLoading,
 }) {
-  const completedCount = todos.filter(t => t.completed).length
+  const completedCount = todos.filter((t) => t.completed).length
 
   if (isLoading) {
     return (
-      <div className="loading-container">
-        <div className="spinner"></div>
-        <p>Loading todos...</p>
+      <div className="flex flex-col items-center justify-center py-12 text-muted-foreground space-y-4">
+        <div className="animate-spin rounded-full border-4 border-primary border-t-transparent h-8 w-8"></div>
+        <p className="text-sm font-medium">Loading task records...</p>
       </div>
     )
   }
 
   if (todos.length === 0) {
     return (
-      <div className="empty-state">
-        <div className="empty-icon">
-          <Inbox size={48} />
+      <div className="flex flex-col items-center justify-center py-16 px-4 text-center bg-card border border-border rounded-xl shadow-sm">
+        <div className="h-12 w-12 bg-muted rounded-full flex items-center justify-center mb-4">
+          <Inbox className="h-5 w-5 text-muted-foreground" />
         </div>
-        <h3>No todos yet</h3>
-        <p>Create your first todo to get started! 🚀</p>
+        <h3 className="text-base font-semibold text-foreground mb-1">No tasks found</h3>
+        <p className="text-sm text-muted-foreground max-w-sm">
+          You're all caught up! Create a new task or adjust your filters.
+        </p>
       </div>
     )
   }
 
   return (
-    <div className="todo-list-container">
-      <div className="list-header">
-        <h2>Your Todos</h2>
-        <div className="list-stats">
-          <div className="stat">
-            <span className="stat-value">{todos.length}</span>
-            <span className="stat-label">Total</span>
-          </div>
-          <div className="stat stat-completed">
-            <span className="stat-value">{completedCount}</span>
-            <span className="stat-label">Completed</span>
-          </div>
-          {todos.length > 0 && (
-            <div className="stat">
-              <span className="stat-value">
-                {Math.round((completedCount / todos.length) * 100)}%
-              </span>
-              <span className="stat-label">Progress</span>
-            </div>
-          )}
+    <div className="space-y-4">
+      <div className="flex items-center justify-between pb-4">
+        <h2 className="text-xl font-bold tracking-tight text-foreground">All Tasks</h2>
+        <div className="text-sm font-medium text-muted-foreground bg-muted/50 px-3 py-1 rounded-full">
+          {todos.length} {todos.length === 1 ? 'task' : 'tasks'}
         </div>
       </div>
 
-      <div className="todo-list">
-        {todos.map(todo => (
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+        {todos.map((todo) => (
           <TodoItem
             key={todo.id}
             todo={todo}
@@ -69,10 +56,10 @@ export default function TodoList({
       </div>
 
       {completedCount > 0 && (
-        <div className="completion-message">
-          <CheckCircle2 size={20} />
+        <div className="flex items-center justify-center space-x-2 text-sm text-muted-foreground py-4">
+          <CheckCircle2 className="h-4 w-4 text-success" />
           <span>
-            You've completed {completedCount} todo{completedCount !== 1 ? 's' : ''}! Great work!
+            {completedCount} task{completedCount !== 1 ? 's' : ''} marked completed in this view.
           </span>
         </div>
       )}

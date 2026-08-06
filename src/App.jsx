@@ -1,46 +1,42 @@
-import { useState, useEffect } from 'react'
-import { useAuth } from './hooks/useAuth'
-import { useTheme } from './hooks/useTheme'
-import { saveUser } from './services/authService'
-import LoginForm from './components/LoginForm'
-import MainLayout from './layouts/MainLayout'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { AuthProvider } from './context/AuthContext'
+import { ThemeProvider } from './context/ThemeContext'
+import AuthLayout from './layouts/AuthLayout'
+import LoginPage from './pages/LoginPage'
+import RegisterPage from './pages/RegisterPage'
 import Dashboard from './pages/Dashboard'
-import './styles/index.css'
+import MyTasksPage from './pages/MyTasksPage'
+import ActivityPage from './pages/ActivityPage'
+import CalendarPage from './pages/CalendarPage'
+import SettingsPage from './pages/SettingsPage'
+import ProtectedRoute from './components/ProtectedRoute'
 
 export default function App() {
-  const { user, login, logout, isLoading: isAuthLoading } = useAuth()
-  const { isDark, toggleTheme } = useTheme()
-
-  const handleLogin = (userData) => {
-    saveUser(userData)
-    login(userData)
-  }
-
-  const handleLogout = () => {
-    logout()
-  }
-
-  if (isAuthLoading) {
-    return (
-      <div className="app-loading">
-        <div className="spinner"></div>
-        <p>Loading...</p>
-      </div>
-    )
-  }
-
-  if (!user) {
-    return <LoginForm onLoginSuccess={handleLogin} />
-  }
-
   return (
-    <MainLayout
-      user={user}
-      onLogout={handleLogout}
-      isDark={isDark}
-      onThemeToggle={toggleTheme}
-    >
-      <Dashboard user={user} />
-    </MainLayout>
+    <ThemeProvider>
+      <AuthProvider>
+        <BrowserRouter>
+        <Routes>
+          {/* Public Auth Routes */}
+          <Route element={<AuthLayout />}>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+          </Route>
+
+          {/* Protected Application Routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/tasks" element={<MyTasksPage />} />
+            <Route path="/activity" element={<ActivityPage />} />
+            <Route path="/calendar" element={<CalendarPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
+          </Route>
+
+          {/* Catch-all redirect */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+        </BrowserRouter>
+      </AuthProvider>
+    </ThemeProvider>
   )
 }

@@ -1,31 +1,23 @@
-import Navbar from '../components/Navbar'
-import '../styles/app.css'
+import Sidebar from '../components/Sidebar'
+import Header from '../components/Header'
 
-export default function MainLayout({
-  children,
-  user,
-  onLogout,
-  isDark,
-  onThemeToggle,
-}) {
+
+export default function MainLayout({ children }) {
   return (
-    <div className="app">
-      <Navbar
-        user={user}
-        onLogout={onLogout}
-        isDark={isDark}
-        onThemeToggle={onThemeToggle}
-      />
-      <main className="app-main">
-        <div className="app-container">
+    <div className="flex h-screen bg-background text-foreground overflow-hidden">
+      {/* Fixed Left Navigation Sidebar */}
+      <Sidebar />
+
+      {/* Main View Area */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        {/* Header Top Bar */}
+        <Header />
+
+        {/* Dynamic Page Content */}
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
           {children}
-        </div>
-      </main>
-      <footer className="app-footer">
-        <p>
-          TaskFlow © {new Date().getFullYear()} | Built with React + Vite
-        </p>
-      </footer>
+        </main>
+      </div>
     </div>
   )
 }
