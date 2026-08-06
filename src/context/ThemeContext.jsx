@@ -9,7 +9,7 @@ export function ThemeProvider({ children }) {
     if (stored !== null) {
       return JSON.parse(stored)
     }
-    return window.matchMedia('(prefers-color-scheme: dark)').matches
+    return false // Default to light mode
   })
 
   useEffect(() => {
