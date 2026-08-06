@@ -8,14 +8,18 @@ datasource db {
 }
 
 model User {
-  id         String     @id @default(uuid())
-  name       String
-  email      String     @unique
-  password   String
-  createdAt  DateTime   @default(now()) @map("created_at")
-  updatedAt  DateTime   @updatedAt @map("updated_at")
-  todos      Todo[]
-  activities Activity[]
+  id               String     @id @default(uuid())
+  name             String
+  email            String     @unique
+  password         String
+  resetToken       String?    @map("reset_token")
+  resetTokenExpiry DateTime?  @map("reset_token_expiry")
+  createdAt        DateTime   @default(now()) @map("created_at")
+  updatedAt        DateTime   @updatedAt @map("updated_at")
+  todos            Todo[]
+  activities       Activity[]
+  notifications    Notification[]
+  settings         Settings?
 
   @@map("users")
 }
@@ -49,4 +53,30 @@ model Activity {
 
   @@index([userId])
   @@map("activities")
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  message   String
+  type      String   @default("INFO")
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("notifications")
+}
+
+model Settings {
+  id                String  @id @default(uuid())
+  theme             String  @default("system")
+  emailAlerts       Boolean @default(true)
+  pushNotifications Boolean @default(true)
+  
+  userId            String  @unique @map("user_id")
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("settings")
 }

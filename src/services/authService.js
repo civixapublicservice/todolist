@@ -37,3 +37,19 @@ export const fetchCurrentUser = async () => {
 export const logoutUser = () => {
   localStorage.removeItem('auth_token')
 }
+
+export const forgotPassword = async (email) => {
+  const data = await fetchApi('/auth/forgot-password', {
+    method: 'POST',
+    body: JSON.stringify({ email }),
+  })
+  return data
+}
+
+export const resetPassword = async (token, password) => {
+  const data = await fetchApi(`/auth/reset-password/${token}`, {
+    method: 'POST',
+    body: JSON.stringify({ password }),
+  })
+  return data
+}

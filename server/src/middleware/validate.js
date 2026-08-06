@@ -58,3 +58,32 @@ export const validateTodo = (req, res, next) => {
 
   next()
 }
+
+export const validateForgotPassword = (req, res, next) => {
+  const { email } = req.body
+
+  if (!email || typeof email !== 'string' || !email.trim()) {
+    return sendError(res, 400, 'Email address is required', 'email')
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailRegex.test(email.trim())) {
+    return sendError(res, 400, 'Please enter a valid email address', 'email')
+  }
+
+  next()
+}
+
+export const validateResetPassword = (req, res, next) => {
+  const { password } = req.body
+
+  if (!password || typeof password !== 'string') {
+    return sendError(res, 400, 'Password is required', 'password')
+  }
+
+  if (password.length < 8) {
+    return sendError(res, 400, 'Password must be at least 8 characters long', 'password')
+  }
+
+  next()
+}

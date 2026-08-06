@@ -1,6 +1,8 @@
 import { useLocation, useNavigate } from 'react-router-dom'
-import { LayoutDashboard, CheckSquare, BarChart3, Calendar as CalendarIcon, Settings } from 'lucide-react'
+import { LayoutDashboard, CheckSquare, BarChart3, Calendar as CalendarIcon, Settings, ChevronRight } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
+import { motion } from 'framer-motion'
+import { cn } from '../utils/cn'
 
 export default function Sidebar() {
   const location = useLocation()
@@ -18,52 +20,90 @@ export default function Sidebar() {
   const currentPath = location.pathname
 
   return (
-    <aside className="w-64 bg-secondary text-secondary-foreground flex flex-col justify-between h-full hidden md:flex shrink-0">
-      <div className="p-4 flex flex-col h-full">
+    <motion.aside 
+      initial={{ x: -20, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      className="w-64 glass m-4 mr-0 rounded-[24px] flex flex-col justify-between hidden md:flex shrink-0 relative overflow-hidden"
+    >
+      <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent pointer-events-none" />
+      
+      <div className="p-5 flex flex-col h-full relative z-10">
         {/* Branding */}
-        <div className="flex items-center space-x-3 px-3 mb-8 mt-2">
-          <div className="bg-primary p-1.5 rounded-lg shadow-sm">
-            <CheckSquare className="h-5 w-5 text-primary-foreground" strokeWidth={2} />
+        <motion.div 
+          initial={{ y: -10, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.1 }}
+          className="flex items-center space-x-3 px-2 mb-8 mt-2 cursor-pointer"
+          onClick={() => navigate('/')}
+        >
+          <div className="bg-gradient-to-br from-primary to-accent p-2 rounded-[14px] shadow-glow">
+            <CheckSquare className="h-5 w-5 text-white" strokeWidth={2.5} />
           </div>
-          <span className="text-xl font-bold tracking-tight">TaskFlow</span>
-        </div>
+          <span className="text-xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
+            TaskFlow
+          </span>
+        </motion.div>
 
         {/* Navigation */}
-        <nav className="space-y-1 flex-1">
-          {navItems.map((item) => {
+        <nav className="space-y-2 flex-1 mt-4">
+          {navItems.map((item, index) => {
             const Icon = item.icon
             const isActive = currentPath === item.path
             return (
-              <button
+              <motion.button
+                initial={{ x: -10, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ delay: 0.1 + index * 0.05 }}
                 key={item.id}
                 onClick={() => navigate(item.path)}
-                className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-200 ease-in-out ${
-                  isActive
-                    ? 'bg-primary text-primary-foreground font-semibold shadow-sm'
-                    : 'text-secondary-foreground/80 font-medium hover:bg-secondary-foreground/10 hover:text-secondary-foreground'
-                }`}
+                className={cn(
+                  "relative w-full flex items-center justify-between px-3 py-3 rounded-2xl text-sm font-medium transition-all duration-300 group",
+                  isActive ? "text-primary-foreground" : "text-foreground/70 hover:text-foreground"
+                )}
               >
-                <Icon className={`h-[18px] w-[18px] shrink-0 ${isActive ? 'text-primary-foreground' : 'text-secondary-foreground/70'}`} strokeWidth={isActive ? 2 : 1.5} />
-                <span>{item.label}</span>
-              </button>
+                {isActive && (
+                  <motion.div 
+                    layoutId="activeNavIndicator"
+                    className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-2xl shadow-glow"
+                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                  />
+                )}
+                <div className="relative z-10 flex items-center space-x-3">
+                  <div className={cn(
+                    "p-1.5 rounded-xl transition-colors duration-300",
+                    isActive ? "bg-white/20" : "group-hover:bg-foreground/5"
+                  )}>
+                    <Icon className="h-5 w-5" strokeWidth={isActive ? 2 : 1.5} />
+                  </div>
+                  <span>{item.label}</span>
+                </div>
+                {isActive && (
+                  <ChevronRight className="h-4 w-4 relative z-10 opacity-70" />
+                )}
+              </motion.button>
             )
           })}
         </nav>
 
         {/* Footer utilities */}
-        <div className="mt-auto pt-4 border-t border-secondary-foreground/10 space-y-1">
+        <motion.div 
+          initial={{ y: 10, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.4 }}
+          className="mt-auto pt-4"
+        >
           {/* User Profile */}
-          <div className="flex items-center space-x-3 px-3 py-2.5 rounded-lg mb-2 hover:bg-secondary-foreground/10 transition-colors cursor-pointer">
-            <div className="h-8 w-8 rounded-full bg-secondary-foreground/10 border border-secondary-foreground/20 text-secondary-foreground flex items-center justify-center font-bold shrink-0">
+          <div className="flex items-center space-x-3 px-3 py-3 rounded-2xl hover:bg-white/5 border border-transparent hover:border-glass-border transition-all cursor-pointer group">
+            <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-primary to-accent shadow-sm flex items-center justify-center text-white font-bold shrink-0 ring-2 ring-background group-hover:shadow-glow transition-all">
               {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
             </div>
             <div className="flex flex-col min-w-0 text-left">
-              <span className="text-sm font-semibold truncate">{user?.name || 'User'}</span>
-              <span className="text-xs text-secondary-foreground/70 truncate">{user?.email || 'user@taskflow.com'}</span>
+              <span className="text-sm font-semibold truncate text-foreground group-hover:text-primary transition-colors">{user?.name || 'User'}</span>
+              <span className="text-xs text-muted-foreground truncate">{user?.email || 'user@taskflow.com'}</span>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
-    </aside>
+    </motion.aside>
   )
 }

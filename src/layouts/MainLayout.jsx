@@ -4,7 +4,7 @@ import Header from '../components/Header'
 
 export default function MainLayout({ children }) {
   return (
-    <div className="flex h-screen bg-background text-foreground overflow-hidden">
+    <div className="flex h-screen bg-transparent text-foreground overflow-hidden">
       {/* Fixed Left Navigation Sidebar */}
       <Sidebar />
 

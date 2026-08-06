@@ -1,3 +1,4 @@
+import crypto from 'crypto'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import { prisma } from '../config/db.js'
@@ -136,5 +137,82 @@ export const getAllUsers = async (req, res) => {
   } catch (error) {
     console.error('GetAllUsers Error:', error)
     return sendError(res, 500, 'Failed to fetch users')
+  }
+}
+
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body
+    const normalizedEmail = email.trim().toLowerCase()
+
+    const user = await prisma.user.findUnique({
+      where: { email: normalizedEmail },
+    })
+
+    if (!user) {
+      return sendError(res, 404, 'User with this email not found')
+    }
+
+    const resetToken = crypto.randomBytes(32).toString('hex')
+    const resetTokenExpiry = new Date(Date.now() + 15 * 60 * 1000) // 15 mins
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        resetToken,
+        resetTokenExpiry,
+      },
+    })
+
+    await logActivity(user.id, 'PASSWORD_RESET_REQUESTED', `Password reset requested`)
+
+    return res.json({
+      message: 'Reset link generated successfully',
+      resetLink: `http://localhost:5173/reset-password/${resetToken}`
+    })
+  } catch (error) {
+    console.error('ForgotPassword Error:', error)
+    return sendError(res, 500, 'Failed to generate reset link')
+  }
+}
+
+export const resetPassword = async (req, res) => {
+  try {
+    const { token } = req.params
+    const { password } = req.body
+
+    const user = await prisma.user.findFirst({
+      where: {
+        resetToken: token,
+        resetTokenExpiry: {
+          gt: new Date()
+        }
+      }
+    })
+
+    if (!user) {
+      return sendError(res, 400, 'Invalid or expired reset token')
+    }
+
+    const salt = await bcrypt.genSalt(10)
+    const hashedPassword = await bcrypt.hash(password, salt)
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        password: hashedPassword,
+        resetToken: null,
+        resetTokenExpiry: null,
+      }
+    })
+
+    await logActivity(user.id, 'PASSWORD_RESET', `Password successfully reset`)
+
+    return res.json({
+      message: 'Password has been reset successfully'
+    })
+  } catch (error) {
+    console.error('ResetPassword Error:', error)
+    return sendError(res, 500, 'Failed to reset password')
   }
 }
