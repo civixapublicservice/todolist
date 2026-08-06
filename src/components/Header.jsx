@@ -1,11 +1,13 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { Moon, Sun, LogOut, CheckSquare, Bell, User, Settings as SettingsIcon } from 'lucide-react'
+import { Moon, Sun, LogOut, CheckSquare, Bell, User, Settings as SettingsIcon, Search } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import { useTheme } from '../hooks/useTheme'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '../utils/cn'
 import { getNotifications, markAllNotificationsAsRead, markNotificationAsRead } from '../services/notificationService'
+import ThemeToggle from './ui/ThemeToggle'
+import ChromeAvatar from './ui/ChromeAvatar'
 
 export default function Header() {
   const { user, logout } = useAuth()
@@ -84,8 +86,7 @@ export default function Header() {
 
   return (
     <header className="h-20 flex items-center justify-between px-4 sm:px-6 lg:px-8 shrink-0 z-40 relative">
-      <div className="absolute inset-0 apple-glass-panel border-x-0 border-t-0 rounded-none pointer-events-none" />
-      
+
       {/* Left side: Project Logo & Name (Mobile) */}
       <Link to="/" className="relative z-10 flex items-center space-x-3 transition-opacity hover:opacity-80 md:hidden">
         <div className="bg-gradient-to-br from-primary to-accent p-1.5 rounded-xl shadow-glow">
@@ -103,27 +104,51 @@ export default function Header() {
       <div className="flex items-center space-x-3 sm:space-x-5 ml-auto relative z-10">
         
         {/* Search Bar */}
-        <form onSubmit={handleSearchSubmit} className="hidden lg:flex items-center relative">
-          <input
+        <form onSubmit={handleSearchSubmit} className="hidden lg:flex items-center relative group">
+          <motion.input
             type="text"
             placeholder="Search... (Enter)"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="apple-glass-input px-5 py-2 focus:ring-1 focus:ring-primary/50 rounded-full outline-none transition-all cursor-text min-w-[240px] text-sm font-medium tracking-wide text-foreground placeholder:text-muted-foreground"
+            whileFocus={{ scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 400, damping: 25 }}
+            className={cn(
+              "pl-11 pr-5 py-2.5 outline-none cursor-text min-w-[280px] text-sm font-medium tracking-wide transition-all duration-300",
+              "rounded-full backdrop-blur-xl border border-white/40 dark:border-white/10",
+              "bg-white/20 dark:bg-black/20",
+              "text-foreground placeholder:text-muted-foreground",
+              "shadow-[0_4px_12px_-2px_rgba(0,0,0,0.15),inset_0_4px_8px_rgba(255,255,255,0.6),inset_0_-4px_8px_rgba(0,0,0,0.05)]",
+              "dark:shadow-[0_4px_12px_-2px_rgba(0,0,0,0.5),inset_0_4px_8px_rgba(255,255,255,0.15),inset_0_-4px_8px_rgba(0,0,0,0.4)]",
+              "focus:shadow-[0_8px_24px_-4px_rgba(0,0,0,0.2),inset_0_6px_12px_rgba(255,255,255,0.8),inset_0_-4px_8px_rgba(0,0,0,0.05)]",
+              "dark:focus:shadow-[0_8px_24px_-4px_rgba(0,0,0,0.6),inset_0_6px_12px_rgba(255,255,255,0.25),inset_0_-4px_8px_rgba(0,0,0,0.4)]",
+              "focus:ring-2 focus:ring-primary/50"
+            )}
           />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors drop-shadow-sm z-10 pointer-events-none" />
         </form>
 
         {/* Notifications */}
         <div className="relative" ref={notifDropdownRef}>
-          <button 
+          <motion.button 
             onClick={() => setShowNotifDropdown(!showNotifDropdown)}
-            className="relative p-2.5 text-muted-foreground hover:text-primary bg-foreground/5 hover:bg-white/10 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-ring border border-transparent hover:border-glass-border group"
-          >
-            <Bell className="h-5 w-5 group-hover:scale-110 transition-transform" strokeWidth={1.5} />
-            {unreadCount > 0 && (
-              <span className="absolute top-2 right-2 h-2.5 w-2.5 rounded-full bg-destructive border-2 border-background flex items-center justify-center"></span>
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            animate={unreadCount > 0 ? { rotate: [0, -20, 20, -15, 15, -10, 10, 0] } : {}}
+            transition={unreadCount > 0 ? { repeat: Infinity, duration: 1.5, ease: "easeInOut", repeatDelay: 2 } : {}}
+            className={cn(
+              "relative flex items-center justify-center w-11 h-11 rounded-full z-10",
+              "backdrop-blur-xl border border-white/40 dark:border-white/10",
+              "bg-white/20 dark:bg-black/20",
+              "shadow-[0_4px_12px_-2px_rgba(0,0,0,0.15),inset_0_4px_8px_rgba(255,255,255,0.6),inset_0_-4px_8px_rgba(0,0,0,0.05)]",
+              "dark:shadow-[0_4px_12px_-2px_rgba(0,0,0,0.5),inset_0_4px_8px_rgba(255,255,255,0.15),inset_0_-4px_8px_rgba(0,0,0,0.4)]",
+              "focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer"
             )}
-          </button>
+          >
+            <Bell className="w-5 h-5 text-foreground drop-shadow-[0_0_8px_rgba(255,255,255,0.5)] dark:drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]" strokeWidth={2} />
+            {unreadCount > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 h-3.5 w-3.5 rounded-full bg-destructive border-2 border-background flex items-center justify-center shadow-[0_0_8px_rgba(239,68,68,0.8)]"></span>
+            )}
+          </motion.button>
           
           <AnimatePresence>
             {showNotifDropdown && (
@@ -173,23 +198,7 @@ export default function Header() {
         </div>
 
         {/* Theme Toggle */}
-        <button
-          onClick={toggleTheme}
-          className="relative p-2.5 text-muted-foreground hover:text-primary bg-foreground/5 hover:bg-white/10 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-ring border border-transparent hover:border-glass-border group overflow-hidden"
-          title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-        >
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.div
-              key={isDark ? 'dark' : 'light'}
-              initial={{ y: -20, opacity: 0, rotate: -90 }}
-              animate={{ y: 0, opacity: 1, rotate: 0 }}
-              exit={{ y: 20, opacity: 0, rotate: 90 }}
-              transition={{ duration: 0.2 }}
-            >
-              {isDark ? <Sun className="h-5 w-5" strokeWidth={1.5} /> : <Moon className="h-5 w-5" strokeWidth={1.5} />}
-            </motion.div>
-          </AnimatePresence>
-        </button>
+        <ThemeToggle />
 
         <div className="h-8 w-px bg-glass-border hidden sm:block mx-1"></div>
 
@@ -197,11 +206,9 @@ export default function Header() {
         <div className="relative" ref={userDropdownRef}>
           <button
             onClick={() => setShowUserDropdown(!showUserDropdown)}
-            className="flex items-center space-x-2 focus:outline-none rounded-full ring-offset-2 ring-offset-background focus:ring-2 focus:ring-ring transition-all"
+            className="flex items-center space-x-2 focus:outline-none rounded-[2rem] transition-all"
           >
-            <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-primary to-accent shadow-sm flex items-center justify-center text-white text-sm font-bold shrink-0 ring-2 ring-background hover:shadow-glow transition-all">
-              {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
-            </div>
+            <ChromeAvatar className="w-12 h-12" />
           </button>
 
           <AnimatePresence>

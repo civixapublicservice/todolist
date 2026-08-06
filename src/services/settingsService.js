@@ -9,8 +9,8 @@ export const updateUserProfile = async (name, email) => {
 }
 
 export const changeUserPassword = async (currentPassword, newPassword) => {
-  const data = await fetchApi('/settings/password', {
-    method: 'PUT',
+  const data = await fetchApi('/settings/change-password', {
+    method: 'POST',
     body: JSON.stringify({ currentPassword, newPassword }),
   })
   return data

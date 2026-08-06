@@ -14,9 +14,9 @@ export function ThemeProvider({ children }) {
 
   useEffect(() => {
     if (isDark) {
-      document.documentElement.classList.add('dark-mode')
+      document.documentElement.classList.add('dark')
     } else {
-      document.documentElement.classList.remove('dark-mode')
+      document.documentElement.classList.remove('dark')
     }
     
     localStorage.setItem(THEME_STORAGE_KEY, JSON.stringify(isDark))

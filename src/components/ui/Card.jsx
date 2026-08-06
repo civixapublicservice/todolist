@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 export const Card = React.forwardRef(({ className, children, ...props }, ref) => (
   <motion.div
     ref={ref}
-    className={cn('apple-glass-panel rounded-[var(--radius-lg)] p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(0,0,0,0.12)] dark:hover:shadow-[0_12px_40px_rgba(0,0,0,0.5)]', className)}
+    className={cn('apple-glass-panel rounded-[var(--radius-lg)] p-6 sm:p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_40px_rgba(14,165,233,0.15)] dark:hover:shadow-[0_16px_40px_rgba(0,0,0,0.6)]', className)}
     {...props}
   >
     {children}

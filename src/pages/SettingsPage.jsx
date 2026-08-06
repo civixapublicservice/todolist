@@ -6,6 +6,7 @@ import { Settings as SettingsIcon, User, Mail, Lock, LogOut, CheckCircle2, Alert
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
 import { cn } from '../utils/cn'
+import ToggleSwitch from '../components/ui/ToggleSwitch'
 
 export default function SettingsPage() {
   const { user, logout, updateUser } = useAuth()
@@ -18,7 +19,7 @@ export default function SettingsPage() {
   // App settings state
   const [theme, setTheme] = useState('dark')
   const [emailAlerts, setEmailAlerts] = useState(true)
-  const [weeklyDigest, setWeeklyDigest] = useState(true)
+  const [pushNotifications, setPushNotifications] = useState(true)
 
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false)
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false)
@@ -31,7 +32,7 @@ export default function SettingsPage() {
         const data = await getUserSettings()
         setTheme(data.theme || 'dark')
         setEmailAlerts(data.emailAlerts ?? true)
-        setWeeklyDigest(data.weeklyDigest ?? true)
+        setPushNotifications(data.pushNotifications ?? true)
       } catch (err) {
         toast.error('Failed to load user settings')
       } finally {
@@ -48,7 +49,7 @@ export default function SettingsPage() {
     try {
       const data = await updateUserProfile(name, email)
       updateUser({ name: data.user?.name || name, email: data.user?.email || email })
-      toast.success('Profile updated successfully', { icon: '✨' })
+      toast.success('Profile updated successfully')
     } catch (err) {
       toast.error(err.message || 'Failed to update profile')
     } finally {
@@ -62,7 +63,7 @@ export default function SettingsPage() {
 
     try {
       await changeUserPassword(currentPassword, newPassword)
-      toast.success('Password changed successfully', { icon: '🔐' })
+      toast.success('Password changed successfully')
       setCurrentPassword('')
       setNewPassword('')
     } catch (err) {
@@ -77,8 +78,8 @@ export default function SettingsPage() {
     setIsUpdatingSettings(true)
 
     try {
-      await updateUserSettings({ theme, emailAlerts, weeklyDigest })
-      toast.success('App preferences updated successfully', { icon: '⚙️' })
+      await updateUserSettings({ theme, emailAlerts, pushNotifications })
+      toast.success('App preferences updated successfully')
     } catch (err) {
       toast.error(err.message || 'Failed to update settings')
     } finally {
@@ -218,35 +219,25 @@ export default function SettingsPage() {
                     </h4>
                     <p className="text-xs text-muted-foreground mt-1">Receive email notifications for deadlines.</p>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input 
-                      type="checkbox" 
-                      className="sr-only peer" 
-                      checked={emailAlerts}
-                      onChange={(e) => setEmailAlerts(e.target.checked)}
-                      disabled={isUpdatingSettings}
-                    />
-                    <div className="w-11 h-6 bg-muted/30 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                  </label>
+                  <ToggleSwitch 
+                    checked={emailAlerts} 
+                    onChange={setEmailAlerts} 
+                    disabled={isUpdatingSettings} 
+                  />
                 </div>
 
                 <div className="flex items-center justify-between border-b border-glass-border pb-4">
                   <div>
                     <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
-                      <Sparkles className="h-4 w-4 text-muted-foreground" /> Weekly Digest
+                      <Sparkles className="h-4 w-4 text-muted-foreground" /> Push Notifications
                     </h4>
-                    <p className="text-xs text-muted-foreground mt-1">Get a weekly summary of your tasks.</p>
+                    <p className="text-xs text-muted-foreground mt-1">Get instant updates for your tasks.</p>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input 
-                      type="checkbox" 
-                      className="sr-only peer" 
-                      checked={weeklyDigest}
-                      onChange={(e) => setWeeklyDigest(e.target.checked)}
-                      disabled={isUpdatingSettings}
-                    />
-                    <div className="w-11 h-6 bg-muted/30 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                  </label>
+                  <ToggleSwitch 
+                    checked={pushNotifications} 
+                    onChange={setPushNotifications} 
+                    disabled={isUpdatingSettings} 
+                  />
                 </div>
 
                 <button

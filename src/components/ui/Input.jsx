@@ -19,7 +19,7 @@ export const Input = React.forwardRef(({ className, error, leftIcon: LeftIcon, t
         ref={ref}
         type={inputType}
         className={cn(
-          variant === 'auth' ? 'input-dark' : 'glass-input w-full py-3.5 text-sm font-medium tracking-wide transition-all focus:border-primary focus:ring-1 focus:ring-primary/50 disabled:opacity-50 placeholder:text-muted-foreground',
+          variant === 'auth' ? 'input-dark' : 'glass-input w-full py-3.5 text-sm font-bold tracking-wide transition-all focus:border-primary focus:ring-2 focus:ring-primary/60 disabled:opacity-50 placeholder:text-muted-foreground/80',
           LeftIcon && 'pl-12',
           isPassword && 'pr-12',
           error && 'border-destructive focus-visible:ring-destructive focus:border-destructive focus:ring-destructive/50',

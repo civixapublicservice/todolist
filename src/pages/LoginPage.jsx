@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Loader2, Mail, Lock } from 'lucide-react'
+import { Loader2, Mail, Lock, Sparkles } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import { validateEmail } from '../utils/validators'
 import { motion } from 'framer-motion'
@@ -61,7 +61,9 @@ export default function LoginPage() {
       >
         <div className="absolute inset-0 bg-white/20 blur-2xl rounded-full" />
         <div className="relative h-20 w-20 rounded-[28px] bg-white/10 backdrop-blur-3xl border border-white/30 flex items-center justify-center shadow-[0_0_40px_rgba(255,255,255,0.1)]">
-          <div className="h-8 w-8 text-white">✨</div>
+          <div className="h-8 w-8 text-white flex items-center justify-center">
+            <Sparkles className="h-6 w-6" />
+          </div>
         </div>
       </motion.div>
 
@@ -72,7 +74,7 @@ export default function LoginPage() {
         className="glass-auth flex flex-col items-center"
       >
         <div className="flex flex-col space-y-2 text-center mb-8 relative z-10 w-full mt-4">
-          <h1 className="text-[28px] font-bold tracking-tight text-white">Welcome to TaskFlow✨!</h1>
+          <h1 className="text-[28px] font-bold tracking-tight text-white flex items-center gap-2">Welcome to TaskFlow <Sparkles className="h-6 w-6 text-white/80" /></h1>
           <p className="text-sm text-white/50 leading-relaxed px-4">
             Credentials are only used to authenticate in TaskFlow. All saved data will be stored securely.
           </p>

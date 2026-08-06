@@ -101,7 +101,7 @@ export default function TodoItem({
               aria-label="Edit Task Title"
               value={editTitle}
               onChange={(e) => setEditTitle(e.target.value)}
-              className="block w-full px-3 py-2 text-sm glass-input font-medium"
+              className="block w-full px-3 py-2 text-sm glass-input font-bold"
               autoFocus
               maxLength={100}
               disabled={isUpdating}
@@ -110,7 +110,7 @@ export default function TodoItem({
               aria-label="Edit Task Description"
               value={editDescription}
               onChange={(e) => setEditDescription(e.target.value)}
-              className="block w-full px-3 py-2 text-sm glass-input resize-none h-[60px]"
+              className="block w-full px-3 py-2 text-sm glass-input resize-none h-[60px] font-semibold"
               maxLength={500}
               disabled={isUpdating}
             />

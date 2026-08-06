@@ -3,6 +3,8 @@ import { LayoutDashboard, CheckSquare, BarChart3, Calendar as CalendarIcon, Sett
 import { useAuth } from '../hooks/useAuth'
 import { motion } from 'framer-motion'
 import { cn } from '../utils/cn'
+import ThreeDLogo from './ui/ThreeDLogo'
+import ThreeDAvatar from './ui/ThreeDAvatar'
 
 export default function Sidebar() {
   const location = useLocation()
@@ -23,7 +25,7 @@ export default function Sidebar() {
     <motion.aside 
       initial={{ x: -20, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
-      className="w-64 apple-glass-panel m-4 mr-0 rounded-[32px] flex flex-col justify-between hidden md:flex shrink-0 relative overflow-hidden"
+      className="w-64 apple-glass-panel m-4 mr-2 rounded-[32px] flex flex-col justify-between hidden md:flex shrink-0 relative overflow-hidden"
     >
       <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent pointer-events-none" />
       
@@ -33,13 +35,11 @@ export default function Sidebar() {
           initial={{ y: -10, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.1 }}
-          className="flex items-center space-x-3 px-2 mb-8 mt-2 cursor-pointer"
+          className="flex items-center space-x-3 px-3 mb-8 mt-2 cursor-pointer group"
           onClick={() => navigate('/')}
         >
-          <div className="bg-gradient-to-br from-primary to-accent p-2 rounded-[14px] shadow-glow">
-            <CheckSquare className="h-5 w-5 text-white" strokeWidth={2.5} />
-          </div>
-          <span className="text-xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
+          <ThreeDLogo className="w-10 h-10 group-hover:scale-110 transition-transform duration-500" />
+          <span className="text-2xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-foreground to-muted-foreground drop-shadow-sm">
             TaskFlow
           </span>
         </motion.div>
@@ -58,7 +58,7 @@ export default function Sidebar() {
                 onClick={() => navigate(item.path)}
                 className={cn(
                   "relative w-full flex items-center justify-between px-3 py-3 rounded-2xl text-sm tracking-wide transition-all duration-300 group",
-                  isActive ? "text-foreground font-bold" : "text-foreground/70 font-medium hover:text-foreground"
+                  isActive ? "text-foreground font-bold" : "text-foreground/90 font-semibold hover:text-foreground"
                 )}
               >
                 {isActive && (
@@ -71,7 +71,7 @@ export default function Sidebar() {
                 <div className="relative z-10 flex items-center space-x-3">
                   <div className={cn(
                     "p-1.5 rounded-xl transition-colors duration-300",
-                    isActive ? "bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary" : "group-hover:bg-foreground/5 text-foreground/70"
+                    isActive ? "bg-primary/15 text-primary dark:bg-primary/30 dark:text-primary" : "group-hover:bg-foreground/10 text-foreground/80"
                   )}>
                     <Icon className="h-5 w-5" strokeWidth={isActive ? 2.5 : 1.5} />
                   </div>
@@ -93,13 +93,11 @@ export default function Sidebar() {
           className="mt-auto pt-4"
         >
           {/* User Profile */}
-          <div className="flex items-center space-x-3 px-3 py-3 rounded-2xl hover:bg-white/5 border border-transparent hover:border-white/20 dark:hover:border-white/10 transition-all cursor-pointer group">
-            <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-primary to-accent shadow-sm flex items-center justify-center text-white font-bold shrink-0 ring-2 ring-background group-hover:shadow-glow transition-all">
-              {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
-            </div>
-            <div className="flex flex-col min-w-0 text-left">
-              <span className="text-sm font-semibold tracking-tight truncate text-foreground group-hover:text-primary transition-colors">{user?.name || 'User'}</span>
-              <span className="text-xs font-medium tracking-wide text-muted-foreground truncate">{user?.email || 'user@taskflow.com'}</span>
+          <div className="flex items-center space-x-3.5 px-3 py-3 rounded-2xl hover:bg-white/5 border border-transparent hover:border-white/20 dark:hover:border-white/10 transition-all cursor-pointer group">
+            <ThreeDAvatar className="w-12 h-12 shrink-0 drop-shadow-md" animate={false} />
+            <div className="flex flex-col min-w-0 text-left justify-center">
+              <span className="text-[17px] font-bold tracking-tight truncate text-foreground group-hover:text-primary transition-colors leading-tight mb-0.5">{user?.name || 'adadadadada'}</span>
+              <span className="text-sm font-medium tracking-wide text-muted-foreground/90 truncate leading-tight">{user?.email || 'aaxa12@gmail.com'}</span>
             </div>
           </div>
         </motion.div>

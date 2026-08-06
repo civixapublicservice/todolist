@@ -82,7 +82,7 @@ export default function MyTasksPage() {
       const newTodo = await createTodo(todoData)
       setTodos((prev) => [newTodo, ...prev])
       setShowCreateModal(false)
-      toast.success('Task created successfully!', { icon: '🎉' })
+      toast.success('Task created successfully!')
     } catch (err) {
       setError(err.message || 'Failed to create task')
       toast.error('Failed to create task')
@@ -117,7 +117,7 @@ export default function MyTasksPage() {
       const updated = await toggleTodo(id)
       setTodos((prev) => prev.map((t) => (t.id === id ? updated : t)))
       if (!wasCompleted) {
-        toast.success('Task completed! Keep it up.', { icon: '✨' })
+        toast.success('Task completed! Keep it up.')
       }
     } catch (err) {
       fetchTodoList()

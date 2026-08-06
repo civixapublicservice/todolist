@@ -4,7 +4,7 @@ import MainLayout from '../layouts/MainLayout'
 import StatsBar from '../components/StatsBar'
 import RightWidget from '../components/RightWidget'
 import { getTodos } from '../services/todoService'
-import { AlertCircle, Sparkles } from 'lucide-react'
+import { AlertCircle, Sparkles, Rocket, Target, ListTodo } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
 
@@ -36,6 +36,10 @@ export default function Dashboard() {
   useEffect(() => {
     fetchTodoList()
   }, [fetchTodoList])
+
+  const completedTasks = todos.filter(t => t.completed).length
+  const pendingTasks = todos.filter(t => !t.completed).length
+  const totalTasks = todos.length
 
   return (
     <MainLayout>
@@ -100,9 +104,31 @@ export default function Dashboard() {
             transition={{ delay: 0.3 }}
             className="mt-8 bg-card border border-border shadow-sm rounded-2xl p-8 text-center flex flex-col items-center justify-center min-h-[300px]"
           >
-            <div className="text-6xl mb-4">🚀</div>
-            <h3 className="text-xl font-bold text-foreground mb-2">Productivity is up!</h3>
-            <p className="text-muted-foreground">You are making great progress this week. Check 'My Tasks' to continue.</p>
+            {totalTasks === 0 ? (
+              <>
+                <div className="h-20 w-20 bg-muted rounded-full flex items-center justify-center mb-6">
+                  <ListTodo className="h-10 w-10 text-muted-foreground" />
+                </div>
+                <h3 className="text-xl font-bold text-foreground mb-2">Let's Get Started</h3>
+                <p className="text-muted-foreground max-w-sm">Create your first task to kick off your productivity journey.</p>
+              </>
+            ) : completedTasks >= pendingTasks ? (
+              <>
+                <div className="h-20 w-20 bg-primary/10 rounded-full flex items-center justify-center mb-6 shadow-glow">
+                  <Rocket className="h-10 w-10 text-primary" />
+                </div>
+                <h3 className="text-xl font-bold text-foreground mb-2">Productivity is soaring!</h3>
+                <p className="text-muted-foreground max-w-sm">You have completed more tasks than you have pending. Keep up the incredible momentum!</p>
+              </>
+            ) : (
+              <>
+                <div className="h-20 w-20 bg-amber-500/10 rounded-full flex items-center justify-center mb-6 shadow-[0_0_20px_rgba(245,158,11,0.2)]">
+                  <Target className="h-10 w-10 text-amber-500" />
+                </div>
+                <h3 className="text-xl font-bold text-foreground mb-2">Stay Focused</h3>
+                <p className="text-muted-foreground max-w-sm">You have {pendingTasks} pending task{pendingTasks !== 1 ? 's' : ''}. Prioritize your most important work and conquer it.</p>
+              </>
+            )}
           </motion.section>
 
         </div>
