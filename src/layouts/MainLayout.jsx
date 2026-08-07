@@ -1,5 +1,6 @@
 import Sidebar from '../components/Sidebar'
 import Header from '../components/Header'
+import MobileNav from '../components/MobileNav'
 
 
 export default function MainLayout({ children }) {
@@ -14,10 +15,13 @@ export default function MainLayout({ children }) {
         <Header />
 
         {/* Dynamic Page Content */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
+        <main className="flex-1 overflow-y-auto p-4 pb-24 md:p-6 lg:p-8 md:pb-6">
           {children}
         </main>
       </div>
+
+      {/* Mobile Bottom Navigation */}
+      <MobileNav />
     </div>
   )
 }

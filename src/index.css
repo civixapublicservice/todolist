@@ -158,6 +158,9 @@
     text-rendering: optimizeLegibility;
   }
   
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 1rem);
+  }
   /* Typography System */
   h1 {
     @apply text-3xl font-extrabold tracking-tight text-foreground leading-tight;

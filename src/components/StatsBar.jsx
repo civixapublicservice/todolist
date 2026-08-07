@@ -56,7 +56,7 @@ export default function StatsBar({ todos = [] }) {
   }, [todos])
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 md:mb-8">
       {CARD_CONFIGS.map((cfg, idx) => {
         const Icon = cfg.icon
         const { value, sub } = stats[cfg.id]

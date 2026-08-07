@@ -240,8 +240,8 @@ export default function TodoItem({
       )}
 
       {/* Top Header - Meta info */}
-      <div className="flex items-center justify-between mb-4 relative z-10">
-        <div className="flex items-center gap-3">
+      <div className="flex items-start sm:items-center justify-between mb-4 relative z-10 gap-2">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <div className="flex items-center space-x-1.5 text-xs text-foreground/70 font-semibold bg-foreground/5 px-2 py-1 rounded-md border border-glass-border">
             <CalendarIcon className="h-3.5 w-3.5 text-primary" strokeWidth={2} />
             <span>{todo.dueDate ? formatFriendlyDate(todo.dueDate) : 'No Date'}</span>
@@ -256,8 +256,8 @@ export default function TodoItem({
           )}
         </div>
 
-        {/* Hover Actions */}
-        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        {/* Actions (Always visible on mobile, hover on desktop) */}
+        <div className="flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
           <button
             onClick={() => setIsEditing(true)}
             aria-label="Edit task"
