@@ -46,10 +46,18 @@ export const forgotPassword = async (email) => {
   return data
 }
 
-export const resetPassword = async (token, password) => {
-  const data = await fetchApi(`/auth/reset-password/${token}`, {
+export const verifyOtp = async (email, otp) => {
+  const data = await fetchApi('/auth/verify-reset-otp', {
     method: 'POST',
-    body: JSON.stringify({ password }),
+    body: JSON.stringify({ email, otp }),
+  })
+  return data
+}
+
+export const resetPassword = async (resetToken, newPassword) => {
+  const data = await fetchApi('/auth/reset-password', {
+    method: 'POST',
+    body: JSON.stringify({ resetToken, newPassword }),
   })
   return data
 }

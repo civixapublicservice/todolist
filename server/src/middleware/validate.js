@@ -110,12 +110,31 @@ export const validateForgotPassword = (req, res, next) => {
   next()
 }
 
-export const validateResetPassword = (req, res, next) => {
-  const { password } = req.body
+export const validateVerifyOtp = (req, res, next) => {
+  const { email, otp } = req.body
 
-  const passwordError = validatePasswordStrength(password)
+  if (!email || typeof email !== 'string' || !email.trim()) {
+    return sendError(res, 400, 'Email address is required', 'email')
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailRegex.test(email.trim())) {
+    return sendError(res, 400, 'Please enter a valid email address', 'email')
+  }
+
+  if (!otp || typeof otp !== 'string' || !otp.trim()) {
+    return sendError(res, 400, 'OTP is required', 'otp')
+  }
+
+  next()
+}
+
+export const validateResetPassword = (req, res, next) => {
+  const { newPassword } = req.body
+
+  const passwordError = validatePasswordStrength(newPassword)
   if (passwordError) {
-    return sendError(res, 400, passwordError, 'password')
+    return sendError(res, 400, passwordError, 'newPassword')
   }
 
   next()

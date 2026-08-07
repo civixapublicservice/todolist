@@ -6,6 +6,7 @@ import { sendError } from '../utils/errors.js'
 import { logActivity } from '../utils/activity.js'
 import { mailService } from '../services/mail.service.js'
 import { getOtpEmailTemplate } from '../utils/otpTemplate.js'
+import { getPasswordChangedTemplate } from '../utils/passwordChangedTemplate.js'
 
 const getJwtSecret = () => process.env.JWT_SECRET || 'super-secret-jwt-key-production-quality-todo-app-2026'
 
@@ -199,28 +200,89 @@ export const forgotPassword = async (req, res) => {
   }
 }
 
+export const verifyOtp = async (req, res) => {
+  try {
+    const { email, otp } = req.body
+
+    if (!email || !otp) {
+      return sendError(res, 400, 'Email and OTP are required')
+    }
+
+    const normalizedEmail = email.trim().toLowerCase()
+
+    const user = await prisma.user.findUnique({
+      where: { email: normalizedEmail },
+    })
+
+    if (!user || !user.resetToken || !user.resetTokenExpiry) {
+      return sendError(res, 400, 'Invalid OTP or expired session')
+    }
+
+    if (user.resetOtpAttempts >= 5) {
+      return sendError(res, 429, 'Too many failed attempts. Please request a new OTP.')
+    }
+
+    if (new Date() > user.resetTokenExpiry) {
+      return sendError(res, 400, 'OTP has expired. Please request a new one.')
+    }
+
+    const isValid = await bcrypt.compare(otp, user.resetToken)
+    
+    if (!isValid) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { resetOtpAttempts: user.resetOtpAttempts + 1 }
+      })
+      return sendError(res, 400, 'Invalid OTP')
+    }
+
+    // OTP is valid. Issue a temporary password-reset token (valid for 15 mins)
+    const resetToken = jwt.sign(
+      { userId: user.id, type: 'password-reset' },
+      getJwtSecret(),
+      { expiresIn: '15m' }
+    )
+
+    return res.json({
+      message: 'OTP verified successfully',
+      resetToken
+    })
+  } catch (error) {
+    console.error('VerifyOTP Error:', error)
+    return sendError(res, 500, 'Failed to verify OTP')
+  }
+}
+
 export const resetPassword = async (req, res) => {
   try {
-    const { token } = req.params
-    const { password } = req.body
+    const { resetToken, newPassword } = req.body
 
+    if (!resetToken || !newPassword) {
+      return sendError(res, 400, 'Token and new password are required')
+    }
 
+    // Verify JWT
+    let decoded
+    try {
+      decoded = jwt.verify(resetToken, getJwtSecret())
+    } catch (err) {
+      return sendError(res, 401, 'Invalid or expired reset session. Please verify your OTP again.')
+    }
 
-    const user = await prisma.user.findFirst({
-      where: {
-        resetToken: token,
-        resetTokenExpiry: {
-          gt: new Date()
-        }
-      }
+    if (decoded.type !== 'password-reset') {
+      return sendError(res, 401, 'Invalid token type')
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.userId }
     })
 
     if (!user) {
-      return sendError(res, 400, 'Invalid or expired reset token')
+      return sendError(res, 404, 'User not found')
     }
 
     const salt = await bcrypt.genSalt(10)
-    const hashedPassword = await bcrypt.hash(password, salt)
+    const hashedPassword = await bcrypt.hash(newPassword, salt)
 
     await prisma.user.update({
       where: { id: user.id },
@@ -228,10 +290,25 @@ export const resetPassword = async (req, res) => {
         password: hashedPassword,
         resetToken: null,
         resetTokenExpiry: null,
+        resetOtpAttempts: 0,
+        resetOtpCreatedAt: null
       }
     })
 
-    await logActivity(user.id, 'PASSWORD_RESET', `Password successfully reset`)
+    await logActivity(user.id, 'PASSWORD_RESET', 'Password successfully changed')
+
+    // Send password changed email
+    try {
+      const html = getPasswordChangedTemplate('TaskFlow')
+      await mailService.sendMail({
+        to: user.email,
+        subject: 'Your Password was Changed - TaskFlow',
+        html
+      })
+    } catch (emailError) {
+      console.error('Failed to send password changed email:', emailError)
+      // We don't fail the request if email fails, as the password was already reset
+    }
 
     return res.json({
       message: 'Password has been reset successfully'

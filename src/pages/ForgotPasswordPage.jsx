@@ -1,20 +1,29 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { AlertCircle, Loader2, CheckCircle2, Sparkles } from 'lucide-react'
-import { forgotPassword } from '../services/authService'
+import { Link, useNavigate } from 'react-router-dom'
+import { AlertCircle, Loader2, CheckCircle2, Sparkles, KeyRound } from 'lucide-react'
+import { forgotPassword, verifyOtp } from '../services/authService'
 import { validateEmail } from '../utils/validators'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Input } from '../components/ui/Input'
 import { Button } from '../components/ui/Button'
 
 export default function ForgotPasswordPage() {
+  const navigate = useNavigate()
+  
+  // Steps: 'email' | 'otp'
+  const [step, setStep] = useState('email')
+  
+  // Form State
   const [email, setEmail] = useState('')
+  const [otp, setOtp] = useState('')
+  
+  // UI State
   const [error, setError] = useState('')
   const [fieldErrors, setFieldErrors] = useState({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [successMsg, setSuccessMsg] = useState('')
 
-  const handleSubmit = async (e) => {
+  const handleEmailSubmit = async (e) => {
     e.preventDefault()
     setError('')
     setSuccessMsg('')
@@ -31,11 +40,36 @@ export default function ForgotPasswordPage() {
     try {
       const data = await forgotPassword(email)
       setSuccessMsg(data.message)
+      setStep('otp') // Transition to OTP step
     } catch (err) {
       setError(err.message || 'Failed to send OTP.')
       if (err.field) {
         setFieldErrors((prev) => ({ ...prev, [err.field]: err.message }))
       }
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleOtpSubmit = async (e) => {
+    e.preventDefault()
+    setError('')
+    setSuccessMsg('')
+    setFieldErrors({})
+
+    if (!otp || otp.length < 6) {
+      setFieldErrors({ otp: 'Please enter the 6-digit OTP' })
+      return
+    }
+
+    setIsSubmitting(true)
+
+    try {
+      const data = await verifyOtp(email, otp)
+      // Navigate to Reset Password page, passing the token securely in memory
+      navigate('/reset-password', { state: { resetToken: data.resetToken } })
+    } catch (err) {
+      setError(err.message || 'Invalid OTP.')
     } finally {
       setIsSubmitting(false)
     }
@@ -54,7 +88,7 @@ export default function ForgotPasswordPage() {
         <div className="absolute inset-0 bg-white/20 blur-2xl rounded-full" />
         <div className="relative h-20 w-20 rounded-[28px] bg-white/10 backdrop-blur-3xl border border-white/30 flex items-center justify-center shadow-[0_0_40px_rgba(255,255,255,0.1)]">
           <div className="h-8 w-8 text-white flex items-center justify-center">
-            <Sparkles className="h-6 w-6" />
+            {step === 'email' ? <Sparkles className="h-6 w-6" /> : <KeyRound className="h-6 w-6" />}
           </div>
         </div>
       </motion.div>
@@ -63,12 +97,16 @@ export default function ForgotPasswordPage() {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5, delay: 0.1 }}
-        className="glass-auth flex flex-col items-center"
+        className="glass-auth flex flex-col items-center overflow-hidden"
       >
         <div className="flex flex-col space-y-2 text-center mb-8 relative z-10 w-full mt-4">
-          <h1 className="text-[28px] font-bold tracking-tight text-white flex items-center justify-center gap-2">Reset Password</h1>
+          <h1 className="text-[28px] font-bold tracking-tight text-white flex items-center justify-center gap-2">
+            {step === 'email' ? 'Reset Password' : 'Verify OTP'}
+          </h1>
           <p className="text-sm text-white/50 leading-relaxed px-4">
-            Enter your email to receive a secure 6-digit OTP.
+            {step === 'email' 
+              ? 'Enter your email to receive a secure 6-digit OTP.' 
+              : 'Enter the 6-digit code sent to your email.'}
           </p>
         </div>
 
@@ -79,7 +117,7 @@ export default function ForgotPasswordPage() {
           </div>
         )}
 
-        {successMsg && (
+        {successMsg && step === 'otp' && (
           <div className="flex flex-col space-y-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 p-4 rounded-xl text-sm font-medium mb-6 w-full">
             <div className="flex items-start space-x-3">
               <CheckCircle2 className="h-4 w-4 shrink-0 mt-0.5" />
@@ -88,36 +126,100 @@ export default function ForgotPasswordPage() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="w-full grid gap-4">
-          <div className="grid gap-1.5">
-            <Input
-              id="forgot-email"
-              type="email"
-              variant="auth"
-              placeholder="name@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              disabled={isSubmitting || !!successMsg}
-              error={fieldErrors.email}
-            />
-          </div>
+        <AnimatePresence mode="wait">
+          {step === 'email' ? (
+            <motion.form 
+              key="email-form"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              onSubmit={handleEmailSubmit} 
+              className="w-full grid gap-4"
+            >
+              <div className="grid gap-1.5">
+                <Input
+                  id="forgot-email"
+                  type="email"
+                  variant="auth"
+                  placeholder="name@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={isSubmitting}
+                  error={fieldErrors.email}
+                />
+              </div>
 
-          <Button
-            type="submit"
-            variant="gradient"
-            className="w-full mt-4"
-            disabled={isSubmitting || !!successMsg}
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                Sending OTP...
-              </>
-            ) : (
-              'SEND OTP'
-            )}
-          </Button>
-        </form>
+              <Button
+                type="submit"
+                variant="gradient"
+                className="w-full mt-4"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    Sending OTP...
+                  </>
+                ) : (
+                  'SEND OTP'
+                )}
+              </Button>
+            </motion.form>
+          ) : (
+            <motion.form 
+              key="otp-form"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              onSubmit={handleOtpSubmit} 
+              className="w-full grid gap-4"
+            >
+              <div className="grid gap-1.5">
+                <Input
+                  id="otp"
+                  type="text"
+                  variant="auth"
+                  placeholder="123456"
+                  maxLength={6}
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
+                  disabled={isSubmitting}
+                  error={fieldErrors.otp}
+                  className="text-center text-xl tracking-[0.5em] font-mono"
+                />
+              </div>
+
+              <Button
+                type="submit"
+                variant="gradient"
+                className="w-full mt-4"
+                disabled={isSubmitting || otp.length !== 6}
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    Verifying...
+                  </>
+                ) : (
+                  'VERIFY OTP'
+                )}
+              </Button>
+
+              <button 
+                type="button" 
+                onClick={() => {
+                  setStep('email')
+                  setOtp('')
+                  setError('')
+                  setSuccessMsg('')
+                }}
+                className="text-sm text-white/40 hover:text-white mt-2 transition-colors"
+              >
+                Wrong email? Go back
+              </button>
+            </motion.form>
+          )}
+        </AnimatePresence>
 
         <div className="mt-8 text-center text-sm w-full border-t border-white/10 pt-6">
           <span className="text-white/40">Remembered your password? </span>
