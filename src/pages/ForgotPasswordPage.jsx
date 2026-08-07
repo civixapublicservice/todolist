@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { AlertCircle, Loader2, CheckCircle2, Sparkles, KeyRound } from 'lucide-react'
 import { forgotPassword, verifyOtp } from '../services/authService'
@@ -12,6 +12,17 @@ export default function ForgotPasswordPage() {
   
   // Steps: 'email' | 'otp'
   const [step, setStep] = useState('email')
+  
+  // Timer State
+  const [timer, setTimer] = useState(0)
+
+  useEffect(() => {
+    let interval
+    if (timer > 0) {
+      interval = setInterval(() => setTimer((t) => t - 1), 1000)
+    }
+    return () => clearInterval(interval)
+  }, [timer])
   
   // Form State
   const [email, setEmail] = useState('')
@@ -40,12 +51,31 @@ export default function ForgotPasswordPage() {
     try {
       const data = await forgotPassword(email)
       setSuccessMsg(data.message)
+      setTimer(60) // Start countdown
       setStep('otp') // Transition to OTP step
     } catch (err) {
       setError(err.message || 'Failed to send OTP.')
       if (err.field) {
         setFieldErrors((prev) => ({ ...prev, [err.field]: err.message }))
       }
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleResendOtp = async () => {
+    if (timer > 0 || isSubmitting) return
+    setError('')
+    setSuccessMsg('')
+    setFieldErrors({})
+    setIsSubmitting(true)
+
+    try {
+      const data = await forgotPassword(email)
+      setSuccessMsg(data.message)
+      setTimer(60)
+    } catch (err) {
+      setError(err.message || 'Failed to resend OTP.')
     } finally {
       setIsSubmitting(false)
     }
@@ -111,9 +141,20 @@ export default function ForgotPasswordPage() {
         </div>
 
         {error && (
-          <div className="flex items-start space-x-3 bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-xl text-sm font-medium mb-6 w-full">
-            <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
-            <span>{error}</span>
+          <div className="flex flex-col space-y-3 bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-xl text-sm font-medium mb-6 w-full">
+            <div className="flex items-start space-x-3">
+              <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+              <span>{error}</span>
+            </div>
+            {error === 'No account found with this email address.' && (
+              <Button
+                variant="outline"
+                className="w-full border-red-500/30 text-red-400 hover:bg-red-500/20 hover:text-red-300 mt-2"
+                onClick={() => navigate('/register')}
+              >
+                Register Now
+              </Button>
+            )}
           </div>
         )}
 
@@ -205,18 +246,29 @@ export default function ForgotPasswordPage() {
                 )}
               </Button>
 
-              <button 
-                type="button" 
-                onClick={() => {
-                  setStep('email')
-                  setOtp('')
-                  setError('')
-                  setSuccessMsg('')
-                }}
-                className="text-sm text-white/40 hover:text-white mt-2 transition-colors"
-              >
-                Wrong email? Go back
-              </button>
+              <div className="flex flex-col items-center mt-2 space-y-3">
+                <button
+                  type="button"
+                  onClick={handleResendOtp}
+                  disabled={timer > 0 || isSubmitting}
+                  className="text-sm font-medium text-[#d8b4fe] hover:text-white disabled:text-white/30 transition-colors"
+                >
+                  {timer > 0 ? \`Resend OTP in \${timer}s\` : 'Resend OTP'}
+                </button>
+
+                <button 
+                  type="button" 
+                  onClick={() => {
+                    setStep('email')
+                    setOtp('')
+                    setError('')
+                    setSuccessMsg('')
+                  }}
+                  className="text-sm text-white/40 hover:text-white transition-colors"
+                >
+                  Wrong email? Go back
+                </button>
+              </div>
             </motion.form>
           )}
         </AnimatePresence>

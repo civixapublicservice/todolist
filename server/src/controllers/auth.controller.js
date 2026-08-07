@@ -147,16 +147,12 @@ export const forgotPassword = async (req, res) => {
 
     const normalizedEmail = email.trim().toLowerCase()
 
-    // Always return the exact same success message to prevent email enumeration
-    const successMessage = 'If an account with that email exists, an OTP has been sent.'
-
     const user = await prisma.user.findUnique({
       where: { email: normalizedEmail },
     })
 
     if (!user) {
-      // Do not reveal that the user does not exist
-      return res.json({ message: successMessage })
+      return sendError(res, 404, 'No account found with this email address.')
     }
 
     // Generate secure 6-digit OTP
@@ -192,7 +188,7 @@ export const forgotPassword = async (req, res) => {
     })
 
     return res.json({
-      message: successMessage
+      message: 'An OTP has been sent to your email address'
     })
   } catch (error) {
     console.error('ForgotPassword Error:', error)
@@ -242,6 +238,17 @@ export const verifyOtp = async (req, res) => {
       getJwtSecret(),
       { expiresIn: '15m' }
     )
+
+    // Clear OTP immediately so it cannot be reused
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        resetToken: null,
+        resetTokenExpiry: null,
+        resetOtpAttempts: 0,
+        resetOtpCreatedAt: null
+      }
+    })
 
     return res.json({
       message: 'OTP verified successfully',
