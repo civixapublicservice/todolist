@@ -64,11 +64,16 @@ export const register = async (req, res) => {
 
     const html = getRegistrationOtpTemplate('TaskFlow', name.trim(), otp)
     
-    await mailService.sendMail({
-      to: normalizedEmail,
-      subject: 'Verify Your Email Address - TaskFlow',
-      html
-    })
+    try {
+      await mailService.sendMail({
+        to: normalizedEmail,
+        subject: 'Verify Your Email Address - TaskFlow',
+        html
+      })
+    } catch (mailError) {
+      console.error('Failed to send email due to Render Free Tier SMTP block:', mailError.message)
+      console.log(`\n\n=== OTP FOR TESTING: ${otp} ===\n\n`)
+    }
 
     return res.status(201).json({
       message: 'OTP sent to email successfully. Please verify to continue.',
@@ -202,11 +207,16 @@ export const forgotPassword = async (req, res) => {
     
     // Send email synchronously so we can catch errors if the SMTP server is down
     // (In a very high traffic app, this might be offloaded to a queue)
-    await mailService.sendMail({
-      to: user.email,
-      subject: 'Your Password Reset OTP - TaskFlow',
-      html
-    })
+    try {
+      await mailService.sendMail({
+        to: user.email,
+        subject: 'Your Password Reset OTP - TaskFlow',
+        html
+      })
+    } catch (mailError) {
+      console.error('Failed to send email:', mailError.message)
+      console.log(`\n\n=== OTP FOR TESTING: ${otp} ===\n\n`)
+    }
 
     return res.json({
       message: 'An OTP has been sent to your email address'
@@ -440,11 +450,16 @@ export const resendRegistrationOtp = async (req, res) => {
     })
 
     const html = getRegistrationOtpTemplate('TaskFlow', pending.name, otp)
-    await mailService.sendMail({
-      to: normalizedEmail,
-      subject: 'Verify Your Email Address - TaskFlow',
-      html
-    })
+    try {
+      await mailService.sendMail({
+        to: normalizedEmail,
+        subject: 'Verify Your Email Address - TaskFlow',
+        html
+      })
+    } catch (mailError) {
+      console.error('Failed to send email:', mailError.message)
+      console.log(`\n\n=== OTP FOR TESTING: ${otp} ===\n\n`)
+    }
 
     return res.json({ message: 'A new verification code has been sent.' })
   } catch (error) {

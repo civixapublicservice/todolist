@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://todolist-18mk.onrender.com'
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://todolist-18mk.onrender.com/api'
 
 export const fetchApi = async (endpoint, options = {}) => {
   const token = localStorage.getItem('auth_token')
