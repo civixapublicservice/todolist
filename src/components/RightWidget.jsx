@@ -1,4 +1,4 @@
-import { Calendar as CalendarIcon, Clock, CheckCircle2, Link as LinkIcon } from 'lucide-react'
+import { Calendar as CalendarIcon, Clock, CheckCircle2, Link as LinkIcon, Bell, BellRing } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useMemo } from 'react'
@@ -116,7 +116,12 @@ export default function RightWidget({ todos = [] }) {
       .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
       .slice(0, 2)
 
-    return { recentActivity, upcomingDeadlines }
+    const upcomingReminders = todos
+      .filter(t => !t.completed && t.dueDate && t.reminderEnabled)
+      .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
+      .slice(0, 2)
+
+    return { recentActivity, upcomingDeadlines, upcomingReminders }
   }, [todos])
 
   return (
@@ -184,6 +189,47 @@ export default function RightWidget({ todos = [] }) {
             </div>
           )}
         </div>
+      </LiftCard>
+
+      {/* ── ACTIVE REMINDERS ── */}
+      <LiftCard delay={0.08} className="p-5">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-sm font-black uppercase tracking-widest text-foreground flex items-center gap-2">
+            <Bell className="h-4 w-4 text-primary" />
+            Active Reminders
+          </h3>
+        </div>
+
+        {upcomingReminders.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-5 text-center bg-foreground/5 rounded-xl border border-glass-border">
+            <div className="bg-primary/10 p-3 rounded-full mb-3 shadow-inner">
+              <Bell className="h-6 w-6 text-primary opacity-50" />
+            </div>
+            <p className="text-sm font-bold text-muted-foreground">No active reminders</p>
+            <p className="text-xs text-muted-foreground/60 mt-1">Set a reminder to stay on top.</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {upcomingReminders.map(todo => (
+              <motion.div
+                whileHover={{ x: 5, scale: 1.02 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 24 }}
+                key={`reminder-${todo.id}`}
+                className="flex items-center gap-3 p-3 rounded-xl hover:bg-muted transition-colors cursor-pointer border border-transparent hover:border-border group"
+              >
+                <div className="flex items-center justify-center h-8 w-8 rounded-full bg-primary/10 border border-primary/20 text-primary shadow-sm group-hover:bg-primary group-hover:text-white transition-colors shrink-0">
+                  <BellRing className="h-4 w-4" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-foreground line-clamp-1">{todo.title}</p>
+                  <p className="text-xs font-semibold text-primary mt-1">
+                    {todo.reminderTime} before
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
       </LiftCard>
 
       {/* ── QUICK ACTIONS ── */}

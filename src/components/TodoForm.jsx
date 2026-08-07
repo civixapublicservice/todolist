@@ -1,12 +1,17 @@
 import { useState } from 'react'
-import { Plus, AlertCircle, Tag, Calendar as CalendarIcon, Sparkles } from 'lucide-react'
+import { Plus, AlertCircle, Tag, Calendar as CalendarIcon, Sparkles, Bell, Mail, MonitorSmartphone } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '../utils/cn'
+import ToggleSwitch from './ui/ToggleSwitch'
 
 export default function TodoForm({ onAddTodo, isSubmitting }) {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [priority, setPriority] = useState('MEDIUM')
   const [dueDate, setDueDate] = useState('')
+  const [reminderEnabled, setReminderEnabled] = useState(false)
+  const [reminderTime, setReminderTime] = useState('15m')
+  const [reminderType, setReminderType] = useState('BOTH')
   const [error, setError] = useState('')
   const [isFocused, setIsFocused] = useState(false)
 
@@ -30,11 +35,17 @@ export default function TodoForm({ onAddTodo, isSubmitting }) {
         description: description.trim(),
         priority,
         dueDate: dueDate || null,
+        reminderEnabled: !!dueDate && reminderEnabled,
+        reminderTime,
+        reminderType,
       })
       setTitle('')
       setDescription('')
       setPriority('MEDIUM')
       setDueDate('')
+      setReminderEnabled(false)
+      setReminderTime('15m')
+      setReminderType('BOTH')
     } catch (err) {
       setError(err.message || 'Failed to create task')
     }
@@ -128,6 +139,88 @@ export default function TodoForm({ onAddTodo, isSubmitting }) {
           </div>
         </div>
       </div>
+
+      <AnimatePresence>
+        {dueDate && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="mt-6 overflow-hidden rounded-xl border border-glass-border bg-foreground/5"
+          >
+            <div className="p-4 border-b border-glass-border flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="bg-primary/10 p-1.5 rounded-lg text-primary">
+                  <Bell className="h-4 w-4" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-semibold">Smart Reminder</h4>
+                  <p className="text-xs text-muted-foreground">Notify me before this is due</p>
+                </div>
+              </div>
+              <ToggleSwitch checked={reminderEnabled} onChange={setReminderEnabled} />
+            </div>
+
+            <AnimatePresence>
+              {reminderEnabled && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="p-4 space-y-4"
+                >
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <div className="flex-1 space-y-1.5">
+                      <label className="text-xs font-semibold text-foreground">Remind me</label>
+                      <select
+                        value={reminderTime}
+                        onChange={(e) => setReminderTime(e.target.value)}
+                        className="w-full glass-input text-sm py-2 px-3 border-glass-border"
+                      >
+                        <option value="5m">5 minutes before</option>
+                        <option value="15m">15 minutes before</option>
+                        <option value="30m">30 minutes before</option>
+                        <option value="1h">1 hour before</option>
+                        <option value="2h">2 hours before</option>
+                        <option value="1d">1 day before</option>
+                      </select>
+                    </div>
+
+                    <div className="flex-1 space-y-1.5">
+                      <label className="text-xs font-semibold text-foreground">Delivery Method</label>
+                      <select
+                        value={reminderType}
+                        onChange={(e) => setReminderType(e.target.value)}
+                        className="w-full glass-input text-sm py-2 px-3 border-glass-border"
+                      >
+                        <option value="BOTH">Email & Browser</option>
+                        <option value="EMAIL">Email Only</option>
+                        <option value="BROWSER">Browser Only</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Live Preview */}
+                  <div className="bg-background/50 rounded-lg p-3 text-xs flex items-center gap-2 text-muted-foreground border border-glass-border/50">
+                    <Sparkles className="h-3.5 w-3.5 text-primary shrink-0" />
+                    <span>
+                      You will receive 
+                      {reminderType === 'EMAIL' ? ' an email ' : reminderType === 'BROWSER' ? ' a notification ' : ' an email and notification '}
+                      <strong>{
+                        reminderTime === '5m' ? '5 minutes' : 
+                        reminderTime === '15m' ? '15 minutes' : 
+                        reminderTime === '30m' ? '30 minutes' : 
+                        reminderTime === '1h' ? '1 hour' : 
+                        reminderTime === '2h' ? '2 hours' : '1 day'
+                      }</strong> before the deadline.
+                    </span>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div className="mt-6 flex justify-end">
         <button

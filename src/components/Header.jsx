@@ -5,7 +5,7 @@ import { useTheme } from '../hooks/useTheme'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '../utils/cn'
-import { getNotifications, markAllNotificationsAsRead, markNotificationAsRead } from '../services/notificationService'
+import { useNotifications } from '../hooks/useNotifications'
 import ThemeToggle from './ui/ThemeToggle'
 import ChromeAvatar from './ui/ChromeAvatar'
 
@@ -19,25 +19,10 @@ export default function Header() {
   const [showNotifDropdown, setShowNotifDropdown] = useState(false)
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '')
   
-  const [notifications, setNotifications] = useState([])
+  const { notifications, unreadCount, handleMarkAsRead, handleMarkAllRead } = useNotifications()
   
   const userDropdownRef = useRef(null)
   const notifDropdownRef = useRef(null)
-
-  // Fetch notifications
-  const fetchNotifications = useCallback(async () => {
-    try {
-      const data = await getNotifications(false) // get all
-      setNotifications(data)
-    } catch (err) {
-      console.error('Failed to fetch notifications', err)
-    }
-  }, [])
-
-  useEffect(() => {
-    fetchNotifications()
-    // Could set up an interval or websocket here, but simple fetch on mount is fine for now
-  }, [fetchNotifications])
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -56,27 +41,6 @@ export default function Header() {
   useEffect(() => {
     setSearchQuery(searchParams.get('q') || '')
   }, [searchParams])
-
-  const unreadCount = notifications.filter(n => !n.read).length
-
-  const handleMarkAllRead = async () => {
-    try {
-      await markAllNotificationsAsRead()
-      setNotifications(prev => prev.map(n => ({ ...n, read: true })))
-    } catch (err) {
-      console.error('Failed to mark all as read')
-    }
-  }
-
-  const handleNotificationClick = async (id, read) => {
-    if (read) return
-    try {
-      await markNotificationAsRead(id)
-      setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n))
-    } catch (err) {
-      console.error('Failed to mark as read')
-    }
-  }
 
   const handleSearchSubmit = (e) => {
     e.preventDefault()
@@ -180,13 +144,13 @@ export default function Header() {
                     notifications.map(notif => (
                       <div 
                         key={notif.id}
-                        onClick={() => handleNotificationClick(notif.id, notif.read)}
+                        onClick={() => handleMarkAsRead(notif.id, notif.isRead)}
                         className={cn(
                           "w-full flex flex-col px-3 py-2 text-sm rounded-xl transition-colors cursor-pointer text-left",
-                          notif.read ? "text-muted-foreground hover:bg-foreground/5" : "bg-primary/5 text-foreground border border-primary/20 hover:bg-primary/10"
+                          notif.isRead ? "text-muted-foreground hover:bg-foreground/5" : "bg-primary/5 text-foreground border border-primary/20 hover:bg-primary/10"
                         )}
                       >
-                        <p className="font-medium text-xs tracking-wide mb-0.5">{notif.title}</p>
+                        <p className="font-medium text-xs tracking-wide mb-0.5">{notif.type === 'REMINDER' ? 'Task Reminder' : 'Notification'}</p>
                         <p className="text-xs opacity-80">{notif.message}</p>
                       </div>
                     ))

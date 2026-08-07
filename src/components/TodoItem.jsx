@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { Trash2, Edit2, Check, X, Calendar as CalendarIcon, Tag, CheckCircle2, Clock } from 'lucide-react'
+import { Trash2, Edit2, Check, X, Calendar as CalendarIcon, Tag, CheckCircle2, Clock, Bell } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { cn } from '../utils/cn'
+import ToggleSwitch from './ui/ToggleSwitch'
 
 export default function TodoItem({
   todo,
@@ -16,6 +17,9 @@ export default function TodoItem({
   const [editDueDate, setEditDueDate] = useState(
     todo.dueDate ? new Date(todo.dueDate).toISOString().split('T')[0] : ''
   )
+  const [editReminderEnabled, setEditReminderEnabled] = useState(todo.reminderEnabled || false)
+  const [editReminderTime, setEditReminderTime] = useState(todo.reminderTime || '15m')
+  const [editReminderType, setEditReminderType] = useState(todo.reminderType || 'BOTH')
   const [isUpdating, setIsUpdating] = useState(false)
 
   const handleSaveEdit = async () => {
@@ -31,6 +35,9 @@ export default function TodoItem({
         description: editDescription.trim(),
         priority: editPriority,
         dueDate: editDueDate || null,
+        reminderEnabled: editDueDate ? editReminderEnabled : false,
+        reminderTime: editReminderTime,
+        reminderType: editReminderType,
       })
       setIsEditing(false)
     } catch (err) {
@@ -45,6 +52,9 @@ export default function TodoItem({
     setEditDescription(todo.description || '')
     setEditPriority(todo.priority || 'MEDIUM')
     setEditDueDate(todo.dueDate ? new Date(todo.dueDate).toISOString().split('T')[0] : '')
+    setEditReminderEnabled(todo.reminderEnabled || false)
+    setEditReminderTime(todo.reminderTime || '15m')
+    setEditReminderType(todo.reminderType || 'BOTH')
     setIsEditing(false)
   }
 
@@ -115,6 +125,44 @@ export default function TodoItem({
               disabled={isUpdating}
             />
           </div>
+
+          {editDueDate && (
+            <div className="bg-foreground/5 rounded-xl p-3 border border-glass-border space-y-3 mt-1">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Bell className="h-4 w-4 text-primary" />
+                  <span className="text-xs font-semibold">Reminder</span>
+                </div>
+                <ToggleSwitch checked={editReminderEnabled} onChange={setEditReminderEnabled} />
+              </div>
+              
+              {editReminderEnabled && (
+                <div className="flex gap-2 pt-2 border-t border-glass-border">
+                  <select
+                    value={editReminderTime}
+                    onChange={(e) => setEditReminderTime(e.target.value)}
+                    className="flex-1 glass-input text-xs py-1.5 px-2"
+                  >
+                    <option value="5m">5 mins before</option>
+                    <option value="15m">15 mins before</option>
+                    <option value="30m">30 mins before</option>
+                    <option value="1h">1 hour before</option>
+                    <option value="2h">2 hours before</option>
+                    <option value="1d">1 day before</option>
+                  </select>
+                  <select
+                    value={editReminderType}
+                    onChange={(e) => setEditReminderType(e.target.value)}
+                    className="flex-1 glass-input text-xs py-1.5 px-2"
+                  >
+                    <option value="BOTH">Email & Browser</option>
+                    <option value="EMAIL">Email</option>
+                    <option value="BROWSER">Browser</option>
+                  </select>
+                </div>
+              )}
+            </div>
+          )}
         </div>
         
         <div className="flex items-center justify-end space-x-2 mt-4 pt-4 border-t border-glass-border relative z-10">
@@ -166,6 +214,11 @@ export default function TodoItem({
           <div className={cn("px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wider uppercase border", getPriorityClasses(todo.priority))}>
             {todo.priority || 'MEDIUM'}
           </div>
+          {todo.reminderEnabled && !todo.completed && (
+            <div className="flex items-center justify-center p-1 rounded-full bg-accent/10 border border-accent/20 text-accent tooltip-trigger relative group" title={todo.reminderSent ? "Reminder Sent" : "Reminder Active"}>
+              <Bell className="h-3.5 w-3.5" strokeWidth={todo.reminderSent ? 1 : 2.5} />
+            </div>
+          )}
         </div>
 
         {/* Hover Actions */}
