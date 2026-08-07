@@ -1,58 +1,29 @@
-import nodemailer from 'nodemailer'
-import { mailConfig } from '../config/mail.config.js'
+import { Resend } from 'resend'
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 class MailService {
   constructor() {
-    this.transporter = null
+    this.resend = null
   }
 
   /**
-   * Initializes the transporter if it hasn't been created yet.
-   * Throws an error if credentials are not provided in production.
+   * Initializes the Resend client.
    */
-  getTransporter() {
-    if (this.transporter) return this.transporter
+  getResend() {
+    if (this.resend) return this.resend
 
-    if (!mailConfig.auth.user || !mailConfig.auth.pass) {
-      console.warn('⚠️ SMTP credentials are not configured. Emails will fail.')
+    if (!process.env.RESEND_API_KEY) {
+      console.warn('⚠️ RESEND_API_KEY is not configured. Emails will fail.')
     }
 
-    this.transporter = nodemailer.createTransport({
-      host: mailConfig.host,
-      port: mailConfig.port,
-      secure: mailConfig.secure,
-      auth: {
-        user: mailConfig.auth.user,
-        pass: mailConfig.auth.pass,
-      },
-      // Settings specific for reliability with production SMTPs
-      pool: true,
-      maxConnections: 5,
-      maxMessages: 100,
-      connectionTimeout: 10000,
-      greetingTimeout: 5000,
-    })
-
-    return this.transporter
+    this.resend = new Resend(process.env.RESEND_API_KEY)
+    return this.resend
   }
 
   /**
-   * Verifies the SMTP connection
-   * @returns {Promise<boolean>} True if successful, throws error if failed
-   */
-  async verifyConnection() {
-    try {
-      const transporter = this.getTransporter()
-      await transporter.verify()
-      return true
-    } catch (error) {
-      console.error('SMTP Connection Verification Failed:', error.message)
-      throw error
-    }
-  }
-
-  /**
-   * Send an email
+   * Send an email using Resend
    * @param {Object} options 
    * @param {string} options.to - Recipient email
    * @param {string} options.subject - Email subject
@@ -61,17 +32,26 @@ class MailService {
    */
   async sendMail({ to, subject, html }) {
     try {
-      const transporter = this.getTransporter()
+      const resend = this.getResend()
       
+      // Resend free tier requires the from address to be onboarding@resend.dev
+      // unless you verify your own domain.
       const mailOptions = {
-        from: mailConfig.from,
-        to,
+        from: 'TaskFlow <onboarding@resend.dev>',
+        to: [to],
         subject,
         html,
       }
 
-      const info = await transporter.sendMail(mailOptions)
-      return info
+      const { data, error } = await resend.emails.send(mailOptions)
+
+      if (error) {
+        console.error('Failed to send email with Resend:', error.message)
+        throw new Error(error.message)
+      }
+
+      console.log('Email sent via Resend:', data)
+      return data
     } catch (error) {
       console.error('Failed to send email:', error.message)
       throw error
