@@ -253,7 +253,7 @@ export default function ForgotPasswordPage() {
                   disabled={timer > 0 || isSubmitting}
                   className="text-sm font-medium text-[#d8b4fe] hover:text-white disabled:text-white/30 transition-colors"
                 >
-                  {timer > 0 ? \`Resend OTP in \${timer}s\` : 'Resend OTP'}
+                  {timer > 0 ? `Resend OTP in ${timer}s` : 'Resend OTP'}
                 </button>
 
                 <button 
