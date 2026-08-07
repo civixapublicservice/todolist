@@ -1,4 +1,4 @@
-import { Filter, ArrowUpDown, Tag, Search } from 'lucide-react'
+import { ArrowUpDown, Tag, Search } from 'lucide-react'
 import { cn } from '../utils/cn'
 
 export default function FilterBar({

@@ -1,4 +1,5 @@
 import { ListTodo, CheckCircle2, AlertTriangle, CalendarClock } from 'lucide-react'
+import { isTodayLocal } from '../utils/dateUtils'
 import { motion } from 'framer-motion'
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
@@ -43,8 +44,7 @@ export default function StatsBar({ todos = [] }) {
     const total        = todos.length
     const completed    = todos.filter(t => t.completed).length
     const highPriority = todos.filter(t => !t.completed && t.priority === 'HIGH').length
-    const today        = new Date().toISOString().split('T')[0]
-    const dueToday     = todos.filter(t => !t.completed && t.dueDate?.startsWith(today)).length
+    const dueToday     = todos.filter(t => !t.completed && isTodayLocal(t.dueDate)).length
     const pending      = total - completed
 
     return {
@@ -59,7 +59,7 @@ export default function StatsBar({ todos = [] }) {
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
       {CARD_CONFIGS.map((cfg, idx) => {
         const Icon = cfg.icon
-        const { value, sub, pct } = stats[cfg.id]
+        const { value, sub } = stats[cfg.id]
 
         return (
           <motion.div

@@ -34,7 +34,7 @@ export const fetchApi = async (endpoint, options = {}) => {
     return data
   } catch (error) {
     if (error.name === 'TypeError' && error.message === 'Failed to fetch') {
-      throw new Error('Unable to connect to server. Please check your network connection.')
+      throw new Error('Unable to connect to server. Please check your network connection.', { cause: error })
     }
     throw error
   }

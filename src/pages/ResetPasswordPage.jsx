@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
-import { AlertCircle, Loader2, CheckCircle2, LockKeyhole, Eye, EyeOff } from 'lucide-react'
+import { AlertCircle, Loader2, CheckCircle2, LockKeyhole } from 'lucide-react'
 import { resetPassword } from '../services/authService'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Input } from '../components/ui/Input'
@@ -36,7 +36,7 @@ export default function ResetPasswordPage() {
       uppercase: /[A-Z]/.test(password),
       lowercase: /[a-z]/.test(password),
       number: /[0-9]/.test(password),
-      special: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/.test(password),
+      special: /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?~]/.test(password),
     }
     const isValid = Object.values(rules).every(Boolean)
     if (!isValid) {

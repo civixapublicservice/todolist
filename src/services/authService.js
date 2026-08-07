@@ -25,7 +25,7 @@ export const fetchCurrentUser = async () => {
   try {
     const data = await fetchApi('/auth/me')
     return data.user
-  } catch (error) {
+  } catch {
     localStorage.removeItem('auth_token')
     return null
   }

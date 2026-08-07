@@ -1,4 +1,4 @@
-export const getReminderEmailTemplate = (appName, userName, taskTitle, dueDateStr, reminderTimeStr, priority, taskId) => {
+export const getReminderEmailTemplate = (appName, userName, taskTitle, dueDateStr, reminderTimeStr, priority) => {
   const priorityColors = {
     HIGH: '#EF4444',
     MEDIUM: '#F59E0B',

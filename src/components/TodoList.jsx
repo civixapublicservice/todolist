@@ -24,6 +24,7 @@ export default function TodoList({
         origin: { y: 0.6 },
         colors: ['#7c3aed', '#a855f7', '#c084fc', '#ffffff']
       })
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setHasCelebrated(true)
     } else if (!allCompleted) {
       setHasCelebrated(false)

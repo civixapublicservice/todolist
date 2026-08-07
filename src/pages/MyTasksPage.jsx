@@ -11,7 +11,7 @@ import {
   deleteTodo,
   toggleTodo,
 } from '../services/todoService'
-import { AlertCircle, Plus, CheckSquare, Sparkles } from 'lucide-react'
+import { AlertCircle, Plus, Sparkles } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
 
@@ -47,9 +47,11 @@ export default function MyTasksPage() {
   useEffect(() => {
     const q = searchParams.get('q')
     if (q !== null && q !== searchQuery) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSearchQuery(q)
       setDebouncedSearch(q)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams])
 
   const fetchTodoList = useCallback(async () => {
@@ -72,6 +74,7 @@ export default function MyTasksPage() {
   }, [debouncedSearch, statusFilter, priorityFilter, sortBy])
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchTodoList()
   }, [fetchTodoList])
 

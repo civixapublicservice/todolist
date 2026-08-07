@@ -1,4 +1,3 @@
-import React from 'react'
 import { motion } from 'framer-motion'
 import { ArrowRight, Check } from 'lucide-react'
 import { cn } from '../../utils/cn'

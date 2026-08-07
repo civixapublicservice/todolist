@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom'
-import { LayoutDashboard, CheckSquare, BarChart3, Calendar as CalendarIcon, Settings, ChevronRight } from 'lucide-react'
+import { LayoutDashboard, ChevronRight } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import { motion } from 'framer-motion'
 import { cn } from '../utils/cn'

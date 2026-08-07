@@ -17,7 +17,7 @@ export function AuthProvider({ children }) {
       try {
         const currentUser = await fetchCurrentUser()
         setUser(currentUser)
-      } catch (err) {
+      } catch {
         setUser(null)
       } finally {
         setIsLoading(false)

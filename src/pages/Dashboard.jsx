@@ -4,13 +4,14 @@ import MainLayout from '../layouts/MainLayout'
 import StatsBar from '../components/StatsBar'
 import RightWidget from '../components/RightWidget'
 import { getTodos } from '../services/todoService'
-import { AlertCircle, Sparkles, Rocket, Target, ListTodo } from 'lucide-react'
+import { AlertCircle, Rocket, Target, ListTodo } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
 
 export default function Dashboard() {
   const { user } = useAuth()
   const [todos, setTodos] = useState([])
+  // eslint-disable-next-line no-unused-vars
   const [isLoadingTodos, setIsLoadingTodos] = useState(true)
   const [error, setError] = useState('')
 
@@ -34,6 +35,7 @@ export default function Dashboard() {
   }, [])
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchTodoList()
   }, [fetchTodoList])
 

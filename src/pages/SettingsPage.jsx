@@ -2,10 +2,9 @@ import { useState, useEffect } from 'react'
 import MainLayout from '../layouts/MainLayout'
 import { useAuth } from '../hooks/useAuth'
 import { updateUserProfile, changeUserPassword, getUserSettings, updateUserSettings } from '../services/settingsService'
-import { Settings as SettingsIcon, User, Mail, Lock, LogOut, CheckCircle2, AlertCircle, Sparkles, Bell, Palette } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { Settings as SettingsIcon, User, Mail, Lock, LogOut, AlertCircle, Sparkles, Bell, Palette } from 'lucide-react'
+import { motion } from 'framer-motion'
 import { toast } from 'sonner'
-import { cn } from '../utils/cn'
 import ToggleSwitch from '../components/ui/ToggleSwitch'
 
 export default function SettingsPage() {
@@ -40,6 +39,7 @@ export default function SettingsPage() {
         setGlobalEmailReminder(data.globalEmailReminder ?? true)
         setGlobalBrowserNotification(data.globalBrowserNotification ?? true)
       } catch (err) {
+        console.error(err)
         toast.error('Failed to load user settings')
       } finally {
         setIsLoadingSettings(false)

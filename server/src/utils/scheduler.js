@@ -82,9 +82,6 @@ const sendTaskReminders = async () => {
           // Format due date in user's timezone
           const formattedDueDate = formatInTimeZone(task.dueDate, timeZone, 'PPpp')
 
-          let emailSent = false
-          let notificationCreated = false
-
           // 2. Email Notification
           if ((task.reminderType === 'EMAIL' || task.reminderType === 'BOTH') && settings.globalEmailReminder) {
             const html = getReminderEmailTemplate(
@@ -102,7 +99,6 @@ const sendTaskReminders = async () => {
               subject: `Task Reminder: ${task.title}`,
               html
             })
-            emailSent = true
           }
 
           // 3. Browser Notification (Save to DB)
@@ -114,7 +110,6 @@ const sendTaskReminders = async () => {
                 type: 'REMINDER',
               }
             })
-            notificationCreated = true
           }
 
           // 4. Mark as completely sent

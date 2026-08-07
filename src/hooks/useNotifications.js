@@ -33,6 +33,7 @@ export function useNotifications() {
 
   // Initial fetch and request permission
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchNotifications()
     
     if ('Notification' in window && Notification.permission === 'default') {

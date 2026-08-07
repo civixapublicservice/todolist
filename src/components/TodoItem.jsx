@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { Trash2, Edit2, Check, X, Calendar as CalendarIcon, Tag, CheckCircle2, Clock, Bell } from 'lucide-react'
+import { Trash2, Edit2, Check, Calendar as CalendarIcon, CheckCircle2, Clock, Bell } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { cn } from '../utils/cn'
 import ToggleSwitch from './ui/ToggleSwitch'
+import { formatFriendlyDate, getLocalHHMM, getLocalYYYYMMDD } from '../utils/dateUtils'
 
 export default function TodoItem({
   todo,
@@ -15,7 +16,10 @@ export default function TodoItem({
   const [editDescription, setEditDescription] = useState(todo.description || '')
   const [editPriority, setEditPriority] = useState(todo.priority || 'MEDIUM')
   const [editDueDate, setEditDueDate] = useState(
-    todo.dueDate ? new Date(todo.dueDate).toISOString().split('T')[0] : ''
+    todo.dueDate ? getLocalYYYYMMDD(todo.dueDate) : ''
+  )
+  const [editDueTime, setEditDueTime] = useState(
+    todo.dueDate ? getLocalHHMM(todo.dueDate) : ''
   )
   const [editReminderEnabled, setEditReminderEnabled] = useState(todo.reminderEnabled || false)
   const [editReminderTime, setEditReminderTime] = useState(todo.reminderTime || '15m')
@@ -28,14 +32,29 @@ export default function TodoItem({
       return
     }
 
+    let finalDueDate = null
+    if (editDueDate) {
+      if (!editDueTime) {
+        alert('Please set a specific time for the deadline')
+        return
+      }
+
+      const localDateTime = new Date(`${editDueDate}T${editDueTime}`)
+      if (localDateTime < new Date()) {
+        alert('Deadline cannot be in the past')
+        return
+      }
+      finalDueDate = localDateTime.toISOString()
+    }
+
     setIsUpdating(true)
     try {
       await onUpdate(todo.id, {
         title: editTitle.trim(),
         description: editDescription.trim(),
         priority: editPriority,
-        dueDate: editDueDate || null,
-        reminderEnabled: editDueDate ? editReminderEnabled : false,
+        dueDate: finalDueDate,
+        reminderEnabled: finalDueDate ? editReminderEnabled : false,
         reminderTime: editReminderTime,
         reminderType: editReminderType,
       })
@@ -51,7 +70,8 @@ export default function TodoItem({
     setEditTitle(todo.title)
     setEditDescription(todo.description || '')
     setEditPriority(todo.priority || 'MEDIUM')
-    setEditDueDate(todo.dueDate ? new Date(todo.dueDate).toISOString().split('T')[0] : '')
+    setEditDueDate(todo.dueDate ? getLocalYYYYMMDD(todo.dueDate) : '')
+    setEditDueTime(todo.dueDate ? getLocalHHMM(todo.dueDate) : '')
     setEditReminderEnabled(todo.reminderEnabled || false)
     setEditReminderTime(todo.reminderTime || '15m')
     setEditReminderType(todo.reminderType || 'BOTH')
@@ -95,13 +115,28 @@ export default function TodoItem({
                 <option value="MEDIUM">Medium</option>
                 <option value="HIGH">High</option>
               </select>
-              <input
-                type="date"
-                aria-label="Edit Due Date"
-                value={editDueDate}
-                onChange={(e) => setEditDueDate(e.target.value)}
-                className="block px-2 py-1.5 text-xs glass-input"
-              />
+              <div className="flex gap-1">
+                <input
+                  type="date"
+                  aria-label="Edit Due Date"
+                  value={editDueDate}
+                  onChange={(e) => {
+                    setEditDueDate(e.target.value)
+                    if (!e.target.value) setEditDueTime('')
+                    else if (!editDueTime && e.target.value) setEditDueTime('17:00')
+                  }}
+                  className="block px-2 py-1.5 text-xs glass-input"
+                />
+                {editDueDate && (
+                  <input
+                    type="time"
+                    aria-label="Edit Due Time"
+                    value={editDueTime}
+                    onChange={(e) => setEditDueTime(e.target.value)}
+                    className="block px-2 py-1.5 text-xs glass-input"
+                  />
+                )}
+              </div>
             </div>
           </div>
 
@@ -209,7 +244,7 @@ export default function TodoItem({
         <div className="flex items-center gap-3">
           <div className="flex items-center space-x-1.5 text-xs text-foreground/70 font-semibold bg-foreground/5 px-2 py-1 rounded-md border border-glass-border">
             <CalendarIcon className="h-3.5 w-3.5 text-primary" strokeWidth={2} />
-            <span>{todo.dueDate ? new Date(todo.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'No Date'}</span>
+            <span>{todo.dueDate ? formatFriendlyDate(todo.dueDate) : 'No Date'}</span>
           </div>
           <div className={cn("px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wider uppercase border", getPriorityClasses(todo.priority))}>
             {todo.priority || 'MEDIUM'}

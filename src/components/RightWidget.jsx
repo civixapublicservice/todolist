@@ -1,9 +1,10 @@
-import { Calendar as CalendarIcon, Clock, CheckCircle2, Link as LinkIcon, Bell, BellRing } from 'lucide-react'
+import { Clock, CheckCircle2, Bell, BellRing } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useMemo } from 'react'
 import ChromeCalendar from './ui/ChromeCalendar'
 import ThreeDTaskList from './ui/ThreeDTaskList'
+import { formatFriendlyDate } from '../utils/dateUtils'
 
 // ── Floating 3D Target icon for empty deadlines ──────────────────────────────
 function EmptyDeadlineIcon() {
@@ -181,7 +182,7 @@ export default function RightWidget({ todos = [] }) {
                     <p className="text-sm font-bold text-foreground line-clamp-1">{todo.title}</p>
                     <p className="text-xs font-semibold text-muted-foreground mt-1 flex items-center gap-1">
                       <Clock className="h-3 w-3" />
-                      Due: {new Date(todo.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                      Due: {formatFriendlyDate(todo.dueDate)}
                     </p>
                   </div>
                 </motion.div>

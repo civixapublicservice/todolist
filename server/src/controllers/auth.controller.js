@@ -293,7 +293,7 @@ export const resetPassword = async (req, res) => {
     let decoded
     try {
       decoded = jwt.verify(resetToken, getJwtSecret())
-    } catch (err) {
+    } catch {
       return sendError(res, 401, 'Invalid or expired reset session. Please verify your OTP again.')
     }
 

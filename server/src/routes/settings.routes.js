@@ -2,7 +2,6 @@ import express from 'express';
 import { prisma } from '../config/db.js';
 import { authenticateToken } from '../middleware/auth.js';
 import { updateProfile, changePassword } from '../controllers/settings.controller.js';
-import { validateResetPassword } from '../middleware/validate.js'; // Can reuse this for password change if desired, but changePassword checks it internally.
 
 const router = express.Router();
 

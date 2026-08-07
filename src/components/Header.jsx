@@ -1,7 +1,6 @@
-import { useState, useRef, useEffect, useCallback } from 'react'
-import { Moon, Sun, LogOut, CheckSquare, Bell, User, Settings as SettingsIcon, Search } from 'lucide-react'
+import { useState, useRef, useEffect } from 'react'
+import { LogOut, CheckSquare, Bell, User, Settings as SettingsIcon, Search } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
-import { useTheme } from '../hooks/useTheme'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '../utils/cn'
@@ -11,7 +10,6 @@ import ChromeAvatar from './ui/ChromeAvatar'
 
 export default function Header() {
   const { user, logout } = useAuth()
-  const { isDark, toggleTheme } = useTheme()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   
@@ -37,8 +35,8 @@ export default function Header() {
     document.addEventListener("mousedown", handleClickOutside)
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
-
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSearchQuery(searchParams.get('q') || '')
   }, [searchParams])
 

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import MainLayout from '../layouts/MainLayout'
 import { getTodos } from '../services/todoService'
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, CheckCircle2, Clock, AlertCircle, Sparkles } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Clock, AlertCircle, Sparkles, CheckCircle2 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '../utils/cn'
 
@@ -26,6 +26,7 @@ export default function CalendarPage() {
   }, [])
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchCalendarTodos()
   }, [fetchCalendarTodos])
 

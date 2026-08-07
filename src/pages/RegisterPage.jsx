@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Loader2, User, Mail, Lock, Check, X, Sparkles } from 'lucide-react'
+import { Loader2, Check, X, Sparkles } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import { validateEmail, validateName, analyzePassword } from '../utils/validators'
 import { motion, AnimatePresence } from 'framer-motion'

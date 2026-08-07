@@ -1,5 +1,4 @@
 import { Outlet, Navigate } from 'react-router-dom'
-import { CheckCircle2 } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 
 export default function AuthLayout() {

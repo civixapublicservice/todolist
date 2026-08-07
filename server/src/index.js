@@ -34,7 +34,7 @@ app.use((req, res) => {
   res.status(404).json({ error: 'API endpoint not found' })
 })
 
-app.use((err, req, res, next) => {
+app.use((err, req, res, _next) => {
   console.error('Unhandled Error:', err)
   res.status(500).json({ error: 'Internal server error' })
 })

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Loader2, Mail, Lock, Sparkles } from 'lucide-react'
+import { Loader2, Sparkles } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import { validateEmail } from '../utils/validators'
 import { motion } from 'framer-motion'

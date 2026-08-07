@@ -1,19 +1,58 @@
-import { useState } from 'react'
-import { Plus, AlertCircle, Tag, Calendar as CalendarIcon, Sparkles, Bell, Mail, MonitorSmartphone } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Plus, AlertCircle, Tag, Calendar as CalendarIcon, Sparkles, Bell, Clock } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '../utils/cn'
 import ToggleSwitch from './ui/ToggleSwitch'
+import { calculateTriggerTime, formatTriggerPreview } from '../utils/dateUtils'
 
 export default function TodoForm({ onAddTodo, isSubmitting }) {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [priority, setPriority] = useState('MEDIUM')
   const [dueDate, setDueDate] = useState('')
+  const [dueTime, setDueTime] = useState('')
   const [reminderEnabled, setReminderEnabled] = useState(false)
   const [reminderTime, setReminderTime] = useState('15m')
   const [reminderType, setReminderType] = useState('BOTH')
   const [error, setError] = useState('')
   const [isFocused, setIsFocused] = useState(false)
+
+  const setPreset = (type) => {
+    const now = new Date()
+    let targetDate = new Date(now)
+    let targetTime = '17:00' // Default to 5 PM
+    
+    switch(type) {
+      case 'today':
+        break
+      case 'tomorrow':
+        targetDate.setDate(now.getDate() + 1)
+        targetTime = '10:00'
+        break
+      case 'weekend':
+        // Next Saturday
+        targetDate.setDate(now.getDate() + ((6 - now.getDay() + 7) % 7 || 7))
+        targetTime = '10:00'
+        break
+      case 'next_week':
+        // Next Monday
+        targetDate.setDate(now.getDate() + ((1 - now.getDay() + 7) % 7 || 7))
+        targetTime = '09:00'
+        break
+      default:
+        break
+    }
+    
+    setDueDate(targetDate.toISOString().split('T')[0])
+    setDueTime(targetTime)
+    setError('')
+  }
+
+  // Clear time if date is cleared
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (!dueDate) setDueTime('')
+  }, [dueDate])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -29,13 +68,28 @@ export default function TodoForm({ onAddTodo, isSubmitting }) {
       return
     }
 
+    let finalDueDate = null
+    if (dueDate) {
+      if (!dueTime) {
+        setError('Please set a specific time for the deadline')
+        return
+      }
+      
+      const localDateTime = new Date(`${dueDate}T${dueTime}`)
+      if (localDateTime < new Date()) {
+        setError('Deadline cannot be in the past')
+        return
+      }
+      finalDueDate = localDateTime.toISOString()
+    }
+
     try {
       await onAddTodo({
         title: title.trim(),
         description: description.trim(),
         priority,
-        dueDate: dueDate || null,
-        reminderEnabled: !!dueDate && reminderEnabled,
+        dueDate: finalDueDate,
+        reminderEnabled: !!finalDueDate && reminderEnabled,
         reminderTime,
         reminderType,
       })
@@ -43,6 +97,7 @@ export default function TodoForm({ onAddTodo, isSubmitting }) {
       setDescription('')
       setPriority('MEDIUM')
       setDueDate('')
+      setDueTime('')
       setReminderEnabled(false)
       setReminderTime('15m')
       setReminderType('BOTH')
@@ -65,34 +120,65 @@ export default function TodoForm({ onAddTodo, isSubmitting }) {
           Task Details
         </h3>
         
-        <div className="flex items-center space-x-3 flex-wrap sm:flex-nowrap">
-          <div className="relative group">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Tag className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+        <div className="flex flex-col gap-3 flex-1 sm:items-end">
+          <div className="flex items-center space-x-2 w-full sm:w-auto">
+            <div className="relative group flex-1 sm:flex-none">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Tag className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+              </div>
+              <select
+                value={priority}
+                onChange={(e) => setPriority(e.target.value)}
+                className="block w-full pl-9 pr-8 py-2 text-sm glass-input appearance-none min-w-[140px] cursor-pointer"
+                aria-label="Task priority"
+              >
+                <option value="LOW">Low Priority</option>
+                <option value="MEDIUM">Medium Priority</option>
+                <option value="HIGH">High Priority</option>
+              </select>
             </div>
-            <select
-              value={priority}
-              onChange={(e) => setPriority(e.target.value)}
-              className="block w-full pl-9 pr-8 py-2 text-sm glass-input appearance-none min-w-[140px] cursor-pointer"
-              aria-label="Task priority"
-            >
-              <option value="LOW">Low Priority</option>
-              <option value="MEDIUM">Medium Priority</option>
-              <option value="HIGH">High Priority</option>
-            </select>
           </div>
-
-          <div className="relative group">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <CalendarIcon className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+          
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+            {/* Quick Presets */}
+            <div className="flex items-center gap-1 bg-foreground/5 p-1 rounded-lg border border-glass-border">
+              <button type="button" onClick={() => setPreset('today')} className="px-2 py-1 text-[11px] font-medium rounded-md hover:bg-background hover:shadow-sm transition-all text-muted-foreground hover:text-foreground">Today</button>
+              <button type="button" onClick={() => setPreset('tomorrow')} className="px-2 py-1 text-[11px] font-medium rounded-md hover:bg-background hover:shadow-sm transition-all text-muted-foreground hover:text-foreground">Tomorrow</button>
+              <button type="button" onClick={() => setPreset('weekend')} className="px-2 py-1 text-[11px] font-medium rounded-md hover:bg-background hover:shadow-sm transition-all text-muted-foreground hover:text-foreground hidden sm:block">Weekend</button>
             </div>
-            <input
-              type="date"
-              value={dueDate}
-              onChange={(e) => setDueDate(e.target.value)}
-              className="block w-full pl-9 pr-4 py-2 text-sm glass-input cursor-pointer"
-              aria-label="Task due date"
-            />
+
+            <div className="flex items-center gap-2">
+              <div className="relative group flex-1 sm:flex-none">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <CalendarIcon className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                </div>
+                <input
+                  type="date"
+                  value={dueDate}
+                  onChange={(e) => {
+                    setDueDate(e.target.value)
+                    if (!dueTime && e.target.value) setDueTime('17:00')
+                  }}
+                  className="block w-full pl-9 pr-4 py-2 text-sm glass-input cursor-pointer min-w-[150px]"
+                  aria-label="Task due date"
+                />
+              </div>
+
+              {dueDate && (
+                <div className="relative group flex-1 sm:flex-none">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Clock className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                  </div>
+                  <input
+                    type="time"
+                    value={dueTime}
+                    onChange={(e) => setDueTime(e.target.value)}
+                    className="block w-full pl-9 pr-4 py-2 text-sm glass-input cursor-pointer min-w-[130px]"
+                    aria-label="Task due time"
+                  />
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -204,15 +290,14 @@ export default function TodoForm({ onAddTodo, isSubmitting }) {
                   <div className="bg-background/50 rounded-lg p-3 text-xs flex items-center gap-2 text-muted-foreground border border-glass-border/50">
                     <Sparkles className="h-3.5 w-3.5 text-primary shrink-0" />
                     <span>
-                      You will receive 
-                      {reminderType === 'EMAIL' ? ' an email ' : reminderType === 'BROWSER' ? ' a notification ' : ' an email and notification '}
-                      <strong>{
-                        reminderTime === '5m' ? '5 minutes' : 
-                        reminderTime === '15m' ? '15 minutes' : 
-                        reminderTime === '30m' ? '30 minutes' : 
-                        reminderTime === '1h' ? '1 hour' : 
-                        reminderTime === '2h' ? '2 hours' : '1 day'
-                      }</strong> before the deadline.
+                      {dueDate && dueTime ? (
+                        <>
+                          You will be notified via {reminderType === 'EMAIL' ? 'email' : reminderType === 'BROWSER' ? 'browser' : 'email & browser'} <br className="sm:hidden" />
+                          <strong className="text-primary">{formatTriggerPreview(calculateTriggerTime(`${dueDate}T${dueTime}`, reminderTime))}</strong>.
+                        </>
+                      ) : (
+                        "Select a deadline to see reminder preview."
+                      )}
                     </span>
                   </div>
                 </motion.div>
