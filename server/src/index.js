@@ -7,6 +7,7 @@ import activityRoutes from './routes/activity.routes.js'
 import settingsRoutes from './routes/settings.routes.js'
 import notificationRoutes from './routes/notification.routes.js'
 import mailRoutes from './routes/mail.routes.js'
+import { initScheduler } from './utils/scheduler.js'
 
 dotenv.config()
 
@@ -38,6 +39,9 @@ app.use((err, req, res, next) => {
   console.error('Unhandled Error:', err)
   res.status(500).json({ error: 'Internal server error' })
 })
+
+// Initialize background scheduler
+initScheduler()
 
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`)

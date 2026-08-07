@@ -51,7 +51,7 @@ export const getTodos = async (req, res) => {
 export const createTodo = async (req, res) => {
   try {
     const userId = req.user.userId
-    const { title, description, priority, dueDate } = req.body
+    const { title, description, priority, dueDate, reminderEnabled, reminderTime, reminderType } = req.body
 
     const newTodo = await prisma.todo.create({
       data: {
@@ -60,6 +60,9 @@ export const createTodo = async (req, res) => {
         description: description ? description.trim() : '',
         priority: priority || 'MEDIUM',
         dueDate: dueDate ? new Date(dueDate) : null,
+        reminderEnabled: Boolean(reminderEnabled),
+        reminderTime: reminderTime || '15m',
+        reminderType: reminderType || 'BOTH',
       },
     })
 
@@ -76,7 +79,7 @@ export const updateTodo = async (req, res) => {
   try {
     const userId = req.user.userId
     const { id } = req.params
-    const { title, description, completed, priority, dueDate } = req.body
+    const { title, description, completed, priority, dueDate, reminderEnabled, reminderTime, reminderType } = req.body
 
     const existingTodo = await prisma.todo.findUnique({
       where: { id },
@@ -95,7 +98,37 @@ export const updateTodo = async (req, res) => {
     if (description !== undefined) updateData.description = description.trim()
     if (completed !== undefined) updateData.completed = Boolean(completed)
     if (priority !== undefined) updateData.priority = priority
-    if (dueDate !== undefined) updateData.dueDate = dueDate ? new Date(dueDate) : null
+    
+    // Check if reminder logic changed
+    let resetReminder = false
+    
+    if (dueDate !== undefined) {
+      const newDueDate = dueDate ? new Date(dueDate) : null
+      updateData.dueDate = newDueDate
+      if (existingTodo.dueDate?.getTime() !== newDueDate?.getTime()) {
+        resetReminder = true
+      }
+    }
+    
+    if (reminderEnabled !== undefined) {
+      updateData.reminderEnabled = Boolean(reminderEnabled)
+    }
+    if (reminderTime !== undefined) {
+      updateData.reminderTime = reminderTime
+      if (existingTodo.reminderTime !== reminderTime) {
+        resetReminder = true
+      }
+    }
+    if (reminderType !== undefined) {
+      updateData.reminderType = reminderType
+    }
+    
+    if (resetReminder) {
+      updateData.reminderSent = false
+      updateData.reminderSentAt = null
+      updateData.lastReminderAttempt = null
+      updateData.reminderError = null
+    }
 
     const updatedTodo = await prisma.todo.update({
       where: { id },

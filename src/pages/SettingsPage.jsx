@@ -20,6 +20,9 @@ export default function SettingsPage() {
   const [theme, setTheme] = useState('dark')
   const [emailAlerts, setEmailAlerts] = useState(true)
   const [pushNotifications, setPushNotifications] = useState(true)
+  const [timezone, setTimezone] = useState(Intl.DateTimeFormat().resolvedOptions().timeZone)
+  const [globalEmailReminder, setGlobalEmailReminder] = useState(true)
+  const [globalBrowserNotification, setGlobalBrowserNotification] = useState(true)
 
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false)
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false)
@@ -33,6 +36,9 @@ export default function SettingsPage() {
         setTheme(data.theme || 'dark')
         setEmailAlerts(data.emailAlerts ?? true)
         setPushNotifications(data.pushNotifications ?? true)
+        setTimezone(data.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone)
+        setGlobalEmailReminder(data.globalEmailReminder ?? true)
+        setGlobalBrowserNotification(data.globalBrowserNotification ?? true)
       } catch (err) {
         toast.error('Failed to load user settings')
       } finally {
@@ -78,7 +84,14 @@ export default function SettingsPage() {
     setIsUpdatingSettings(true)
 
     try {
-      await updateUserSettings({ theme, emailAlerts, pushNotifications })
+      await updateUserSettings({ 
+        theme, 
+        emailAlerts, 
+        pushNotifications,
+        timezone,
+        globalEmailReminder,
+        globalBrowserNotification
+      })
       toast.success('App preferences updated successfully')
     } catch (err) {
       toast.error(err.message || 'Failed to update settings')
@@ -238,6 +251,65 @@ export default function SettingsPage() {
                     onChange={setPushNotifications} 
                     disabled={isUpdatingSettings} 
                   />
+                </div>
+
+                <div className="flex items-center justify-between border-b border-glass-border pb-4">
+                  <div>
+                    <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                      <Mail className="h-4 w-4 text-muted-foreground" /> Task Email Reminders
+                    </h4>
+                    <p className="text-xs text-muted-foreground mt-1">Receive automatic emails before tasks are due.</p>
+                  </div>
+                  <ToggleSwitch 
+                    checked={globalEmailReminder} 
+                    onChange={setGlobalEmailReminder} 
+                    disabled={isUpdatingSettings} 
+                  />
+                </div>
+
+                <div className="flex items-center justify-between border-b border-glass-border pb-4">
+                  <div>
+                    <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                      <Bell className="h-4 w-4 text-muted-foreground" /> Browser Notification Reminders
+                    </h4>
+                    <p className="text-xs text-muted-foreground mt-1">Display native notifications when tasks are due.</p>
+                  </div>
+                  <ToggleSwitch 
+                    checked={globalBrowserNotification} 
+                    onChange={async (val) => {
+                      if (val) {
+                        if ('Notification' in window) {
+                          const permission = await Notification.requestPermission()
+                          if (permission === 'granted') {
+                            setGlobalBrowserNotification(true)
+                          } else {
+                            toast.error('Browser notification permission denied')
+                            setGlobalBrowserNotification(false)
+                          }
+                        }
+                      } else {
+                        setGlobalBrowserNotification(false)
+                      }
+                    }} 
+                    disabled={isUpdatingSettings} 
+                  />
+                </div>
+
+                <div className="flex items-center justify-between border-b border-glass-border pb-4">
+                  <div>
+                    <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                      <AlertCircle className="h-4 w-4 text-muted-foreground" /> Timezone
+                    </h4>
+                    <p className="text-xs text-muted-foreground mt-1">Your local timezone for accurate reminders.</p>
+                  </div>
+                  <select 
+                    value={timezone}
+                    onChange={(e) => setTimezone(e.target.value)}
+                    className="glass-input text-sm py-2 px-3 rounded-lg border-glass-border focus:border-primary w-48 truncate"
+                    disabled={isUpdatingSettings}
+                  >
+                    <option value={timezone}>{timezone}</option>
+                  </select>
                 </div>
 
                 <button
