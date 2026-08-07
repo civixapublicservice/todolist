@@ -178,11 +178,11 @@ export default function ForgotPasswordPage() {
               className="w-full grid gap-4"
             >
               <div className="grid gap-1.5">
+                <label htmlFor="forgot-email" className="text-sm font-medium text-white/70 ml-1">Email</label>
                 <Input
                   id="forgot-email"
                   type="email"
                   variant="auth"
-                  placeholder="name@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   disabled={isSubmitting}
@@ -216,11 +216,11 @@ export default function ForgotPasswordPage() {
               className="w-full grid gap-4"
             >
               <div className="grid gap-1.5">
+                <label htmlFor="otp" className="text-sm font-medium text-white/70 ml-1">6-Digit OTP</label>
                 <Input
                   id="otp"
                   type="text"
                   variant="auth"
-                  placeholder="123456"
                   maxLength={6}
                   value={otp}
                   onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}

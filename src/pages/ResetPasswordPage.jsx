@@ -15,7 +15,7 @@ export default function ResetPasswordPage() {
   // Form State
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
+
   
   // UI State
   const [error, setError] = useState('')
@@ -137,12 +137,12 @@ export default function ResetPasswordPage() {
               className="w-full grid gap-4"
             >
               <div className="grid gap-4">
-                <div className="relative">
+                <div className="grid gap-1.5">
+                  <label htmlFor="new-password" className="text-sm font-medium text-white/70 ml-1">New Password</label>
                   <Input
                     id="new-password"
-                    type={showPassword ? 'text' : 'password'}
+                    type="password"
                     variant="auth"
-                    placeholder="New Password"
                     value={newPassword}
                     onChange={(e) => {
                       setNewPassword(e.target.value)
@@ -151,21 +151,15 @@ export default function ResetPasswordPage() {
                     disabled={isSubmitting}
                     error={fieldErrors.newPassword}
                   />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-[14px] text-white/40 hover:text-white transition-colors"
-                  >
-                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                  </button>
                 </div>
 
-                <Input
-                  id="confirm-password"
-                  type={showPassword ? 'text' : 'password'}
-                  variant="auth"
-                  placeholder="Confirm New Password"
-                  value={confirmPassword}
+                <div className="grid gap-1.5">
+                  <label htmlFor="confirm-password" className="text-sm font-medium text-white/70 ml-1">Confirm New Password</label>
+                  <Input
+                    id="confirm-password"
+                    type="password"
+                    variant="auth"
+                    value={confirmPassword}
                   onChange={(e) => {
                     setConfirmPassword(e.target.value)
                     if (fieldErrors.confirmPassword) setFieldErrors(p => ({...p, confirmPassword: null}))

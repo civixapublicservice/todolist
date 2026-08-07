@@ -108,11 +108,11 @@ export default function RegisterPage() {
 
         <form onSubmit={handleSubmit} className="w-full grid gap-4">
           <div className="grid gap-1.5">
+            <label htmlFor="register-name" className="text-sm font-medium text-white/70 ml-1">Full Name</label>
             <Input
               id="register-name"
               type="text"
               variant="auth"
-              placeholder="Full Name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               disabled={isSubmitting}
@@ -121,11 +121,11 @@ export default function RegisterPage() {
           </div>
 
           <div className="grid gap-1.5">
+            <label htmlFor="register-email" className="text-sm font-medium text-white/70 ml-1">Email</label>
             <Input
               id="register-email"
               type="email"
               variant="auth"
-              placeholder="name@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={isSubmitting}
@@ -134,11 +134,11 @@ export default function RegisterPage() {
           </div>
 
           <div className="grid gap-1.5">
+            <label htmlFor="register-password" className="text-sm font-medium text-white/70 ml-1">Password</label>
             <Input
               id="register-password"
               type="password"
               variant="auth"
-              placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               disabled={isSubmitting}
@@ -201,11 +201,11 @@ export default function RegisterPage() {
           </div>
 
           <div className="grid gap-1.5">
+            <label htmlFor="register-confirm-password" className="text-sm font-medium text-white/70 ml-1">Confirm Password</label>
             <Input
               id="register-confirm-password"
               type="password"
               variant="auth"
-              placeholder="Confirm Password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               disabled={isSubmitting}

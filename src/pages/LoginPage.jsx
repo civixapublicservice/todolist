@@ -82,11 +82,11 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit} className="w-full grid gap-4">
           <div className="grid gap-1.5">
+            <label htmlFor="login-email" className="text-sm font-medium text-white/70 ml-1">Email</label>
             <Input
               id="login-email"
               type="email"
               variant="auth"
-              placeholder="name@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={isSubmitting}
@@ -95,11 +95,11 @@ export default function LoginPage() {
           </div>
 
           <div className="grid gap-1.5">
+            <label htmlFor="login-password" className="text-sm font-medium text-white/70 ml-1">Password</label>
             <Input
               id="login-password"
               type="password"
               variant="auth"
-              placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               disabled={isSubmitting}
