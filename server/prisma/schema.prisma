@@ -14,6 +14,8 @@ model User {
   password         String
   resetToken       String?    @map("reset_token")
   resetTokenExpiry DateTime?  @map("reset_token_expiry")
+  resetOtpAttempts Int        @default(0) @map("reset_otp_attempts")
+  resetOtpCreatedAt DateTime? @map("reset_otp_created_at")
   createdAt        DateTime   @default(now()) @map("created_at")
   updatedAt        DateTime   @updatedAt @map("updated_at")
   todos            Todo[]

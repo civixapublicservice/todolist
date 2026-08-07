@@ -4,6 +4,8 @@ import jwt from 'jsonwebtoken'
 import { prisma } from '../config/db.js'
 import { sendError } from '../utils/errors.js'
 import { logActivity } from '../utils/activity.js'
+import { mailService } from '../services/mail.service.js'
+import { getOtpEmailTemplate } from '../utils/otpTemplate.js'
 
 const getJwtSecret = () => process.env.JWT_SECRET || 'super-secret-jwt-key-production-quality-todo-app-2026'
 
@@ -138,38 +140,62 @@ export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body
 
-
+    if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
+      return sendError(res, 400, 'Valid email address is required', 'email')
+    }
 
     const normalizedEmail = email.trim().toLowerCase()
+
+    // Always return the exact same success message to prevent email enumeration
+    const successMessage = 'If an account with that email exists, an OTP has been sent.'
 
     const user = await prisma.user.findUnique({
       where: { email: normalizedEmail },
     })
 
     if (!user) {
-      return sendError(res, 404, 'User with this email not found')
+      // Do not reveal that the user does not exist
+      return res.json({ message: successMessage })
     }
 
-    const resetToken = crypto.randomBytes(32).toString('hex')
-    const resetTokenExpiry = new Date(Date.now() + 15 * 60 * 1000) // 15 mins
+    // Generate secure 6-digit OTP
+    const otp = crypto.randomInt(100000, 999999).toString()
+    
+    // Hash the OTP before storing
+    const salt = await bcrypt.genSalt(10)
+    const hashedOtp = await bcrypt.hash(otp, salt)
+
+    const resetTokenExpiry = new Date(Date.now() + 10 * 60 * 1000) // 10 mins
 
     await prisma.user.update({
       where: { id: user.id },
       data: {
-        resetToken,
+        resetToken: hashedOtp, // Reusing resetToken field for the hashed OTP
         resetTokenExpiry,
+        resetOtpAttempts: 0,
+        resetOtpCreatedAt: new Date(),
       },
     })
 
-    await logActivity(user.id, 'PASSWORD_RESET_REQUESTED', `Password reset requested`)
+    await logActivity(user.id, 'PASSWORD_RESET_OTP_REQUESTED', `Password reset OTP requested`)
+
+    // Send email asynchronously (do not block the response, but log errors if it fails)
+    const html = getOtpEmailTemplate('TaskFlow', otp)
+    
+    // Send email synchronously so we can catch errors if the SMTP server is down
+    // (In a very high traffic app, this might be offloaded to a queue)
+    await mailService.sendMail({
+      to: user.email,
+      subject: 'Your Password Reset OTP - TaskFlow',
+      html
+    })
 
     return res.json({
-      message: 'Reset link generated successfully',
-      resetLink: `http://localhost:5173/reset-password/${resetToken}`
+      message: successMessage
     })
   } catch (error) {
     console.error('ForgotPassword Error:', error)
-    return sendError(res, 500, 'Failed to generate reset link')
+    return sendError(res, 500, 'Failed to process request')
   }
 }
 

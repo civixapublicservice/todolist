@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 
 @theme {
@@ -67,80 +67,80 @@
 
 @layer base {
   :root {
-    /* Clean Sky Blue Light Mode */
-    --background: #f0f9ff; /* sky-50 */
-    --background-end: #e0f2fe; /* sky-100 */
-    --foreground: #0f172a;
-    
+    /* ── Light Mode: Warm Neutral (Notion / Linear inspired) ── */
+    --background: #F6F6F5;      /* warm off-white — zero blue tint */
+    --background-end: #F6F6F5;  /* flat, no gradient */
+    --foreground: #111111;       /* near-black, high contrast */
+
     /* Surfaces */
-    --card: #ffffff;
-    --card-foreground: #0f172a;
-    --popover: rgba(255, 255, 255, 0.95);
-    --popover-foreground: #0f172a;
-    
-    /* Primary Action/Accent */
-    --primary: #0ea5e9; /* sky-500 */
-    --primary-foreground: #ffffff;
-    
+    --card: #FFFFFF;
+    --card-foreground: #111111;
+    --popover: rgba(255, 255, 255, 0.98);
+    --popover-foreground: #111111;
+
+    /* Primary — indigo, works across light & dark */
+    --primary: #4F46E5;
+    --primary-foreground: #FFFFFF;
+
     /* Secondary */
-    --secondary: #38bdf8; /* sky-400 */
-    --secondary-foreground: #ffffff;
-    
-    /* Muted states */
-    --muted: #f1f5f9;
-    --muted-foreground: #334155; /* slate-700 for guaranteed WCAG AAA contrast */
-    
-    /* Accent states */
-    --accent: #0284c7; /* sky-600 */
-    --accent-foreground: #ffffff;
-    
-    /* System states */
-    --destructive: #ef4444;
-    --destructive-foreground: #ffffff;
-    
+    --secondary: #6366F1;
+    --secondary-foreground: #FFFFFF;
+
+    /* Muted */
+    --muted: #EFEFED;
+    --muted-foreground: #6B7280;
+
+    /* Accent */
+    --accent: #4338CA;
+    --accent-foreground: #FFFFFF;
+
+    /* System */
+    --destructive: #EF4444;
+    --destructive-foreground: #FFFFFF;
+
     /* Structural */
-    --border: #bae6fd; /* sky-200 */
-    --input: #ffffff;
-    --ring: rgba(14, 165, 233, 0.5);
-    
-    /* Targeted Glass specifics for Sidebar/Navbar */
-    --glass-border: rgba(255, 255, 255, 0.6);
-    --glass-bg: rgba(255, 255, 255, 0.85);
+    --border: #E5E5E3;           /* warm neutral border, no blue */
+    --input: #FFFFFF;
+    --ring: rgba(79, 70, 229, 0.4);
+
+    /* Glass */
+    --glass-border: rgba(0, 0, 0, 0.06);
+    --glass-bg: rgba(255, 255, 255, 0.92);
   }
 
   :root.dark {
-    /* Premium Sky Blue Dark Mode */
-    --background: #082f49; /* sky-900 */
-    --background-end: #0f172a; /* slate-900 */
-    --foreground: #ffffff; /* Brightened for contrast */
-    
-    --card: #0c4a6e; /* sky-950 */
-    --card-foreground: #f8fafc;
-    --popover: rgba(12, 74, 110, 0.95);
-    --popover-foreground: #f8fafc;
-    
-    --primary: #38bdf8; /* sky-400 */
-    --primary-foreground: #0f172a;
-    
-    --secondary: #7dd3fc; /* sky-300 */
-    --secondary-foreground: #0f172a;
-    
-    --muted: #1e293b;
-    --muted-foreground: #e2e8f0; /* slate-200 for guaranteed WCAG AAA contrast */
-    
-    --accent: #0ea5e9; /* sky-500 */
-    --accent-foreground: #ffffff;
-    
-    --destructive: #ef4444;
-    --destructive-foreground: #ffffff;
-    
-    --border: #0369a1; /* sky-700 */
-    --input: #0c4a6e;
-    --ring: rgba(56, 189, 248, 0.5);
+    /* ── Dark Mode: Near-Black (Linear inspired) ── */
+    --background: #0C0C0C;
+    --background-end: #0C0C0C;
+    --foreground: #EDEDED;
 
-    /* Targeted Glass specifics for Sidebar/Navbar */
-    --glass-border: rgba(255, 255, 255, 0.12);
-    --glass-bg: rgba(15, 23, 42, 0.75);
+    --card: #171717;
+    --card-foreground: #EDEDED;
+    --popover: rgba(23, 23, 23, 0.98);
+    --popover-foreground: #EDEDED;
+
+    --primary: #6366F1;          /* lighter indigo for dark bg */
+    --primary-foreground: #FFFFFF;
+
+    --secondary: #818CF8;
+    --secondary-foreground: #FFFFFF;
+
+    --muted: #222222;
+    --muted-foreground: #9CA3AF;
+
+    --accent: #4F46E5;
+    --accent-foreground: #FFFFFF;
+
+    --destructive: #EF4444;
+    --destructive-foreground: #FFFFFF;
+
+    --border: #2A2A2A;           /* dark neutral border */
+    --input: #1F1F1F;
+    --ring: rgba(99, 102, 241, 0.5);
+
+    /* Glass */
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-bg: rgba(23, 23, 23, 0.90);
   }
 }
 
@@ -149,8 +149,8 @@
     @apply border-border;
   }
   body {
-    @apply text-foreground min-h-screen bg-gradient-to-br from-background to-background-end transition-colors duration-500 relative;
-    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    @apply text-foreground min-h-screen bg-background transition-colors duration-300 relative;
+    font-family: 'Inter', system-ui, sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -189,57 +189,57 @@
 @layer components {
   /* Clean Professional Glassmorphism */
   .apple-glass-panel {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(16px) saturate(180%);
-    -webkit-backdrop-filter: blur(16px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.9);
-    box-shadow: 0 4px 24px -2px rgba(14, 165, 233, 0.12), inset 0 1px 0 0 rgba(255, 255, 255, 1);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    border: 1px solid rgba(0, 0, 0, 0.07);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,1);
   }
   
   .dark .apple-glass-panel {
-    background: rgba(12, 74, 110, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    box-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
+    background: rgba(20, 20, 20, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04);
   }
 
   .apple-glass-dropdown {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(36px) saturate(180%);
-    -webkit-backdrop-filter: blur(36px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.95);
-    box-shadow: 0 12px 32px -4px rgba(14, 165, 233, 0.15), inset 0 1px 0 0 rgba(255, 255, 255, 1);
+    background: rgba(255, 255, 255, 0.97);
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 16px 40px -4px rgba(0,0,0,0.12);
   }
   
   .dark .apple-glass-dropdown {
-    background: rgba(8, 47, 73, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
+    background: rgba(23, 23, 23, 0.97);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.4), 0 16px 40px -4px rgba(0,0,0,0.6);
   }
 
   .apple-glass-input {
-    background: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.7);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(14, 165, 233, 0.1);
-    box-shadow: inset 0 2px 4px 0 rgba(14, 165, 233, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
   }
   
   .dark .apple-glass-input {
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3);
   }
 
   .apple-glass-active {
-    background: rgba(255, 255, 255, 1);
-    box-shadow: 0 2px 10px 0 rgba(14, 165, 233, 0.15);
-    border: 1px solid rgba(255, 255, 255, 1);
+    background: rgba(79, 70, 229, 0.08);
+    box-shadow: 0 1px 4px rgba(79, 70, 229, 0.1);
+    border: 1px solid rgba(79, 70, 229, 0.15);
   }
 
   .dark .apple-glass-active {
-    background: rgba(14, 165, 233, 0.2);
-    box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(14, 165, 233, 0.5);
+    background: rgba(99, 102, 241, 0.15);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(99, 102, 241, 0.3);
   }
 }
 

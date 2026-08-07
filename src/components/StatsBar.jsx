@@ -1,75 +1,112 @@
-import { ListTodo, CheckCircle2, AlertTriangle, Calendar } from 'lucide-react'
+import { ListTodo, CheckCircle2, AlertTriangle, CalendarClock } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 
+const CARD_CONFIGS = [
+  {
+    id: 'total',
+    label: 'Total Tasks',
+    icon: ListTodo,
+    link: '/tasks',
+    accent: '#4F46E5',
+    chipBg: 'rgba(79,70,229,0.10)',
+  },
+  {
+    id: 'completed',
+    label: 'Completed',
+    icon: CheckCircle2,
+    link: '/tasks?status=completed',
+    accent: '#10B981',
+    chipBg: 'rgba(16,185,129,0.10)',
+  },
+  {
+    id: 'highPriority',
+    label: 'High Priority',
+    icon: AlertTriangle,
+    link: '/tasks?priority=HIGH',
+    accent: '#F59E0B',
+    chipBg: 'rgba(245,158,11,0.10)',
+  },
+  {
+    id: 'dueToday',
+    label: 'Due Today',
+    icon: CalendarClock,
+    link: '/tasks',
+    accent: '#F43F5E',
+    chipBg: 'rgba(244,63,94,0.10)',
+  },
+]
+
 export default function StatsBar({ todos = [] }) {
-  const { total, completed, pending, highPriority, dueToday } = useMemo(() => {
-    const total = todos.length
-    const completed = todos.filter((t) => t.completed).length
-    const pending = total - completed
-    const highPriority = todos.filter((t) => !t.completed && t.priority === 'HIGH').length
-    
-    const today = new Date().toISOString().split('T')[0]
-    const dueToday = todos.filter((t) => !t.completed && t.dueDate && t.dueDate.startsWith(today)).length
-    
-    return { total, completed, pending, highPriority, dueToday }
+  const stats = useMemo(() => {
+    const total        = todos.length
+    const completed    = todos.filter(t => t.completed).length
+    const highPriority = todos.filter(t => !t.completed && t.priority === 'HIGH').length
+    const today        = new Date().toISOString().split('T')[0]
+    const dueToday     = todos.filter(t => !t.completed && t.dueDate?.startsWith(today)).length
+    const pending      = total - completed
+
+    return {
+      total:        { value: total,        sub: `${pending} active`,        pct: 100 },
+      completed:    { value: completed,    sub: 'Successfully finished',    pct: total > 0 ? (completed / total) * 100 : 0 },
+      highPriority: { value: highPriority, sub: 'Needs attention',          pct: total > 0 ? (highPriority / total) * 100 : 0 },
+      dueToday:     { value: dueToday,     sub: 'Deadlines today',          pct: total > 0 ? (dueToday / total) * 100 : 0 },
+    }
   }, [todos])
 
-  const stats = [
-    { label: 'Total Tasks', value: total, subtext: `${pending} active`, icon: ListTodo, color: 'text-primary', link: '/tasks' },
-    { label: 'Completed', value: completed, subtext: 'Successfully finished', icon: CheckCircle2, color: 'text-emerald-500', link: '/tasks?status=completed' },
-    { label: 'High Priority', value: highPriority, subtext: 'Requires attention', icon: AlertTriangle, color: 'text-destructive', link: '/tasks?priority=HIGH' },
-    { label: 'Due Today', value: dueToday, subtext: 'Deadlines approaching', icon: Calendar, color: 'text-accent', link: '/tasks' }
-  ]
-
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1 }
-    }
-  }
-
-  const item = {
-    hidden: { opacity: 0, y: 10 },
-    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
-  }
-
   return (
-    <motion.div 
-      variants={container}
-      initial="hidden"
-      animate="show"
-      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
-    >
-      {stats.map((stat, idx) => {
-        const Icon = stat.icon
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      {CARD_CONFIGS.map((cfg, idx) => {
+        const Icon = cfg.icon
+        const { value, sub, pct } = stats[cfg.id]
+
         return (
-          <motion.div 
-            key={idx} 
-            variants={item}
+          <motion.div
+            key={cfg.id}
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: idx * 0.07, type: 'spring', stiffness: 380, damping: 28 }}
+            whileHover={{ y: -5, scale: 1.025, transition: { type: 'spring', stiffness: 420, damping: 24, mass: 0.7 } }}
+            whileTap={{ scale: 0.98 }}
           >
-            <Link 
-              to={stat.link}
-              className="group flex flex-col bg-card border border-border shadow-sm hover:shadow-md rounded-2xl p-6 transition-all duration-200 hover:-translate-y-1 block h-full"
+            <Link
+              to={cfg.link}
+              className="flex flex-col bg-card border border-border rounded-2xl overflow-hidden h-full"
+              style={{
+                boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04)',
+                borderLeft: `3px solid ${cfg.accent}`,
+              }}
             >
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">{stat.label}</span>
-                <div className="p-2 bg-muted rounded-xl group-hover:bg-primary/10 transition-colors">
-                  <Icon className={`h-5 w-5 ${stat.color} group-hover:text-primary transition-colors`} strokeWidth={2} />
+              <div className="flex flex-col flex-1 p-5">
+                {/* Header */}
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-sm font-semibold text-muted-foreground tracking-tight">
+                    {cfg.label}
+                  </span>
+                  <div
+                    className="flex items-center justify-center w-8 h-8 rounded-lg"
+                    style={{ background: cfg.chipBg }}
+                  >
+                    <Icon className="w-4 h-4" style={{ color: cfg.accent }} strokeWidth={2} />
+                  </div>
                 </div>
-              </div>
-              <div className="text-3xl font-bold text-foreground">
-                {stat.value}
-              </div>
-              <div className="text-xs text-muted-foreground mt-2 group-hover:text-foreground/70 transition-colors">
-                {stat.subtext}
+
+                {/* Number */}
+                <div
+                  className="text-4xl font-black leading-none tracking-tighter mb-1"
+                  style={{ color: value > 0 ? cfg.accent : 'var(--foreground)' }}
+                >
+                  {value}
+                </div>
+
+                {/* Sub label */}
+                <p className="text-xs text-muted-foreground font-medium mt-1">{sub}</p>
               </div>
             </Link>
           </motion.div>
         )
       })}
-    </motion.div>
+    </div>
   )
 }

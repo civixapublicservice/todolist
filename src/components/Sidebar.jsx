@@ -5,6 +5,10 @@ import { motion } from 'framer-motion'
 import { cn } from '../utils/cn'
 import ThreeDLogo from './ui/ThreeDLogo'
 import ThreeDAvatar from './ui/ThreeDAvatar'
+import ThreeDCalendar from './ui/ThreeDCalendar'
+import ThreeDTaskList from './ui/ThreeDTaskList'
+import ThreeDActivity from './ui/ThreeDActivity'
+import ThreeDSettings from './ui/ThreeDSettings'
 
 export default function Sidebar() {
   const location = useLocation()
@@ -13,10 +17,10 @@ export default function Sidebar() {
 
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', path: '/', icon: LayoutDashboard },
-    { id: 'tasks', label: 'My Tasks', path: '/tasks', icon: CheckSquare },
-    { id: 'analytics', label: 'Activity', path: '/activity', icon: BarChart3 },
-    { id: 'calendar', label: 'Calendar', path: '/calendar', icon: CalendarIcon },
-    { id: 'settings', label: 'Settings', path: '/settings', icon: Settings },
+    { id: 'tasks', label: 'My Tasks', path: '/tasks', icon: ThreeDTaskList },
+    { id: 'activity', label: 'Activity', path: '/activity', icon: ThreeDActivity },
+    { id: 'calendar', label: 'Calendar', path: '/calendar', icon: ThreeDCalendar },
+    { id: 'settings', label: 'Settings', path: '/settings', icon: ThreeDSettings },
   ]
 
   const currentPath = location.pathname
@@ -27,7 +31,7 @@ export default function Sidebar() {
       animate={{ x: 0, opacity: 1 }}
       className="w-64 apple-glass-panel m-4 mr-2 rounded-[32px] flex flex-col justify-between hidden md:flex shrink-0 relative overflow-hidden"
     >
-      <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent pointer-events-none" />
+
       
       <div className="p-5 flex flex-col h-full relative z-10">
         {/* Branding */}
@@ -49,34 +53,93 @@ export default function Sidebar() {
           {navItems.map((item, index) => {
             const Icon = item.icon
             const isActive = currentPath === item.path
+            const is3D = ['calendar', 'tasks', 'activity', 'settings'].includes(item.id)
+
+            // Per-icon signature 3D hover transform
+            const iconHoverVariant = {
+              calendar:  { scale: 1.32, rotateZ: -10, rotateY: -18, rotateX: -6,  filter: 'drop-shadow(0 10px 22px rgba(0,0,0,0.55))' },
+              tasks:     { scale: 1.32, rotateZ:   8, rotateY: -16, rotateX: -5,  filter: 'drop-shadow(0 10px 22px rgba(30,100,220,0.6))' },
+              activity:  { scale: 1.32, rotateZ:   0, rotateY:  20, rotateX: -10, filter: 'drop-shadow(0 0 16px rgba(80,160,255,0.95)) drop-shadow(0 10px 22px rgba(0,40,120,0.5))' },
+              settings:  { scale: 1.32, rotateZ:  50, rotateY:   0, rotateX:  0,  filter: 'drop-shadow(0 8px 20px rgba(0,0,0,0.5)) drop-shadow(0 0 10px rgba(180,200,255,0.4))' },
+            }
+
             return (
               <motion.button
+                key={item.id}
                 initial={{ x: -10, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: 0.1 + index * 0.05 }}
-                key={item.id}
+                variants={{
+                  rest: { x: 0, y: 0, scale: 1 },
+                  hover: { x: 5, y: -8, scale: 1.06 },
+                  tap:   { x: 2, y: -2, scale: 0.97 },
+                }}
+                whileHover="hover"
+                whileTap="tap"
+                transition={{
+                  delay: 0.1 + index * 0.05,
+                  type: 'spring',
+                  stiffness: 480,
+                  damping: 28,
+                  mass: 0.6,
+                }}
                 onClick={() => navigate(item.path)}
                 className={cn(
-                  "relative w-full flex items-center justify-between px-3 py-3 rounded-2xl text-sm tracking-wide transition-all duration-300 group",
-                  isActive ? "text-foreground font-bold" : "text-foreground/90 font-semibold hover:text-foreground"
+                  "relative w-full flex items-center justify-between px-3 py-3 rounded-2xl text-sm transition-colors duration-200 group",
+                  isActive ? "text-foreground" : "text-foreground/90"
                 )}
               >
                 {isActive && (
-                  <motion.div 
+                  <motion.div
                     layoutId="activeNavIndicator"
                     className="absolute inset-0 apple-glass-active rounded-2xl"
-                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                    transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                   />
                 )}
-                <div className="relative z-10 flex items-center space-x-3">
-                  <div className={cn(
-                    "p-1.5 rounded-xl transition-colors duration-300",
-                    isActive ? "bg-primary/15 text-primary dark:bg-primary/30 dark:text-primary" : "group-hover:bg-foreground/10 text-foreground/80"
-                  )}>
-                    <Icon className="h-5 w-5" strokeWidth={isActive ? 2.5 : 1.5} />
-                  </div>
-                  <span>{item.label}</span>
+
+                <div className="relative z-10 flex items-center space-x-3.5">
+                  {/* Icon — inherits parent "hover" variant, applies signature 3D tilt */}
+                  <motion.div
+                    variants={is3D ? {
+                      rest: { scale: 1, rotateZ: 0, rotateY: 0, rotateX: 0, filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.15))' },
+                      hover: iconHoverVariant[item.id] || { scale: 1.3 },
+                      tap:   { scale: 0.92, rotateZ: 0, rotateY: 0 },
+                    } : {
+                      rest:  { scale: 1 },
+                      hover: { scale: 1.12 },
+                    }}
+                    style={{ perspective: 700, transformStyle: 'preserve-3d' }}
+                    transition={{ type: 'spring', stiffness: 480, damping: 26, mass: 0.55 }}
+                    className={cn(
+                      "rounded-xl transition-colors duration-200",
+                      isActive
+                        ? "bg-primary/15 text-primary dark:bg-primary/30 p-1.5"
+                        : "text-foreground/80 p-1.5",
+                      is3D && "p-0 !bg-transparent"
+                    )}
+                  >
+                    <Icon
+                      className={cn("h-5 w-5", is3D && "w-8 h-8")}
+                      strokeWidth={isActive ? 2.5 : 2}
+                    />
+                  </motion.div>
+
+                  {/* Label — floats up in sync */}
+                  <motion.span
+                    variants={{
+                      rest:  { y: 0, opacity: 1 },
+                      hover: { y: -2, opacity: 1 },
+                      tap:   { y: 0 },
+                    }}
+                    transition={{ type: 'spring', stiffness: 480, damping: 28, mass: 0.6 }}
+                    className={cn(
+                      "text-[16px] transition-colors duration-200",
+                      isActive ? "font-black tracking-tight text-foreground" : "font-extrabold tracking-wide text-foreground/90 group-hover:text-foreground"
+                    )}
+                  >
+                    {item.label}
+                  </motion.span>
                 </div>
+
                 {isActive && (
                   <ChevronRight className="h-4 w-4 relative z-10 opacity-70" />
                 )}

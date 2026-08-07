@@ -1,8 +1,11 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { AlertCircle, Loader2, Mail, CheckCircle2 } from 'lucide-react'
+import { AlertCircle, Loader2, CheckCircle2, Sparkles } from 'lucide-react'
 import { forgotPassword } from '../services/authService'
 import { validateEmail } from '../utils/validators'
+import { motion } from 'framer-motion'
+import { Input } from '../components/ui/Input'
+import { Button } from '../components/ui/Button'
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('')
@@ -10,13 +13,11 @@ export default function ForgotPasswordPage() {
   const [fieldErrors, setFieldErrors] = useState({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [successMsg, setSuccessMsg] = useState('')
-  const [resetLink, setResetLink] = useState('') // Just for dev purposes as requested
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
     setSuccessMsg('')
-    setResetLink('')
     setFieldErrors({})
 
     const emailErr = validateEmail(email)
@@ -30,11 +31,8 @@ export default function ForgotPasswordPage() {
     try {
       const data = await forgotPassword(email)
       setSuccessMsg(data.message)
-      if (data.resetLink) {
-        setResetLink(data.resetLink)
-      }
     } catch (err) {
-      setError(err.message || 'Failed to send reset link.')
+      setError(err.message || 'Failed to send OTP.')
       if (err.field) {
         setFieldErrors((prev) => ({ ...prev, [err.field]: err.message }))
       }
@@ -44,75 +42,93 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="w-full max-w-[420px] mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500 relative z-30">
-      <div className="flex flex-col space-y-3 text-center mb-10">
-        <h1 className="text-4xl font-semibold tracking-tight text-foreground">Reset Password</h1>
-        <p className="text-sm text-muted-foreground">
-          Enter your email to receive a password reset link
-        </p>
-      </div>
-
-      {error && (
-        <div className="flex items-start space-x-3 bg-destructive/10 text-destructive p-3 rounded-md text-sm font-medium mb-6">
-          <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
-          <span>{error}</span>
-        </div>
-      )}
-
-      {successMsg && (
-        <div className="flex flex-col space-y-2 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 p-4 rounded-md text-sm font-medium mb-6">
-          <div className="flex items-start space-x-3">
-            <CheckCircle2 className="h-4 w-4 shrink-0 mt-0.5" />
-            <span>{successMsg}</span>
+    <div className="w-full max-w-[400px] mx-auto relative z-20 flex flex-col items-center">
+      
+      {/* Floating Glowing Icon */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, type: 'spring', damping: 20 }}
+        className="relative z-30 -mb-10"
+      >
+        <div className="absolute inset-0 bg-white/20 blur-2xl rounded-full" />
+        <div className="relative h-20 w-20 rounded-[28px] bg-white/10 backdrop-blur-3xl border border-white/30 flex items-center justify-center shadow-[0_0_40px_rgba(255,255,255,0.1)]">
+          <div className="h-8 w-8 text-white flex items-center justify-center">
+            <Sparkles className="h-6 w-6" />
           </div>
-          {resetLink && (
-            <div className="mt-2 pl-7 pt-2 border-t border-emerald-500/20 break-all text-xs">
-              <strong>Dev Link:</strong> <a href={resetLink} className="underline hover:text-emerald-500">{resetLink}</a>
-            </div>
-          )}
         </div>
-      )}
+      </motion.div>
 
-      <form onSubmit={handleSubmit} className="grid gap-5">
-        <div className="grid gap-1.5">
-          <div className="relative group">
-            <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-muted-foreground group-focus-within:text-primary transition-colors">
-              <Mail className="h-5 w-5" />
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+        className="glass-auth flex flex-col items-center"
+      >
+        <div className="flex flex-col space-y-2 text-center mb-8 relative z-10 w-full mt-4">
+          <h1 className="text-[28px] font-bold tracking-tight text-white flex items-center justify-center gap-2">Reset Password</h1>
+          <p className="text-sm text-white/50 leading-relaxed px-4">
+            Enter your email to receive a secure 6-digit OTP.
+          </p>
+        </div>
+
+        {error && (
+          <div className="flex items-start space-x-3 bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-xl text-sm font-medium mb-6 w-full">
+            <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+            <span>{error}</span>
+          </div>
+        )}
+
+        {successMsg && (
+          <div className="flex flex-col space-y-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 p-4 rounded-xl text-sm font-medium mb-6 w-full">
+            <div className="flex items-start space-x-3">
+              <CheckCircle2 className="h-4 w-4 shrink-0 mt-0.5" />
+              <span>{successMsg}</span>
             </div>
-            <input
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="w-full grid gap-4">
+          <div className="grid gap-1.5">
+            <Input
               id="forgot-email"
               type="email"
-              placeholder="awesome@user.com"
+              variant="auth"
+              placeholder="name@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="flex h-12 w-full rounded-full border border-input bg-transparent pl-14 pr-4 py-2 text-sm shadow-sm transition-colors placeholder:text-muted-foreground/60 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-50"
               disabled={isSubmitting || !!successMsg}
+              error={fieldErrors.email}
             />
           </div>
-          {fieldErrors.email && (
-            <p className="text-xs text-destructive pl-4">{fieldErrors.email}</p>
-          )}
+
+          <Button
+            type="submit"
+            variant="gradient"
+            className="w-full mt-4"
+            disabled={isSubmitting || !!successMsg}
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                Sending OTP...
+              </>
+            ) : (
+              'SEND OTP'
+            )}
+          </Button>
+        </form>
+
+        <div className="mt-8 text-center text-sm w-full border-t border-white/10 pt-6">
+          <span className="text-white/40">Remembered your password? </span>
+          <Link 
+            to="/login" 
+            className="font-medium text-[#d8b4fe] hover:text-white transition-colors"
+          >
+            Log in
+          </Link>
         </div>
-
-        <button
-          type="submit"
-          className="inline-flex items-center justify-center rounded-full text-base font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow-md hover:shadow-lg hover:-translate-y-0.5 hover:bg-primary/90 h-12 px-8 mt-4 mx-auto min-w-[200px]"
-          disabled={isSubmitting || !!successMsg}
-        >
-          {isSubmitting ? (
-            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-          ) : (
-            'Send Reset Link'
-          )}
-        </button>
-      </form>
-
-      <div className="flex items-center justify-center space-x-1 mt-10 text-sm">
-        <span className="text-muted-foreground">Remembered your password?</span>
-        <Link to="/login" className="text-muted-foreground hover:text-primary transition-colors underline underline-offset-4 decoration-muted-foreground/50 hover:decoration-primary">
-          Log in
-        </Link>
-      </div>
+      </motion.div>
     </div>
   )
 }

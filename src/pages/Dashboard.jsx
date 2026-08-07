@@ -53,24 +53,24 @@ export default function Dashboard() {
         <div className="flex-1 min-w-0 xl:pr-4">
           
           {/* Welcome Header */}
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-8">
-            <motion.div 
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.1 }}
-            >
-              <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold tracking-wide uppercase mb-3 border border-primary/20">
-                <Sparkles className="h-3.5 w-3.5" />
-                <span>Dashboard Overview</span>
-              </div>
-              <h1 className="text-3xl sm:text-4xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent mb-2 pb-1">
-                Welcome back, {user?.name ? user.name.split(' ')[0] : 'Team'}
-              </h1>
-              <p className="text-muted-foreground text-sm font-medium">
-                Here's a high-level overview of your workspace.
-              </p>
-            </motion.div>
-          </div>
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.08, type: 'spring', stiffness: 380, damping: 30 }}
+            className="mb-8"
+          >
+            <h1 className="text-3xl font-bold text-foreground tracking-tight leading-snug mb-1">
+              {(() => {
+                const h = new Date().getHours()
+                const greeting = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening'
+                const name = user?.name ? user.name.split(' ')[0] : 'there'
+                return `${greeting}, ${name}.`
+              })()}
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Here's what's on your plate today.
+            </p>
+          </motion.div>
 
           <AnimatePresence>
             {error && (
