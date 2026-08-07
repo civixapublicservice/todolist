@@ -54,9 +54,14 @@ export default function RegisterPage() {
     setIsSubmitting(true)
 
     try {
-      await register(name, email, password)
-      toast.success('Account created successfully')
-      navigate('/login', { replace: true })
+      const response = await register(name, email, password)
+      if (response.requireVerification) {
+        toast.success(response.message || 'OTP sent to your email')
+        navigate('/verify-email', { state: { email } })
+      } else {
+        toast.success('Account created successfully')
+        navigate('/login', { replace: true })
+      }
     } catch (err) {
       toast.error(err.message || 'Failed to create account. Please try again.')
       if (err.field) {

@@ -168,6 +168,7 @@ export default function ResetPasswordPage() {
                   error={fieldErrors.confirmPassword}
                 />
               </div>
+            </div>
 
               <Button
                 type="submit"

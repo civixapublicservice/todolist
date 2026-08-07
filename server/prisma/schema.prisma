@@ -82,3 +82,16 @@ model Settings {
 
   @@map("settings")
 }
+
+model PendingRegistration {
+  id          String   @id @default(uuid())
+  name        String
+  email       String   @unique
+  password    String   
+  otp         String   
+  otpExpiry   DateTime @map("otp_expiry")
+  otpAttempts Int      @default(0) @map("otp_attempts")
+  createdAt   DateTime @default(now()) @map("created_at")
+  
+  @@map("pending_registrations")
+}
