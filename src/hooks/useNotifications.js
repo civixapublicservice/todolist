@@ -14,7 +14,7 @@ export function useNotifications() {
         const newUnread = data.filter(n => !prevIds.has(n.id) && !n.isRead)
 
         // Show browser notifications for new unread notifications
-        if (newUnread.length > 0 && Notification.permission === 'granted') {
+        if (newUnread.length > 0 && 'Notification' in window && Notification.permission === 'granted') {
           newUnread.forEach(notif => {
             new Notification('TaskFlow Reminder', {
               body: notif.message,
@@ -35,7 +35,7 @@ export function useNotifications() {
   useEffect(() => {
     fetchNotifications()
     
-    if (Notification.permission === 'default') {
+    if ('Notification' in window && Notification.permission === 'default') {
       Notification.requestPermission()
     }
   }, [fetchNotifications])

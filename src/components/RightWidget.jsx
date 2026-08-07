@@ -106,7 +106,7 @@ export default function RightWidget({ todos = [] }) {
   const dateNum = today.getDate()
   const monthStr = today.toLocaleString('default', { month: 'short' }).toUpperCase()
 
-  const { recentActivity, upcomingDeadlines } = useMemo(() => {
+  const { recentActivity, upcomingDeadlines, upcomingReminders } = useMemo(() => {
     const recentActivity = [...todos]
       .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))
       .slice(0, 4)
