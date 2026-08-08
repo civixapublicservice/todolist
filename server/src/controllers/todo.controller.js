@@ -125,9 +125,12 @@ export const updateTodo = async (req, res) => {
     
     if (resetReminder) {
       updateData.reminderSent = false
+      updateData.emailReminderSent = false
+      updateData.browserReminderSent = false
       updateData.reminderSentAt = null
       updateData.lastReminderAttempt = null
       updateData.reminderError = null
+      updateData.reminderRetryCount = 0
     }
 
     const updatedTodo = await prisma.todo.update({

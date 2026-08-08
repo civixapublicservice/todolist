@@ -37,9 +37,12 @@ model Todo {
   reminderTime        String?   @map("reminder_time")
   reminderType        String?   @map("reminder_type")
   reminderSent        Boolean   @default(false) @map("reminder_sent")
+  emailReminderSent   Boolean   @default(false) @map("email_reminder_sent")
+  browserReminderSent Boolean   @default(false) @map("browser_reminder_sent")
   reminderSentAt      DateTime? @map("reminder_sent_at")
   lastReminderAttempt DateTime? @map("last_reminder_attempt")
   reminderError       String?   @map("reminder_error")
+  reminderRetryCount  Int       @default(0) @map("reminder_retry_count")
   createdAt           DateTime  @default(now()) @map("created_at")
   updatedAt           DateTime  @updatedAt @map("updated_at")
 

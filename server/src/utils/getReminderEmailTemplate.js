@@ -1,4 +1,4 @@
-export const getReminderEmailTemplate = (appName, userName, taskTitle, dueDateStr, reminderTimeStr, priority) => {
+export const getReminderEmailTemplate = (appName, userName, taskTitle, taskDescription, dueDateStr, reminderTimeStr, priority) => {
   const priorityColors = {
     HIGH: '#EF4444',
     MEDIUM: '#F59E0B',
@@ -21,9 +21,7 @@ export const getReminderEmailTemplate = (appName, userName, taskTitle, dueDateSt
 
   const remainingText = formatReminderTime(reminderTimeStr)
   
-  // We don't have absolute URLs passed in, assuming standard port 5173 for local, but a relative path is safer or using a generic link
-  // The exact host URL could be passed from ENV, but standard localhost for dev
-  const appUrl = process.env.CLIENT_URL || 'http://localhost:5173'
+  const appUrl = process.env.FRONTEND_URL || process.env.CLIENT_URL || 'http://localhost:5173'
   const taskUrl = `${appUrl}/dashboard`
 
   return `
@@ -34,51 +32,72 @@ export const getReminderEmailTemplate = (appName, userName, taskTitle, dueDateSt
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Task Reminder</title>
       <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
         body {
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+          font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
           line-height: 1.6;
-          color: #333;
+          color: #1f2937;
           background-color: #f3f4f6;
           margin: 0;
           padding: 0;
         }
-        .container {
+        .wrapper {
+          width: 100%;
+          table-layout: fixed;
+          background-color: #f3f4f6;
+          padding: 40px 20px;
+        }
+        .main-container {
           max-width: 600px;
-          margin: 40px auto;
-          background-color: #ffffff;
+          margin: 0 auto;
+          background: #ffffff;
           border-radius: 16px;
           overflow: hidden;
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+          box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
         }
         .header {
-          background-color: #4F46E5;
-          color: #ffffff;
-          padding: 32px 40px;
+          background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
+          padding: 40px 40px;
           text-align: center;
         }
-        .header h1 {
-          margin: 0;
-          font-size: 24px;
+        .header-brand {
+          color: #e0e7ff;
+          font-size: 14px;
           font-weight: 600;
+          letter-spacing: 1px;
+          text-transform: uppercase;
+          margin-bottom: 8px;
+        }
+        .header-title {
+          color: #ffffff;
+          font-size: 28px;
+          font-weight: 700;
+          margin: 0;
           letter-spacing: -0.025em;
         }
         .content {
           padding: 40px;
+          background-color: #ffffff;
         }
         .greeting {
           font-size: 18px;
           font-weight: 500;
           color: #111827;
-          margin-bottom: 24px;
+          margin-bottom: 16px;
         }
-        .message {
+        .intro-text {
           font-size: 16px;
           color: #4b5563;
           margin-bottom: 32px;
         }
-        .task-card {
-          background-color: #f9fafb;
-          border: 1px solid #e5e7eb;
+        .highlight {
+          color: #4F46E5;
+          font-weight: 600;
+        }
+        .card {
+          background-color: #f8fafc;
+          border: 1px solid #e2e8f0;
           border-radius: 12px;
           padding: 24px;
           margin-bottom: 32px;
@@ -86,30 +105,38 @@ export const getReminderEmailTemplate = (appName, userName, taskTitle, dueDateSt
         .task-title {
           font-size: 20px;
           font-weight: 600;
-          color: #111827;
-          margin-top: 0;
-          margin-bottom: 16px;
+          color: #0f172a;
+          margin: 0 0 8px 0;
         }
-        .task-detail {
+        .task-desc {
+          font-size: 15px;
+          color: #64748b;
+          margin: 0 0 24px 0;
+        }
+        .meta-list {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+        }
+        .meta-item {
           display: flex;
           align-items: center;
           margin-bottom: 12px;
+          font-size: 15px;
         }
-        .task-detail:last-child {
+        .meta-item:last-child {
           margin-bottom: 0;
         }
-        .detail-label {
-          font-weight: 600;
-          color: #6b7280;
-          width: 120px;
-          font-size: 14px;
-        }
-        .detail-value {
+        .meta-label {
+          width: 140px;
+          color: #64748b;
           font-weight: 500;
-          color: #111827;
-          font-size: 14px;
         }
-        .priority-badge {
+        .meta-value {
+          color: #0f172a;
+          font-weight: 600;
+        }
+        .badge {
           display: inline-block;
           padding: 4px 12px;
           border-radius: 9999px;
@@ -117,79 +144,93 @@ export const getReminderEmailTemplate = (appName, userName, taskTitle, dueDateSt
           font-weight: 600;
           color: #ffffff;
           background-color: ${priorityColor};
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
         }
-        .cta-container {
+        .cta-wrapper {
           text-align: center;
-          margin-top: 32px;
+          margin: 40px 0 20px;
         }
         .btn {
           display: inline-block;
-          background-color: #4F46E5;
-          color: #ffffff;
+          background: linear-gradient(to right, #4F46E5, #6366F1);
+          color: #ffffff !important;
           font-weight: 600;
           font-size: 16px;
           text-decoration: none;
-          padding: 14px 28px;
+          padding: 14px 32px;
           border-radius: 8px;
-          transition: background-color 0.2s;
-        }
-        .btn:hover {
-          background-color: #4338ca;
+          box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.3);
         }
         .footer {
-          background-color: #f9fafb;
-          padding: 24px 40px;
+          background-color: #f8fafc;
+          padding: 32px 40px;
           text-align: center;
-          border-top: 1px solid #e5e7eb;
+          border-top: 1px solid #f1f5f9;
         }
-        .footer p {
-          margin: 0;
+        .footer-text {
+          margin: 0 0 8px;
           font-size: 14px;
-          color: #6b7280;
+          color: #64748b;
         }
-        .brand {
-          font-weight: 600;
+        .footer-link {
           color: #4F46E5;
+          text-decoration: none;
         }
       </style>
     </head>
     <body>
-      <div class="container">
-        <div class="header">
-          <h1>Reminder: Upcoming Task</h1>
-        </div>
-        <div class="content">
-          <div class="greeting">Hi ${userName},</div>
-          <div class="message">
-            This is a friendly reminder that you have a task due <strong>${remainingText}</strong>.
+      <div class="wrapper">
+        <div class="main-container">
+          <!-- Header -->
+          <div class="header">
+            <div class="header-brand">${appName}</div>
+            <h1 class="header-title">Task Reminder</h1>
           </div>
           
-          <div class="task-card">
-            <h2 class="task-title">${taskTitle}</h2>
+          <!-- Content -->
+          <div class="content">
+            <div class="greeting">Hi ${userName},</div>
+            <p class="intro-text">
+              Your task is approaching its deadline. It is due <span class="highlight">${remainingText}</span>.
+            </p>
             
-            <div class="task-detail">
-              <span class="detail-label">Due Date:</span>
-              <span class="detail-value">${dueDateStr}</span>
+            <!-- Task Card -->
+            <div class="card">
+              <h2 class="task-title">${taskTitle}</h2>
+              ${taskDescription ? \`<p class="task-desc">\${taskDescription}</p>\` : ''}
+              
+              <ul class="meta-list">
+                <li class="meta-item">
+                  <span class="meta-label">Deadline:</span>
+                  <span class="meta-value">${dueDateStr}</span>
+                </li>
+                <li class="meta-item">
+                  <span class="meta-label">Priority:</span>
+                  <span class="meta-value"><span class="badge">${priority}</span></span>
+                </li>
+                <li class="meta-item">
+                  <span class="meta-label">Reminder:</span>
+                  <span class="meta-value">${reminderTimeStr} before</span>
+                </li>
+              </ul>
             </div>
             
-            <div class="task-detail">
-              <span class="detail-label">Priority:</span>
-              <span class="detail-value">
-                <span class="priority-badge">${priority}</span>
-              </span>
+            <!-- CTA -->
+            <div class="cta-wrapper">
+              <a href="${taskUrl}" class="btn">Open Task in ${appName}</a>
             </div>
           </div>
           
-          <div class="cta-container">
-            <a href="${taskUrl}" class="btn" style="color: #ffffff;">View Task in ${appName}</a>
+          <!-- Footer -->
+          <div class="footer">
+            <p class="footer-text">This is an automated reminder from ${appName}.</p>
+            <p class="footer-text">To stop receiving these emails, adjust your <a href="${taskUrl}" class="footer-link">notification settings</a>.</p>
           </div>
-        </div>
-        <div class="footer">
-          <p>You received this email because you set a reminder in <span class="brand">${appName}</span>.</p>
-          <p style="margin-top: 8px;">If you'd like to change your notification preferences, you can do so in your Settings.</p>
         </div>
       </div>
     </body>
     </html>
   `
 }
+

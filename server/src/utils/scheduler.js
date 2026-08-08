@@ -26,18 +26,19 @@ const sendTaskReminders = async () => {
     const now = new Date()
 
     // 1. Fetch pending reminders. 
-    // We only want incomplete tasks that have a reminder enabled, haven't been sent,
-    // and have a due date.
+    // We only want incomplete tasks that have a reminder enabled, haven't been sent completely,
+    // and have a due date. We also enforce a maximum of 3 retries.
     const tasks = await prisma.todo.findMany({
       where: {
         completed: false,
         reminderEnabled: true,
         reminderSent: false,
         dueDate: { not: null },
-        // Don't retry if we tried recently (e.g. last 5 mins) to prevent spam on error
+        reminderRetryCount: { lt: 3 },
+        // Don't retry if we tried recently to prevent spam on error
         OR: [
           { lastReminderAttempt: null },
-          { lastReminderAttempt: { lt: new Date(now.getTime() - 5 * 60 * 1000) } }
+          { lastReminderAttempt: { lt: new Date(now.getTime() - 10 * 60 * 1000) } } // 10 minute retry backoff
         ]
       },
       include: {
@@ -82,61 +83,127 @@ const sendTaskReminders = async () => {
           // Format due date in user's timezone
           const formattedDueDate = formatInTimeZone(task.dueDate, timeZone, 'PPpp')
 
-          // 2. Email Notification
-          if ((task.reminderType === 'EMAIL' || task.reminderType === 'BOTH') && settings.globalEmailReminder) {
-            const html = getReminderEmailTemplate(
-              'TaskFlow',
-              user.name,
-              task.title,
-              formattedDueDate,
-              task.reminderTime,
-              task.priority,
-              task.id
-            )
+          let emailSuccess = task.emailReminderSent
+          let browserSuccess = task.browserReminderSent
+          let currentError = null
 
-            await mailService.sendMail({
-              to: user.email,
-              subject: `Task Reminder: ${task.title}`,
-              html
-            })
+          const shouldSendEmail = !task.emailReminderSent && (task.reminderType === 'EMAIL' || task.reminderType === 'BOTH') && settings.globalEmailReminder
+          const shouldSendBrowser = !task.browserReminderSent && (task.reminderType === 'BROWSER' || task.reminderType === 'BOTH') && settings.globalBrowserNotification
+
+          // 2. Email Notification
+          if (shouldSendEmail) {
+            try {
+              const html = getReminderEmailTemplate(
+                'TaskFlow',
+                user.name,
+                task.title,
+                task.description, // Added description param
+                formattedDueDate,
+                task.reminderTime,
+                task.priority,
+                task.id
+              )
+
+              await mailService.sendMail({
+                to: user.email,
+                subject: `Reminder: ${task.title} is due soon`,
+                html
+              })
+              
+              emailSuccess = true
+              
+              // Immediately record success for this channel
+              await prisma.todo.update({
+                where: { id: task.id },
+                data: { emailReminderSent: true }
+              })
+            } catch (err) {
+              console.error(`Failed to send email reminder for task ${task.id}:`, err)
+              currentError = err.message || 'Email delivery failed'
+            }
+          } else {
+            // If it doesn't need to be sent (or already sent), consider it a success for the purpose of overall status
+            emailSuccess = true
           }
 
-          // 3. Browser Notification (Save to DB)
-          if ((task.reminderType === 'BROWSER' || task.reminderType === 'BOTH') && settings.globalBrowserNotification) {
-            await prisma.notification.create({
+          // 3. Browser Notification
+          if (shouldSendBrowser) {
+            try {
+              await prisma.notification.create({
+                data: {
+                  userId: user.id,
+                  message: `Reminder: ${task.title} is due at ${formattedDueDate}`,
+                  type: 'REMINDER',
+                }
+              })
+              
+              browserSuccess = true
+              
+              // Immediately record success for this channel
+              await prisma.todo.update({
+                where: { id: task.id },
+                data: { browserReminderSent: true }
+              })
+            } catch (err) {
+              console.error(`Failed to create browser notification for task ${task.id}:`, err)
+              currentError = err.message || 'Browser notification failed'
+            }
+          } else {
+            browserSuccess = true
+          }
+
+          // 4. Overall Status Update
+          if (emailSuccess && browserSuccess) {
+            // Both required channels succeeded
+            await prisma.todo.update({
+              where: { id: task.id },
               data: {
-                userId: user.id,
-                message: `Reminder: ${task.title} is due at ${formattedDueDate}`,
-                type: 'REMINDER',
+                reminderSent: true,
+                reminderSentAt: new Date(),
+                reminderError: null,
+                reminderRetryCount: 0 // Reset on complete success
               }
             })
+
+            // Log Activity
+            await prisma.activity.create({
+              data: {
+                userId: user.id,
+                action: 'REMINDER_SENT',
+                details: `Sent reminder for task: "${task.title}"`
+              }
+            })
+          } else {
+            // Partial or complete failure - increment retry count
+            const newRetryCount = task.reminderRetryCount + 1
+            await prisma.todo.update({
+              where: { id: task.id },
+              data: { 
+                reminderError: currentError,
+                reminderRetryCount: newRetryCount,
+              }
+            })
+
+            if (newRetryCount >= 3) {
+              await prisma.activity.create({
+                data: {
+                  userId: user.id,
+                  action: 'REMINDER_FAILED',
+                  details: `Failed to send reminder for task: "${task.title}" after max retries.`
+                }
+              })
+            }
           }
-
-          // 4. Mark as completely sent
-          await prisma.todo.update({
-            where: { id: task.id },
-            data: {
-              reminderSent: true,
-              reminderSentAt: new Date(),
-              reminderError: null
-            }
-          })
-
-          // 5. Log Activity
-          await prisma.activity.create({
-            data: {
-              userId: user.id,
-              action: 'REMINDER_SENT',
-              details: `Sent reminder for task: "${task.title}"`
-            }
-          })
         }
       } catch (err) {
-        console.error(`Failed to process reminder for task ${task.id}:`, err)
-        // Record error
+        console.error(`Unexpected error processing reminder for task ${task.id}:`, err)
+        // Record error safely
         await prisma.todo.update({
           where: { id: task.id },
-          data: { reminderError: err.message || 'Unknown error' }
+          data: { 
+            reminderError: err.message || 'Unknown error',
+            reminderRetryCount: { increment: 1 }
+          }
         })
       }
     }
@@ -156,3 +223,4 @@ export const initScheduler = () => {
   sendTaskReminders()
   console.log('TaskFlow Scheduler Initialized')
 }
+
