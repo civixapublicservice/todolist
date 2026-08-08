@@ -1,14 +1,25 @@
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import { ArrowRight, Check } from 'lucide-react'
 import { cn } from '../../utils/cn'
+import { useAudio } from '../../context/AudioContext'
 
 export default function ToggleSwitch({ checked, onChange, disabled }) {
+  const { playUISound } = useAudio()
+  const shouldReduceMotion = useReducedMotion()
+
+  const handleClick = () => {
+    if (!disabled) {
+      onChange(!checked)
+      playUISound('toggle')
+    }
+  }
+
   return (
     <button
       type="button"
       role="switch"
       aria-checked={checked}
-      onClick={() => !disabled && onChange(!checked)}
+      onClick={handleClick}
       disabled={disabled}
       className={cn(
         "relative w-[76px] h-11 rounded-[22px] flex items-center p-[4px] transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
@@ -22,7 +33,7 @@ export default function ToggleSwitch({ checked, onChange, disabled }) {
         animate={{
           x: checked ? 35 : 0,
         }}
-        transition={{ type: "spring", stiffness: 500, damping: 30 }}
+        transition={shouldReduceMotion ? { duration: 0.1 } : { type: "spring", stiffness: 500, damping: 30 }}
         className={cn(
           "w-[34px] h-[34px] rounded-full flex items-center justify-center relative overflow-hidden",
           "bg-gradient-to-b from-[#2a2a2a] to-[#1a1a1a]",

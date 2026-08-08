@@ -89,6 +89,8 @@ model Settings {
   defaultReminderTime       String  @default("15m") @map("default_reminder_time")
   reminderSound             Boolean @default(true) @map("reminder_sound")
   desktopNotification       Boolean @default(true) @map("desktop_notification")
+  uiSounds                  Boolean @default(true) @map("ui_sounds")
+  notificationSounds        Boolean @default(true) @map("notification_sounds")
   
   userId                    String  @unique @map("user_id")
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
