@@ -110,3 +110,20 @@ export const isTodayLocal = (dateString, userTimezone) => {
   const d2 = new Intl.DateTimeFormat('en-US', dateOptions).format(new Date());
   return d1 === d2;
 };
+
+export const convert12HourTo24Hour = (hour12, minute, period) => {
+  let h = parseInt(hour12, 10);
+  if (period === 'PM' && h !== 12) h += 12;
+  if (period === 'AM' && h === 12) h = 0;
+  return `${h.toString().padStart(2, '0')}:${minute.padStart(2, '0')}`;
+};
+
+export const convert24HourTo12Hour = (time24) => {
+  if (!time24) return { hour: '12', minute: '00', period: 'PM' };
+  const [h24, m] = time24.split(':');
+  let h = parseInt(h24, 10);
+  const period = h >= 12 ? 'PM' : 'AM';
+  if (h === 0) h = 12;
+  else if (h > 12) h -= 12;
+  return { hour: h.toString(), minute: m, period };
+};

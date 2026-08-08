@@ -3,7 +3,7 @@ import { Trash2, Edit2, Check, Calendar as CalendarIcon, CheckCircle2, Clock, Be
 import { motion } from 'framer-motion'
 import { cn } from '../utils/cn'
 import ToggleSwitch from './ui/ToggleSwitch'
-import { formatFriendlyDate, getLocalHHMM, getLocalYYYYMMDD } from '../utils/dateUtils'
+import { formatFriendlyDate, getLocalHHMM, getLocalYYYYMMDD, convert12HourTo24Hour, convert24HourTo12Hour } from '../utils/dateUtils'
 
 export default function TodoItem({
   todo,
@@ -41,7 +41,12 @@ export default function TodoItem({
 
       const localDateTime = new Date(`${editDueDate}T${editDueTime}`)
       if (localDateTime < new Date()) {
-        alert('Deadline cannot be in the past')
+        const todayStr = new Date().toLocaleDateString('en-CA')
+        if (editDueDate < todayStr) {
+          alert("You can't schedule a task for a past date.")
+        } else {
+          alert("Please select a future time for today's task.")
+        }
         return
       }
       finalDueDate = localDateTime.toISOString()
@@ -115,10 +120,11 @@ export default function TodoItem({
                 <option value="MEDIUM">Medium</option>
                 <option value="HIGH">High</option>
               </select>
-              <div className="flex gap-1">
+              <div className="flex flex-col sm:flex-row gap-1">
                 <input
                   type="date"
                   aria-label="Edit Due Date"
+                  min={new Date().toLocaleDateString('en-CA')}
                   value={editDueDate}
                   onChange={(e) => {
                     setEditDueDate(e.target.value)
@@ -128,13 +134,47 @@ export default function TodoItem({
                   className="block px-2 py-1.5 text-xs glass-input"
                 />
                 {editDueDate && (
-                  <input
-                    type="time"
-                    aria-label="Edit Due Time"
-                    value={editDueTime}
-                    onChange={(e) => setEditDueTime(e.target.value)}
-                    className="block px-2 py-1.5 text-xs glass-input"
-                  />
+                  <div className="flex items-center glass-input rounded-md px-1.5 h-[28px] sm:h-[30px]">
+                    <select
+                      aria-label="Edit Due Time Hour"
+                      value={convert24HourTo12Hour(editDueTime || '17:00').hour}
+                      onChange={(e) => {
+                        const current = convert24HourTo12Hour(editDueTime || '17:00');
+                        setEditDueTime(convert12HourTo24Hour(e.target.value, current.minute, current.period));
+                      }}
+                      className="bg-transparent text-xs cursor-pointer appearance-none outline-none focus:text-primary"
+                    >
+                      {Array.from({length: 12}, (_, i) => i + 1).map(h => (
+                        <option key={h} value={h.toString()}>{h.toString()}</option>
+                      ))}
+                    </select>
+                    <span className="text-muted-foreground mx-0.5 text-xs">:</span>
+                    <select
+                      aria-label="Edit Due Time Minute"
+                      value={convert24HourTo12Hour(editDueTime || '17:00').minute}
+                      onChange={(e) => {
+                        const current = convert24HourTo12Hour(editDueTime || '17:00');
+                        setEditDueTime(convert12HourTo24Hour(current.hour, e.target.value, current.period));
+                      }}
+                      className="bg-transparent text-xs cursor-pointer appearance-none outline-none focus:text-primary"
+                    >
+                      {Array.from({length: 60}, (_, i) => i.toString().padStart(2, '0')).map(m => (
+                        <option key={m} value={m}>{m}</option>
+                      ))}
+                    </select>
+                    <select
+                      aria-label="Edit Due Time Period"
+                      value={convert24HourTo12Hour(editDueTime || '17:00').period}
+                      onChange={(e) => {
+                        const current = convert24HourTo12Hour(editDueTime || '17:00');
+                        setEditDueTime(convert12HourTo24Hour(current.hour, current.minute, e.target.value));
+                      }}
+                      className="bg-transparent text-xs font-medium cursor-pointer appearance-none outline-none focus:text-primary ml-1"
+                    >
+                      <option value="AM">AM</option>
+                      <option value="PM">PM</option>
+                    </select>
+                  </div>
                 )}
               </div>
             </div>

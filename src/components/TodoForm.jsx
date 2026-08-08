@@ -3,7 +3,7 @@ import { Plus, AlertCircle, Tag, Calendar as CalendarIcon, Sparkles, Bell, Clock
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '../utils/cn'
 import ToggleSwitch from './ui/ToggleSwitch'
-import { calculateTriggerTime, formatTriggerPreview } from '../utils/dateUtils'
+import { calculateTriggerTime, formatTriggerPreview, convert12HourTo24Hour, convert24HourTo12Hour } from '../utils/dateUtils'
 
 export default function TodoForm({ onAddTodo, isSubmitting }) {
   const [title, setTitle] = useState('')
@@ -77,7 +77,12 @@ export default function TodoForm({ onAddTodo, isSubmitting }) {
       
       const localDateTime = new Date(`${dueDate}T${dueTime}`)
       if (localDateTime < new Date()) {
-        setError('Deadline cannot be in the past')
+        const todayStr = new Date().toLocaleDateString('en-CA')
+        if (dueDate < todayStr) {
+          setError("You can't schedule a task for a past date.")
+        } else {
+          setError("Please select a future time for today's task.")
+        }
         return
       }
       finalDueDate = localDateTime.toISOString()
@@ -141,10 +146,10 @@ export default function TodoForm({ onAddTodo, isSubmitting }) {
           
           <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
             {/* Quick Presets */}
-            <div className="flex items-center gap-1 bg-foreground/5 p-1 rounded-lg border border-glass-border">
-              <button type="button" onClick={() => setPreset('today')} className="px-2 py-1 text-[11px] font-medium rounded-md hover:bg-background hover:shadow-sm transition-all text-muted-foreground hover:text-foreground">Today</button>
-              <button type="button" onClick={() => setPreset('tomorrow')} className="px-2 py-1 text-[11px] font-medium rounded-md hover:bg-background hover:shadow-sm transition-all text-muted-foreground hover:text-foreground">Tomorrow</button>
-              <button type="button" onClick={() => setPreset('weekend')} className="px-2 py-1 text-[11px] font-medium rounded-md hover:bg-background hover:shadow-sm transition-all text-muted-foreground hover:text-foreground hidden sm:block">Weekend</button>
+            <div className="flex w-full sm:w-auto items-center gap-1 bg-foreground/5 p-1 rounded-lg border border-glass-border">
+              <button type="button" onClick={() => setPreset('today')} className="flex-1 sm:flex-none px-2 py-1 text-[11px] font-medium rounded-md hover:bg-background hover:shadow-sm transition-all text-muted-foreground hover:text-foreground">Today</button>
+              <button type="button" onClick={() => setPreset('tomorrow')} className="flex-1 sm:flex-none px-2 py-1 text-[11px] font-medium rounded-md hover:bg-background hover:shadow-sm transition-all text-muted-foreground hover:text-foreground">Tomorrow</button>
+              <button type="button" onClick={() => setPreset('weekend')} className="flex-1 sm:flex-none px-2 py-1 text-[11px] font-medium rounded-md hover:bg-background hover:shadow-sm transition-all text-muted-foreground hover:text-foreground">Weekend</button>
             </div>
 
             <div className="flex items-center gap-2">
@@ -154,6 +159,7 @@ export default function TodoForm({ onAddTodo, isSubmitting }) {
                 </div>
                 <input
                   type="date"
+                  min={new Date().toLocaleDateString('en-CA')}
                   value={dueDate}
                   onChange={(e) => {
                     setDueDate(e.target.value)
@@ -165,17 +171,48 @@ export default function TodoForm({ onAddTodo, isSubmitting }) {
               </div>
 
               {dueDate && (
-                <div className="relative group flex-1 sm:flex-none">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <div className="relative group flex-1 sm:flex-none flex items-center gap-1">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
                     <Clock className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
                   </div>
-                  <input
-                    type="time"
-                    value={dueTime}
-                    onChange={(e) => setDueTime(e.target.value)}
-                    className="block w-full pl-9 pr-4 py-2 text-sm glass-input cursor-pointer min-w-[130px]"
-                    aria-label="Task due time"
-                  />
+                  <div className="flex items-center glass-input rounded-md pl-9 pr-2 h-[38px]">
+                    <select
+                      value={convert24HourTo12Hour(dueTime || '17:00').hour}
+                      onChange={(e) => {
+                        const current = convert24HourTo12Hour(dueTime || '17:00');
+                        setDueTime(convert12HourTo24Hour(e.target.value, current.minute, current.period));
+                      }}
+                      className="bg-transparent text-sm cursor-pointer appearance-none outline-none focus:text-primary"
+                    >
+                      {Array.from({length: 12}, (_, i) => i + 1).map(h => (
+                        <option key={h} value={h.toString()}>{h.toString()}</option>
+                      ))}
+                    </select>
+                    <span className="text-muted-foreground mx-0.5">:</span>
+                    <select
+                      value={convert24HourTo12Hour(dueTime || '17:00').minute}
+                      onChange={(e) => {
+                        const current = convert24HourTo12Hour(dueTime || '17:00');
+                        setDueTime(convert12HourTo24Hour(current.hour, e.target.value, current.period));
+                      }}
+                      className="bg-transparent text-sm cursor-pointer appearance-none outline-none focus:text-primary"
+                    >
+                      {Array.from({length: 60}, (_, i) => i.toString().padStart(2, '0')).map(m => (
+                        <option key={m} value={m}>{m}</option>
+                      ))}
+                    </select>
+                    <select
+                      value={convert24HourTo12Hour(dueTime || '17:00').period}
+                      onChange={(e) => {
+                        const current = convert24HourTo12Hour(dueTime || '17:00');
+                        setDueTime(convert12HourTo24Hour(current.hour, current.minute, e.target.value));
+                      }}
+                      className="bg-transparent text-sm font-medium cursor-pointer appearance-none outline-none focus:text-primary ml-1"
+                    >
+                      <option value="AM">AM</option>
+                      <option value="PM">PM</option>
+                    </select>
+                  </div>
                 </div>
               )}
             </div>
