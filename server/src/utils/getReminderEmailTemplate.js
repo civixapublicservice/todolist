@@ -198,7 +198,7 @@ export const getReminderEmailTemplate = (appName, userName, taskTitle, taskDescr
             <!-- Task Card -->
             <div class="card">
               <h2 class="task-title">${taskTitle}</h2>
-              ${taskDescription ? \`<p class="task-desc">\${taskDescription}</p>\` : ''}
+              ${taskDescription ? `<p class="task-desc">${taskDescription}</p>` : ''}
               
               <ul class="meta-list">
                 <li class="meta-item">
