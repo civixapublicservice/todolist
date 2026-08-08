@@ -15,13 +15,19 @@ export function useNotifications() {
 
         // Show browser notifications for new unread notifications
         if (newUnread.length > 0 && 'Notification' in window && Notification.permission === 'granted') {
-          newUnread.forEach(notif => {
-            new Notification('TaskFlow Reminder', {
-              body: notif.message,
-              icon: '/favicon.svg', // Assumes a favicon or logo is here
-              badge: '/favicon.svg'
+          setTimeout(() => {
+            newUnread.forEach(notif => {
+              try {
+                new Notification('TaskFlow Reminder', {
+                  body: notif.message,
+                  icon: '/favicon.svg', // Assumes a favicon or logo is here
+                  badge: '/favicon.svg'
+                })
+              } catch (err) {
+                console.error('Browser notification error:', err)
+              }
             })
-          })
+          }, 0)
         }
         
         return data
