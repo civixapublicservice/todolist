@@ -75,7 +75,9 @@ export default function TodoForm({ onAddTodo, isSubmitting }) {
         return
       }
       
-      const localDateTime = new Date(`${dueDate}T${dueTime}`)
+      const [y, m, d] = dueDate.split('-').map(Number)
+      const [h, min] = dueTime.split(':').map(Number)
+      const localDateTime = new Date(y, m - 1, d, h, min)
       if (localDateTime < new Date()) {
         const todayStr = new Date().toLocaleDateString('en-CA')
         if (dueDate < todayStr) {

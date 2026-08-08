@@ -39,7 +39,9 @@ export default function TodoItem({
         return
       }
 
-      const localDateTime = new Date(`${editDueDate}T${editDueTime}`)
+      const [y, m, d] = editDueDate.split('-').map(Number)
+      const [h, min] = editDueTime.split(':').map(Number)
+      const localDateTime = new Date(y, m - 1, d, h, min)
       if (localDateTime < new Date()) {
         const todayStr = new Date().toLocaleDateString('en-CA')
         if (editDueDate < todayStr) {

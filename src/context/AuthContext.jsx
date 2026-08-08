@@ -5,6 +5,7 @@ import {
   fetchCurrentUser,
   logoutUser,
 } from '../services/authService'
+import { fetchApi } from '../services/api'
 
 const AuthContext = createContext(null)
 
@@ -17,6 +18,17 @@ export function AuthProvider({ children }) {
       try {
         const currentUser = await fetchCurrentUser()
         setUser(currentUser)
+        
+        // Silently sync timezone for email scheduler
+        try {
+          const tz = Intl.DateTimeFormat().resolvedOptions().timeZone
+          await fetchApi('/settings', {
+            method: 'PUT',
+            body: JSON.stringify({ timezone: tz })
+          })
+        } catch (e) {
+          // ignore
+        }
       } catch {
         setUser(null)
       } finally {
