@@ -1,4 +1,5 @@
 export const getWelcomeEmailTemplate = (appName, name) => {
+  const appUrl = process.env.FRONTEND_URL || process.env.CLIENT_URL || 'http://localhost:5173';
   const currentDate = new Date().toLocaleString('en-US', {
     weekday: 'long',
     year: 'numeric',
@@ -92,7 +93,7 @@ export const getWelcomeEmailTemplate = (appName, name) => {
         <p>Your email has been successfully verified and your account is now ready.</p>
         <p>You can now log in to manage your tasks, collaborate with your team, and stay organized.</p>
         
-        <a href="http://localhost:5173/login" class="btn" style="color: #ffffff;">Go to Login</a>
+        <a href="${appUrl}/login" class="btn" style="color: #ffffff;">Go to Login</a>
       </div>
       <div class="footer">
         <p>Joined on ${currentDate}</p>
