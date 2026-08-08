@@ -1,7 +1,6 @@
 import React from 'react';
 import { cn } from '../../utils/cn';
-import { motion, useReducedMotion } from 'framer-motion';
-import { useAudio } from '../../context/AudioContext';
+import { motion } from 'framer-motion';
 
 export const Button = React.forwardRef(({ 
   className, 
@@ -9,12 +8,8 @@ export const Button = React.forwardRef(({
   size = 'default', 
   isLoading, 
   children, 
-  onClick,
   ...props 
 }, ref) => {
-  const shouldReduceMotion = useReducedMotion();
-  const { playUISound } = useAudio();
-  
   const variants = {
     primary: 'btn-primary',
     secondary: 'btn-secondary',
@@ -28,20 +23,11 @@ export const Button = React.forwardRef(({
     small: 'btn-small'
   };
 
-  const handleClick = (e) => {
-    if (!isLoading && !props.disabled) {
-      playUISound('click');
-      if (onClick) onClick(e);
-    }
-  };
-
   return (
     <motion.button
-      whileHover={shouldReduceMotion || props.disabled ? {} : { scale: 1.01 }}
-      whileTap={shouldReduceMotion || props.disabled ? {} : { scale: 0.98 }}
+      whileTap={{ scale: 0.98 }}
       ref={ref}
       disabled={isLoading || props.disabled}
-      onClick={handleClick}
       className={cn(
         'btn',
         variants[variant],

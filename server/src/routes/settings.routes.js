@@ -39,9 +39,7 @@ router.put('/', async (req, res) => {
       globalBrowserNotification,
       defaultReminderTime,
       reminderSound,
-      desktopNotification,
-      uiSounds,
-      notificationSounds
+      desktopNotification
     } = req.body;
     
     const settings = await prisma.settings.upsert({
@@ -56,8 +54,6 @@ router.put('/', async (req, res) => {
         ...(defaultReminderTime !== undefined && { defaultReminderTime }),
         ...(reminderSound !== undefined && { reminderSound }),
         ...(desktopNotification !== undefined && { desktopNotification }),
-        ...(uiSounds !== undefined && { uiSounds }),
-        ...(notificationSounds !== undefined && { notificationSounds }),
       },
       create: {
         userId: req.user.userId,
@@ -70,8 +66,6 @@ router.put('/', async (req, res) => {
         defaultReminderTime: defaultReminderTime || '15m',
         reminderSound: reminderSound !== undefined ? reminderSound : true,
         desktopNotification: desktopNotification !== undefined ? desktopNotification : true,
-        uiSounds: uiSounds !== undefined ? uiSounds : true,
-        notificationSounds: notificationSounds !== undefined ? notificationSounds : true,
       }
     });
 

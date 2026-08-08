@@ -6,11 +6,9 @@ import { Settings as SettingsIcon, User, Mail, Lock, LogOut, AlertCircle, Sparkl
 import { motion } from 'framer-motion'
 import { toast } from 'sonner'
 import ToggleSwitch from '../components/ui/ToggleSwitch'
-import { useAudio } from '../context/AudioContext'
 
 export default function SettingsPage() {
   const { user, logout, updateUser } = useAuth()
-  const { updateAudioPreferences } = useAudio()
 
   const [name, setName] = useState(user?.name || '')
   const [email, setEmail] = useState(user?.email || '')
@@ -24,8 +22,6 @@ export default function SettingsPage() {
   const [timezone, setTimezone] = useState(Intl.DateTimeFormat().resolvedOptions().timeZone)
   const [globalEmailReminder, setGlobalEmailReminder] = useState(true)
   const [globalBrowserNotification, setGlobalBrowserNotification] = useState(true)
-  const [uiSounds, setUiSounds] = useState(true)
-  const [notificationSounds, setNotificationSounds] = useState(true)
 
   const [isUpdatingProfile, setIsUpdatingProfile] = useState(false)
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false)
@@ -42,8 +38,6 @@ export default function SettingsPage() {
         setTimezone(data.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone)
         setGlobalEmailReminder(data.globalEmailReminder ?? true)
         setGlobalBrowserNotification(data.globalBrowserNotification ?? true)
-        setUiSounds(data.uiSounds ?? true)
-        setNotificationSounds(data.notificationSounds ?? true)
       } catch (err) {
         console.error(err)
         toast.error('Failed to load user settings')
@@ -96,11 +90,8 @@ export default function SettingsPage() {
         pushNotifications,
         timezone,
         globalEmailReminder,
-        globalBrowserNotification,
-        uiSounds,
-        notificationSounds
+        globalBrowserNotification
       })
-      updateAudioPreferences(uiSounds, notificationSounds)
       toast.success('App preferences updated successfully')
     } catch (err) {
       toast.error(err.message || 'Failed to update settings')
@@ -319,33 +310,6 @@ export default function SettingsPage() {
                   >
                     <option value={timezone}>{timezone}</option>
                   </select>
-                </div>
-                <div className="flex items-center justify-between border-b border-glass-border pb-4">
-                  <div>
-                    <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
-                      <Sparkles className="h-4 w-4 text-muted-foreground" /> UI Sounds
-                    </h4>
-                    <p className="text-xs text-muted-foreground mt-1">Play soft sounds on interactive elements.</p>
-                  </div>
-                  <ToggleSwitch 
-                    checked={uiSounds} 
-                    onChange={setUiSounds} 
-                    disabled={isUpdatingSettings} 
-                  />
-                </div>
-
-                <div className="flex items-center justify-between border-b border-glass-border pb-4">
-                  <div>
-                    <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
-                      <Bell className="h-4 w-4 text-muted-foreground" /> Notification Sounds
-                    </h4>
-                    <p className="text-xs text-muted-foreground mt-1">Play a chime when a new notification arrives.</p>
-                  </div>
-                  <ToggleSwitch 
-                    checked={notificationSounds} 
-                    onChange={setNotificationSounds} 
-                    disabled={isUpdatingSettings} 
-                  />
                 </div>
 
                 <button

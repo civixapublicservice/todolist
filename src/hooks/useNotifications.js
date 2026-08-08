@@ -1,10 +1,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import { getNotifications, markNotificationAsRead, markAllNotificationsAsRead } from '../services/notificationService'
-import { useAudio } from '../context/AudioContext'
 
 export function useNotifications() {
   const [notifications, setNotifications] = useState([])
-  const { playNotificationSound } = useAudio()
   
   const fetchNotifications = useCallback(async () => {
     try {
@@ -14,11 +12,6 @@ export function useNotifications() {
         // Find new unread notifications that were just fetched
         const prevIds = new Set(prevNotifications.map(n => n.id))
         const newUnread = data.filter(n => !prevIds.has(n.id) && !n.isRead)
-
-        // Play sound if there are new unread notifications
-        if (newUnread.length > 0) {
-          playNotificationSound()
-        }
 
         // Show browser notifications for new unread notifications
         if (newUnread.length > 0 && 'Notification' in window && Notification.permission === 'granted') {
