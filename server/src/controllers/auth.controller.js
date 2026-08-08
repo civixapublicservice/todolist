@@ -87,7 +87,7 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
   try {
-    const { email, password } = req.body
+    const { email, password, timezone } = req.body
 
 
 
@@ -110,6 +110,17 @@ export const login = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password)
     if (!isMatch) {
       return sendError(res, 401, 'Invalid email or password')
+    }
+
+    if (timezone) {
+      await prisma.settings.upsert({
+        where: { userId: user.id },
+        update: { timezone },
+        create: {
+          userId: user.id,
+          timezone
+        }
+      })
     }
 
     const token = jwt.sign(

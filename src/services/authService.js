@@ -9,9 +9,10 @@ export const registerUser = async (name, email, password) => {
 }
 
 export const loginUser = async (email, password) => {
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone
   const data = await fetchApi('/auth/login', {
     method: 'POST',
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ email, password, timezone }),
   })
   if (data.token) {
     localStorage.setItem('auth_token', data.token)
