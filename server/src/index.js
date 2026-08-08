@@ -8,7 +8,6 @@ import settingsRoutes from './routes/settings.routes.js'
 import notificationRoutes from './routes/notification.routes.js'
 import mailRoutes from './routes/mail.routes.js'
 import { initScheduler } from './utils/scheduler.js'
-import { prisma } from './config/db.js'
 
 dotenv.config()
 
@@ -43,22 +42,6 @@ app.use((err, req, res, _next) => {
 // Initialize background scheduler
 initScheduler()
 
-async function runProductionDiagnostic() {
-  try {
-    const userCount = await prisma.user.count()
-    const todoCount = await prisma.todo.count()
-    const pendingRegistrationCount = await prisma.pendingRegistration.count()
-
-    console.log('Production DB diagnostic:')
-    console.log(`Users: ${userCount}`)
-    console.log(`Todos: ${todoCount}`)
-    console.log(`Pending registrations: ${pendingRegistrationCount}`)
-  } catch (error) {
-    console.log(`Production DB diagnostic failed: ${error.message || 'Unknown error'}`)
-  }
-}
-
-app.listen(PORT, async () => {
+app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`)
-  await runProductionDiagnostic()
 })
