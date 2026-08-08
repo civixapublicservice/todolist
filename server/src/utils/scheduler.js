@@ -81,7 +81,7 @@ const sendTaskReminders = async () => {
           const timeZone = settings.timezone || 'UTC'
 
           // Format due date in user's timezone
-          const formattedDueDate = formatInTimeZone(task.dueDate, timeZone, 'PPpp')
+          const formattedDueDate = formatInTimeZone(task.dueDate, timeZone, 'MMM d, yyyy, h:mm a')
 
           let emailSuccess = task.emailReminderSent
           let browserSuccess = task.browserReminderSent

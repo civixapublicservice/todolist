@@ -22,7 +22,8 @@ export const getReminderEmailTemplate = (appName, userName, taskTitle, taskDescr
   const remainingText = formatReminderTime(reminderTimeStr)
   
   const appUrl = process.env.FRONTEND_URL || process.env.CLIENT_URL || 'http://localhost:5173'
-  const taskUrl = `${appUrl}/dashboard`
+  const cleanAppUrl = appUrl.replace(/\/+$/, '')
+  const taskUrl = `${cleanAppUrl}/`
 
   return `
     <!DOCTYPE html>
