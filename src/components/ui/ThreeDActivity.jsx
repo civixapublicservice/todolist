@@ -1,7 +1,9 @@
 import { motion } from 'framer-motion'
+import { useId } from 'react'
 import { cn } from '../../utils/cn'
 
 export default function ThreeDActivity({ className }) {
+  const uid = useId().replace(/:/g, "");
   return (
     <motion.div
       className={cn("relative flex items-center justify-center", className)}
@@ -31,33 +33,33 @@ export default function ThreeDActivity({ className }) {
       >
         <defs>
           {/* Dark navy background */}
-          <radialGradient id="act-bg" cx="40%" cy="35%" r="70%">
+          <radialGradient id={`act-bg-${uid}`} cx="40%" cy="35%" r="70%">
             <stop offset="0%"  stopColor="#0d2045" />
             <stop offset="100%" stopColor="#050d1e" />
           </radialGradient>
 
           {/* Bar 3D gradient — blue steel */}
-          <linearGradient id="act-bar" x1="0%" y1="0%" x2="100%" y2="0%">
+          <linearGradient id={`act-bar-${uid}`} x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%"  stopColor="#1a4a8a" />
             <stop offset="45%" stopColor="#2e6fc0" />
             <stop offset="100%" stopColor="#0d2c5e" />
           </linearGradient>
 
           {/* Bar top face */}
-          <linearGradient id="act-bar-top" x1="0%" y1="0%" x2="100%" y2="0%">
+          <linearGradient id={`act-bar-top-${uid}`} x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%"  stopColor="#4a90d8" />
             <stop offset="100%" stopColor="#2060a8" />
           </linearGradient>
 
           {/* Glow arrow gradient */}
-          <linearGradient id="act-arrow" x1="0%" y1="100%" x2="100%" y2="0%">
+          <linearGradient id={`act-arrow-${uid}`} x1="0%" y1="100%" x2="100%" y2="0%">
             <stop offset="0%"  stopColor="#60b0ff" stopOpacity="0.6" />
             <stop offset="60%" stopColor="#a0d8ff" />
             <stop offset="100%" stopColor="#ffffff" />
           </linearGradient>
 
           {/* Arrow glow filter — tighter spread */}
-          <filter id="act-glow" x="-20%" y="-20%" width="140%" height="140%">
+          <filter id={`act-glow-${uid}`} x="-20%" y="-20%" width="140%" height="140%">
             <feGaussianBlur stdDeviation="2" result="blur"/>
             <feMerge>
               <feMergeNode in="blur"/>
@@ -66,7 +68,7 @@ export default function ThreeDActivity({ className }) {
           </filter>
 
           {/* Soft glow for arrowhead — reduced */}
-          <filter id="act-tip-glow" x="-50%" y="-50%" width="200%" height="200%">
+          <filter id={`act-tip-glow-${uid}`} x="-50%" y="-50%" width="200%" height="200%">
             <feGaussianBlur stdDeviation="3" result="blur"/>
             <feMerge>
               <feMergeNode in="blur"/>
@@ -75,18 +77,18 @@ export default function ThreeDActivity({ className }) {
           </filter>
 
           {/* Drop shadow — tight, no bleed */}
-          <filter id="act-drop" x="-10%" y="-10%" width="120%" height="130%">
+          <filter id={`act-drop-${uid}`} x="-10%" y="-10%" width="120%" height="130%">
             <feDropShadow dx="0" dy="3" stdDeviation="2.5" floodColor="#0a1a40" floodOpacity="0.4"/>
           </filter>
 
           {/* Clip to icon bounds */}
-          <clipPath id="act-clip">
+          <clipPath id={`act-clip-${uid}`}>
             <circle cx="60" cy="60" r="50"/>
           </clipPath>
         </defs>
 
         {/* Background circle — clipped, no bleed */}
-        <circle cx="60" cy="60" r="50" fill="url(#act-bg)" filter="url(#act-drop)" clipPath="url(#act-clip)" />
+        <circle cx="60" cy="60" r="50" fill={`url(#act-bg-${uid})`} filter={`url(#act-drop-${uid})`} clipPath={`url(#act-clip-${uid})`} />
         {/* Subtle rim highlight */}
         <circle cx="60" cy="60" r="50" fill="none" stroke="#1a3a6a" strokeWidth="1.5" />
         <path d="M 26 32 A 50 50 0 0 1 94 32" stroke="#2a5090" strokeWidth="1" fill="none" opacity="0.5"/>
@@ -106,13 +108,13 @@ export default function ThreeDActivity({ className }) {
             {/* Bar front face */}
             <rect
               x={x} y={100 - h} width={10} height={h}
-              fill="url(#act-bar)"
+              fill={`url(#act-bar-${uid})`}
               rx="1.5"
             />
             {/* Bar top face (3D effect) */}
             <rect
               x={x} y={100 - h} width={10} height={3}
-              fill="url(#act-bar-top)"
+              fill={`url(#act-bar-top-${uid})`}
               rx="1"
             />
             {/* Right side face (darker) */}
@@ -129,7 +131,7 @@ export default function ThreeDActivity({ className }) {
         {/* Glow trail line — no static filter */}
         <path
           d="M 16 90 L 38 72 L 58 80 L 95 28"
-          stroke="url(#act-arrow)"
+          stroke={`url(#act-arrow-${uid})`}
           strokeWidth="5"
           strokeLinecap="round"
           strokeLinejoin="round"
