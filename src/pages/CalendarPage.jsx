@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { useTasks } from '../context/TaskContext'
 import { ChevronLeft, ChevronRight, Clock, AlertCircle, Sparkles, CheckCircle2 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -12,47 +12,67 @@ export default function CalendarPage() {
   const year = currentDate.getFullYear()
   const month = currentDate.getMonth()
 
-  const firstDayOfMonth = new Date(year, month, 1).getDay()
-  const daysInMonth = new Date(year, month + 1, 0).getDate()
+  const { firstDayOfMonth, daysInMonth } = useMemo(() => {
+    return {
+      firstDayOfMonth: new Date(year, month, 1).getDay(),
+      daysInMonth: new Date(year, month + 1, 0).getDate()
+    }
+  }, [year, month])
 
   const monthNames = [
     'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'
   ]
 
-  const prevMonth = () => {
+  const prevMonth = useCallback(() => {
     setCurrentDate(new Date(year, month - 1, 1))
-  }
+  }, [year, month])
 
-  const nextMonth = () => {
+  const nextMonth = useCallback(() => {
     setCurrentDate(new Date(year, month + 1, 1))
-  }
+  }, [year, month])
 
-  const isSameDay = (d1, d2) => {
+  const isSameDay = useCallback((d1, d2) => {
     if (!d1 || !d2) return false
     return (
       d1.getFullYear() === d2.getFullYear() &&
       d1.getMonth() === d2.getMonth() &&
       d1.getDate() === d2.getDate()
     )
-  }
+  }, [])
 
-  const getTodosForDate = (date) => {
-    return todos.filter((todo) => {
+  const todosByDateString = useMemo(() => {
+    const map = new Map()
+    todos.forEach((todo) => {
       const todoDate = todo.dueDate ? new Date(todo.dueDate) : new Date(todo.createdAt)
-      return isSameDay(todoDate, date)
+      if (isNaN(todoDate)) return
+      const dateString = `${todoDate.getFullYear()}-${todoDate.getMonth()}-${todoDate.getDate()}`
+      if (!map.has(dateString)) {
+        map.set(dateString, [])
+      }
+      map.get(dateString).push(todo)
     })
-  }
+    return map
+  }, [todos])
 
-  const selectedDateTodos = getTodosForDate(selectedDate)
+  const getTodosForDate = useCallback((date) => {
+    if (!date) return []
+    const dateString = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`
+    return todosByDateString.get(dateString) || []
+  }, [todosByDateString])
 
-  const calendarGrid = []
-  for (let i = 0; i < firstDayOfMonth; i++) {
-    calendarGrid.push(null)
-  }
-  for (let day = 1; day <= daysInMonth; day++) {
-    calendarGrid.push(new Date(year, month, day))
-  }
+  const selectedDateTodos = useMemo(() => getTodosForDate(selectedDate), [getTodosForDate, selectedDate])
+
+  const calendarGrid = useMemo(() => {
+    const grid = []
+    for (let i = 0; i < firstDayOfMonth; i++) {
+      grid.push(null)
+    }
+    for (let day = 1; day <= daysInMonth; day++) {
+      grid.push(new Date(year, month, day))
+    }
+    return grid
+  }, [year, month, firstDayOfMonth, daysInMonth])
 
   return (
     <>
