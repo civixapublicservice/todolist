@@ -109,7 +109,8 @@ export default function TodoItem({
       exit={{ opacity: 0, scale: 0.95 }}
       whileHover={!isEditing ? { y: -2 } : {}}
       className={cn(
-        "glass-card relative flex flex-col p-4 sm:p-5 gap-3 transition-all duration-300 overflow-hidden",
+        "glass-card relative flex flex-col p-4 sm:p-5 gap-3 transition-all duration-300",
+        !isEditing && "overflow-hidden",
         isEditing 
           ? "border border-primary/40 shadow-glow bg-white/95 dark:bg-[#151515]/95 z-20" 
           : cn(
