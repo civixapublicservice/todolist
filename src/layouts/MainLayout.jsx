@@ -1,9 +1,9 @@
 import Sidebar from '../components/Sidebar'
 import Header from '../components/Header'
 import MobileNav from '../components/MobileNav'
+import { Outlet } from 'react-router-dom'
 
-
-export default function MainLayout({ children }) {
+export default function MainLayout() {
   return (
     <div className="flex h-screen bg-transparent text-foreground overflow-hidden">
       {/* Fixed Left Navigation Sidebar */}
@@ -16,7 +16,7 @@ export default function MainLayout({ children }) {
 
         {/* Dynamic Page Content */}
         <main className="flex-1 overflow-y-auto p-4 pb-24 md:p-6 lg:p-8 md:pb-6 relative z-0">
-          {children}
+          <Outlet />
         </main>
       </div>
 

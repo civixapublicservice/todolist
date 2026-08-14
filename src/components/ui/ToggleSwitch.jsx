@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { ArrowRight, Check } from 'lucide-react'
+import { Check } from 'lucide-react'
 import { cn } from '../../utils/cn'
 
 export default function ToggleSwitch({ checked, onChange, disabled }) {
@@ -10,34 +10,74 @@ export default function ToggleSwitch({ checked, onChange, disabled }) {
       aria-checked={checked}
       onClick={() => !disabled && onChange(!checked)}
       disabled={disabled}
+      style={{
+        boxShadow: checked 
+          ? '0 0 12px color-mix(in srgb, var(--primary) 50%, transparent)' 
+          : undefined
+      }}
       className={cn(
-        "relative w-[76px] h-11 rounded-[22px] flex items-center p-[4px] transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-        "bg-[#0f0f0f] border border-white/20 shadow-[inset_0_4px_8px_rgba(0,0,0,0.8),0_1px_2px_rgba(255,255,255,0.1)]",
+        "relative w-[46px] h-[26px] sm:w-14 sm:h-8 rounded-full flex items-center p-[3px] sm:p-1 shrink-0 transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+        // Light mode (OFF)
+        "bg-slate-200 border border-slate-300/50 shadow-inner",
+        // Dark mode (OFF)
+        "dark:bg-[#111111] dark:border-white/10 dark:shadow-[inset_0_4px_8px_rgba(0,0,0,0.6)]",
+        
         disabled && "opacity-50 cursor-not-allowed",
-        checked ? "bg-black border-primary/40 shadow-[inset_0_4px_8px_rgba(0,0,0,0.9),0_0_12px_rgba(14,165,233,0.25)]" : ""
+        
+        checked 
+          ? [
+              // Light mode (ON)
+              "bg-primary border-primary", 
+              // Dark mode (ON)
+              "dark:bg-[#050505] dark:border-primary dark:ring-1 dark:ring-primary/50"
+            ] 
+          : "justify-start"
       )}
     >
       <motion.div
         initial={false}
         animate={{
-          x: checked ? 35 : 0,
+          x: checked ? "100%" : "0%",
         }}
-        transition={{ type: "spring", stiffness: 500, damping: 30 }}
+        transition={{ type: "spring", stiffness: 700, damping: 40, mass: 0.8 }}
         className={cn(
-          "w-[34px] h-[34px] rounded-full flex items-center justify-center relative overflow-hidden",
-          "bg-gradient-to-b from-[#2a2a2a] to-[#1a1a1a]",
-          "shadow-[0_2px_8px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.15)]",
-          checked ? "from-[#202020] to-[#0f0f0f]" : ""
+          "w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center relative overflow-hidden shrink-0",
+          // Light mode (Thumb OFF)
+          "bg-white border border-slate-200 shadow-[0_2px_4px_rgba(0,0,0,0.1)]",
+          // Dark mode (Thumb OFF)
+          "dark:bg-gradient-to-b dark:from-[#2a2a2a] dark:to-[#111111] dark:border-white/5 dark:shadow-[0_2px_8px_rgba(0,0,0,0.8)]",
+          
+          checked 
+            ? [
+                // Light mode (Thumb ON)
+                "bg-white border-white",
+                // Dark mode (Thumb ON)
+                "dark:from-[#1a1a1a] dark:to-[#050505]"
+              ] 
+            : ""
         )}
       >
-        {/* Shiny metallic ring effect to mimic the image */}
-        <div className="absolute inset-0 rounded-full border-[1.5px] border-transparent bg-gradient-to-br from-white/40 via-transparent to-white/10 [mask-image:linear-gradient(white,white)] [mask-composite:exclude] -z-10"></div>
-        <div className="absolute inset-0 rounded-full ring-1 ring-inset ring-white/10"></div>
+        {/* Shiny metallic ring effect inside thumb (Dark mode only) */}
+        <div className="hidden dark:block absolute inset-0 rounded-full border-[1px] border-transparent bg-gradient-to-br from-white/20 via-transparent to-white/5 [mask-image:linear-gradient(white,white)] [mask-composite:exclude] -z-10"></div>
+        <div className="hidden dark:block absolute inset-0 rounded-full ring-1 ring-inset ring-white/5"></div>
         
-        {checked ? (
-          <Check className="w-4 h-4 text-primary drop-shadow-[0_0_8px_rgba(14,165,233,0.8)]" strokeWidth={2.5} />
-        ) : (
-          <ArrowRight className="w-4 h-4 text-[#666666]" strokeWidth={2.5} />
+        {checked && (
+          <motion.div
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 500, damping: 30, delay: 0.05 }}
+          >
+            <Check 
+              className={cn(
+                "w-3 h-3 sm:w-3.5 sm:h-3.5",
+                // Light mode: checkmark is primary color
+                "text-primary",
+                // Dark mode: checkmark can also be primary color
+                "dark:text-primary"
+              )} 
+              strokeWidth={3} 
+            />
+          </motion.div>
         )}
       </motion.div>
     </button>

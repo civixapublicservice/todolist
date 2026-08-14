@@ -1,34 +1,13 @@
-import { useState, useEffect, useCallback } from 'react'
-import MainLayout from '../layouts/MainLayout'
-import { getTodos } from '../services/todoService'
+import { useState } from 'react'
+import { useTasks } from '../context/TaskContext'
 import { ChevronLeft, ChevronRight, Clock, AlertCircle, Sparkles, CheckCircle2 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '../utils/cn'
 
 export default function CalendarPage() {
-  const [todos, setTodos] = useState([])
+  const { todos, isLoading, error } = useTasks()
   const [currentDate, setCurrentDate] = useState(new Date())
   const [selectedDate, setSelectedDate] = useState(new Date())
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState('')
-
-  const fetchCalendarTodos = useCallback(async () => {
-    setIsLoading(true)
-    setError('')
-    try {
-      const data = await getTodos()
-      setTodos(data)
-    } catch (err) {
-      setError(err.message || 'Failed to fetch calendar tasks')
-    } finally {
-      setIsLoading(false)
-    }
-  }, [])
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    fetchCalendarTodos()
-  }, [fetchCalendarTodos])
 
   const year = currentDate.getFullYear()
   const month = currentDate.getMonth()
@@ -76,12 +55,12 @@ export default function CalendarPage() {
   }
 
   return (
-    <MainLayout>
+    <>
       <div className="max-w-6xl mx-auto w-full">
         <motion.div 
-          initial={{ opacity: 0, y: -20, scale: 0.98 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.5, type: 'spring' }}
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25, ease: 'easeOut' }}
           className="bg-gradient-to-r from-primary to-accent text-white rounded-[var(--radius-lg)] p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 relative overflow-hidden mb-8 shadow-glow"
         >
           <div className="relative z-10">
@@ -114,9 +93,9 @@ export default function CalendarPage() {
         </AnimatePresence>
 
         <motion.div 
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
+          transition={{ duration: 0.25, ease: 'easeOut', delay: 0.05 }}
           className="flex flex-col lg:flex-row gap-6 items-start"
         >
           {/* Calendar View Card */}
@@ -159,7 +138,7 @@ export default function CalendarPage() {
             <div className="grid grid-cols-7 gap-2 sm:gap-3">
               {calendarGrid.map((date, idx) => {
                 if (!date) {
-                  return <div key={`empty-${idx}`} className="min-h-[70px] sm:min-h-[100px]"></div>
+                  return <div key={`empty-${idx}`} className="aspect-square"></div>
                 }
 
                 const dayTodos = getTodosForDate(date)
@@ -174,7 +153,7 @@ export default function CalendarPage() {
                     key={date.toISOString()}
                     onClick={() => setSelectedDate(date)}
                     className={cn(
-                      "min-h-[70px] sm:min-h-[100px] p-2 sm:p-3 rounded-2xl border flex flex-col justify-between cursor-pointer transition-all duration-300 relative overflow-hidden",
+                      "aspect-square p-1 rounded-xl border flex flex-col items-center justify-center cursor-pointer transition-all duration-300 relative overflow-hidden",
                       isSelected
                         ? "border-primary bg-primary/10 shadow-glow ring-2 ring-primary/50"
                         : isToday
@@ -184,21 +163,15 @@ export default function CalendarPage() {
                   >
                     <div
                       className={cn(
-                        "text-xs sm:text-sm z-10 relative",
-                        isToday ? "font-bold text-primary" : "font-semibold text-foreground",
+                        "text-xs sm:text-sm z-10 relative font-medium",
+                        isToday ? "font-bold text-primary" : "text-foreground",
                         isSelected ? "text-primary" : ""
                       )}
                     >
                       {date.getDate()}
                     </div>
                     {hasTodos && (
-                      <div className="flex items-center gap-1.5 text-[10px] sm:text-xs text-primary font-bold mt-2 bg-primary/10 px-2 py-1 rounded-md w-fit z-10 relative border border-primary/20">
-                        <Clock className="h-3 w-3 shrink-0" strokeWidth={2.5} />
-                        <span className="hidden sm:inline">
-                          {dayTodos.length} task{dayTodos.length > 1 ? 's' : ''}
-                        </span>
-                        <span className="sm:hidden">{dayTodos.length}</span>
-                      </div>
+                      <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-primary mt-0.5 sm:mt-1 z-10 shadow-sm" />
                     )}
                     {isSelected && (
                       <motion.div 
@@ -232,40 +205,80 @@ export default function CalendarPage() {
                 <p className="text-sm font-medium">No tasks scheduled for this date.</p>
               </div>
             ) : (
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-6">
                 <AnimatePresence>
-                  {selectedDateTodos.map((todo) => (
-                    <motion.div
-                      initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      key={todo.id}
-                      className={cn(
-                        "p-4 rounded-xl border relative overflow-hidden transition-all duration-300 hover:shadow-glow",
-                        todo.completed ? "glass border-glass-border opacity-70 bg-muted/20" : "bg-gradient-to-br from-primary/5 to-accent/5 border-primary/20 shadow-sm"
-                      )}
-                    >
-                      <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary to-accent" />
-                      <div
-                        className={cn(
-                          "font-bold text-sm text-foreground",
-                          todo.completed ? "line-through text-muted-foreground" : ""
+                  {(() => {
+                    const pendingTodos = selectedDateTodos.filter(t => !t.completed);
+                    const completedTodos = selectedDateTodos.filter(t => t.completed);
+                    
+                    return (
+                      <>
+                        {pendingTodos.length > 0 && (
+                          <div>
+                            <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3 flex items-center space-x-2">
+                              <span className="w-2 h-2 rounded-full bg-primary"></span>
+                              <span>Pending Tasks</span>
+                            </h4>
+                            <div className="flex flex-col gap-3">
+                              {pendingTodos.map((todo) => (
+                                <motion.div
+                                  initial={{ opacity: 0, x: 20 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  key={todo.id}
+                                  className="p-3.5 sm:p-4 rounded-[1.25rem] border relative overflow-hidden transition-all duration-300 hover:shadow-glow bg-gradient-to-br from-primary/5 to-accent/5 border-primary/20 shadow-sm group"
+                                >
+                                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary to-accent" />
+                                  <div className="font-bold text-sm text-foreground group-hover:text-primary transition-colors">
+                                    {todo.title}
+                                  </div>
+                                  {todo.description && (
+                                    <div className="text-xs font-medium text-muted-foreground/80 mt-1.5 line-clamp-2">
+                                      {todo.description}
+                                    </div>
+                                  )}
+                                </motion.div>
+                              ))}
+                            </div>
+                          </div>
                         )}
-                      >
-                        {todo.title}
-                      </div>
-                      {todo.description && (
-                        <div className="text-xs font-medium text-muted-foreground/80 mt-2 line-clamp-2">
-                          {todo.description}
-                        </div>
-                      )}
-                    </motion.div>
-                  ))}
+
+                        {completedTodos.length > 0 && (
+                          <div className={pendingTodos.length > 0 ? "pt-4 border-t border-black/5 dark:border-white/5" : ""}>
+                            <h4 className="text-xs font-bold text-muted-foreground/60 uppercase tracking-widest mb-3 flex items-center space-x-2">
+                              <CheckCircle2 className="w-3.5 h-3.5" />
+                              <span>Completed</span>
+                            </h4>
+                            <div className="flex flex-col gap-3">
+                              {completedTodos.map((todo) => (
+                                <motion.div
+                                  initial={{ opacity: 0, x: 20 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  key={todo.id}
+                                  className="p-3.5 sm:p-4 rounded-[1.25rem] border relative overflow-hidden transition-all duration-300 bg-foreground/5 dark:bg-white/5 border-transparent opacity-60 hover:opacity-100"
+                                >
+                                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-green-500/40" />
+                                  <div className="font-semibold text-sm text-muted-foreground line-through">
+                                    {todo.title}
+                                  </div>
+                                  {todo.description && (
+                                    <div className="text-xs font-medium text-muted-foreground/50 mt-1.5 line-clamp-1 line-through">
+                                      {todo.description}
+                                    </div>
+                                  )}
+                                </motion.div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    )
+                  })()}
                 </AnimatePresence>
               </div>
             )}
           </div>
         </motion.div>
       </div>
-    </MainLayout>
+    </>
   )
 }

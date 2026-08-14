@@ -1,32 +1,97 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react'
 
 const ThemeContext = createContext(null)
-const THEME_STORAGE_KEY = 'todo-app-theme'
+const THEME_STORAGE_KEY = 'todo-app-theme-preference'
 
 export function ThemeProvider({ children }) {
-  const [isDark, setIsDark] = useState(() => {
+  const [theme, setThemeState] = useState(() => {
     const stored = localStorage.getItem(THEME_STORAGE_KEY)
-    if (stored !== null) {
-      return JSON.parse(stored)
+    if (stored) {
+      return stored.replace(/['"]/g, '')
     }
-    return false // Default to light mode
+    
+    // Migration from old boolean
+    const oldStored = localStorage.getItem('todo-app-theme')
+    if (oldStored !== null) {
+      const isDarkOld = JSON.parse(oldStored)
+      return isDarkOld ? 'dark' : 'light'
+    }
+    
+    return 'system'
   })
 
-  useEffect(() => {
-    if (isDark) {
+  const [isDark, setIsDark] = useState(false)
+
+  const applyTheme = useCallback((currentTheme) => {
+    let effectiveIsDark = false
+    
+    if (currentTheme === 'dark') {
+      effectiveIsDark = true
+    } else if (currentTheme === 'light') {
+      effectiveIsDark = false
+    } else if (currentTheme === 'system') {
+      effectiveIsDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+    }
+
+    setIsDark(effectiveIsDark)
+
+    if (effectiveIsDark) {
       document.documentElement.classList.add('dark')
     } else {
       document.documentElement.classList.remove('dark')
     }
+  }, [])
+
+  useEffect(() => {
+    localStorage.setItem(THEME_STORAGE_KEY, theme)
+    applyTheme(theme)
+  }, [theme, applyTheme])
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    const handleChange = () => {
+      if (theme === 'system') {
+        applyTheme('system')
+      }
+    }
     
-    localStorage.setItem(THEME_STORAGE_KEY, JSON.stringify(isDark))
-  }, [isDark])
+    mediaQuery.addEventListener('change', handleChange)
+    return () => mediaQuery.removeEventListener('change', handleChange)
+  }, [theme, applyTheme])
+
+  useEffect(() => {
+    const handleSync = (e) => {
+      const backendTheme = e.detail;
+      if (backendTheme && ['light', 'dark', 'system'].includes(backendTheme)) {
+        setThemeState((prev) => {
+          if (prev !== backendTheme) {
+            return backendTheme;
+          }
+          return prev;
+        });
+      }
+    };
+    window.addEventListener('auth:sync-theme', handleSync);
+    return () => window.removeEventListener('auth:sync-theme', handleSync);
+  }, []);
+
+  const setTheme = useCallback((newTheme) => {
+    setThemeState(newTheme)
+  }, [])
 
   const toggleTheme = useCallback(() => {
-    setIsDark((prev) => !prev)
+    setThemeState((prev) => {
+      if (prev === 'system') {
+        const isCurrentlyDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+        return isCurrentlyDark ? 'light' : 'dark'
+      }
+      return prev === 'dark' ? 'light' : 'dark'
+    })
   }, [])
 
   const value = {
+    theme,
+    setTheme,
     isDark,
     toggleTheme,
   }
@@ -41,15 +106,11 @@ export function ThemeProvider({ children }) {
 export const useTheme = () => {
   const context = useContext(ThemeContext)
   if (!context) {
-    throw new Error('useThemeContext must be used within a ThemeProvider')
+    throw new Error('useTheme must be used within a ThemeProvider')
   }
   return context
 }
 
 export function useThemeContext() {
-  const context = useContext(ThemeContext)
-  if (!context) {
-    throw new Error('useThemeContext must be used within a ThemeProvider')
-  }
-  return context
+  return useTheme()
 }

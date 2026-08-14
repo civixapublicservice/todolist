@@ -80,9 +80,9 @@ export const formatTriggerPreview = (triggerDate, userTimezone) => {
   const todayStr = new Intl.DateTimeFormat('en-US', dateOptions).format(now);
   
   if (dateStr === todayStr) {
-    return `Reminding at ${timeStr} today`;
+    return `${timeStr} today`;
   }
-  return `Reminding at ${timeStr} on ${dateStr}`;
+  return `${timeStr} on ${dateStr}`;
 };
 
 export const getLocalYYYYMMDD = (dateString) => {

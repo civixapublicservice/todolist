@@ -1,9 +1,7 @@
-import { Clock, CheckCircle2, Bell, BellRing } from 'lucide-react'
+import { Clock, CheckCircle2, Bell, BellRing, CalendarDays, ListTodo } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useMemo } from 'react'
-import ChromeCalendar from './ui/ChromeCalendar'
-import ThreeDTaskList from './ui/ThreeDTaskList'
 import { formatFriendlyDate } from '../utils/dateUtils'
 
 // ── Floating 3D Target icon for empty deadlines ──────────────────────────────
@@ -90,9 +88,9 @@ function LiftCard({ children, className = '', delay = 0 }) {
     <motion.div
       initial={{ y: 16, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      whileHover={{ y: -6, scale: 1.025, boxShadow: '0 20px 48px rgba(0,0,0,0.13)' }}
+      whileHover={{ y: -6, scale: 1.02 }}
       transition={{ delay, type: 'spring', stiffness: 400, damping: 26, mass: 0.7 }}
-      className={`bg-card border border-border rounded-2xl overflow-hidden cursor-default ${className}`}
+      className={`bg-white/60 dark:bg-black/40 backdrop-blur-xl border border-glass-border shadow-sm hover:shadow-xl transition-shadow duration-300 rounded-3xl overflow-hidden cursor-default ${className}`}
     >
       {children}
     </motion.div>
@@ -139,10 +137,11 @@ export default function RightWidget({ todos = [] }) {
           <motion.div
             whileHover={{ scale: 1.1, rotate: -4 }}
             transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-            className="flex flex-col items-center justify-center bg-primary text-primary-foreground rounded-2xl shadow-md min-w-[54px] py-2 px-1"
+            className="flex flex-col items-center justify-center bg-gradient-to-b from-primary to-indigo-500 text-white rounded-2xl shadow-[0_8px_20px_rgba(99,102,241,0.3)] min-w-[56px] py-2 px-1 relative overflow-hidden group"
           >
-            <span className="text-[10px] font-black uppercase tracking-widest opacity-90">{monthStr}</span>
-            <span className="text-2xl font-black leading-none mt-0.5">{dateNum}</span>
+            <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity" />
+            <span className="text-[10px] font-black uppercase tracking-widest opacity-90 relative z-10">{monthStr}</span>
+            <span className="text-2xl font-black leading-none mt-0.5 relative z-10">{dateNum}</span>
           </motion.div>
           <div>
             <div className="text-xl font-black text-foreground tracking-tight">Today</div>
@@ -179,7 +178,7 @@ export default function RightWidget({ todos = [] }) {
                 >
                   <div className="mt-1.5 w-2 h-2 rounded-full shrink-0 bg-primary shadow-sm" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-foreground line-clamp-1">{todo.title}</p>
+                    <p className="text-sm font-bold text-foreground break-words">{todo.title}</p>
                     <p className="text-xs font-semibold text-muted-foreground mt-1 flex items-center gap-1">
                       <Clock className="h-3 w-3" />
                       Due: {formatFriendlyDate(todo.dueDate)}
@@ -222,7 +221,7 @@ export default function RightWidget({ todos = [] }) {
                   <BellRing className="h-4 w-4" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold text-foreground line-clamp-1">{todo.title}</p>
+                  <p className="text-sm font-bold text-foreground break-words">{todo.title}</p>
                   <p className="text-xs font-semibold text-primary mt-1">
                     {todo.reminderTime} before
                   </p>
@@ -234,28 +233,33 @@ export default function RightWidget({ todos = [] }) {
       </LiftCard>
 
       {/* ── QUICK ACTIONS ── */}
-      <LiftCard delay={0.1} className="p-5">
-        <h3 className="text-sm font-black uppercase tracking-widest text-foreground mb-4">Quick Actions</h3>
-        <div className="grid grid-cols-2 gap-3">
+      <LiftCard delay={0.1} className="p-6">
+        <h3 className="text-[13px] font-black uppercase tracking-widest text-foreground mb-4">Quick Actions</h3>
+        <div className="grid grid-cols-2 gap-4">
           <motion.div
-            whileHover={{ y: -5, scale: 1.04 }}
-            whileTap={{ scale: 0.96 }}
-            transition={{ type: 'spring', stiffness: 420, damping: 22, mass: 0.6 }}
+            whileHover={{ y: -4, scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => navigate('/calendar')}
-            className="flex flex-col items-center justify-center p-4 rounded-2xl bg-muted hover:bg-primary/5 border border-transparent hover:border-primary/25 transition-colors gap-2 cursor-pointer"
+            className="group flex flex-col items-center justify-center p-5 rounded-2xl bg-gradient-to-br from-primary/5 to-primary/10 hover:from-primary/10 hover:to-primary/20 border border-primary/10 hover:border-primary/30 transition-all duration-300 cursor-pointer shadow-sm relative overflow-hidden"
           >
-            <ChromeCalendar className="w-14 h-14" />
-            <span className="text-[13px] font-black tracking-tight text-muted-foreground">Calendar</span>
+            <div className="absolute inset-0 bg-white/20 dark:bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="bg-white dark:bg-black p-3 rounded-xl shadow-sm mb-3 group-hover:scale-110 transition-transform duration-300 relative z-10 border border-border">
+              <CalendarDays className="w-6 h-6 text-primary" strokeWidth={2.5} />
+            </div>
+            <span className="text-[14px] font-bold tracking-tight text-foreground relative z-10">Calendar</span>
           </motion.div>
+          
           <motion.div
-            whileHover={{ y: -5, scale: 1.04 }}
-            whileTap={{ scale: 0.96 }}
-            transition={{ type: 'spring', stiffness: 420, damping: 22, mass: 0.6 }}
+            whileHover={{ y: -4, scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => navigate('/tasks')}
-            className="flex flex-col items-center justify-center p-4 rounded-2xl bg-muted hover:bg-primary/5 border border-transparent hover:border-primary/25 transition-colors gap-2 cursor-pointer"
+            className="group flex flex-col items-center justify-center p-5 rounded-2xl bg-gradient-to-br from-indigo-500/5 to-indigo-500/10 hover:from-indigo-500/10 hover:to-indigo-500/20 border border-indigo-500/10 hover:border-indigo-500/30 transition-all duration-300 cursor-pointer shadow-sm relative overflow-hidden"
           >
-            <ThreeDTaskList className="w-14 h-14" />
-            <span className="text-[13px] font-black tracking-tight text-muted-foreground">My Tasks</span>
+            <div className="absolute inset-0 bg-white/20 dark:bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="bg-white dark:bg-black p-3 rounded-xl shadow-sm mb-3 group-hover:scale-110 transition-transform duration-300 relative z-10 border border-border">
+              <ListTodo className="w-6 h-6 text-indigo-500" strokeWidth={2.5} />
+            </div>
+            <span className="text-[14px] font-bold tracking-tight text-foreground relative z-10">My Tasks</span>
           </motion.div>
         </div>
       </LiftCard>
@@ -276,9 +280,15 @@ export default function RightWidget({ todos = [] }) {
             <p className="text-xs text-muted-foreground/60 mt-1">Start adding tasks to see activity</p>
           </div>
         ) : (
-          <div className="relative pl-5 space-y-5 before:absolute before:inset-y-0 before:left-2 before:w-px before:bg-border">
+          <div className="relative pl-5 space-y-6">
             {recentActivity.map((todo, idx) => {
               const isCompleted = todo.completed
+              const isNewlyCreated = Math.abs(new Date(todo.updatedAt) - new Date(todo.createdAt)) < 5000 // If updated within 5 seconds of creation, treat as newly created
+              
+              let actionText = 'updated'
+              if (isCompleted) actionText = 'completed'
+              else if (isNewlyCreated) actionText = 'added'
+
               return (
                 <motion.div
                   initial={{ opacity: 0, x: -10 }}
@@ -288,14 +298,14 @@ export default function RightWidget({ todos = [] }) {
                   key={`activity-${todo.id}`}
                   className="relative group cursor-default"
                 >
-                  <div className={`absolute -left-[29px] top-0 p-1 rounded-full border-2 transition-colors ${isCompleted ? 'bg-emerald-500 border-emerald-500 text-white shadow-sm' : 'bg-background border-border text-muted-foreground ring-4 ring-background group-hover:border-primary group-hover:text-primary'}`}>
-                    <CheckCircle2 className="h-3 w-3" strokeWidth={2.5} />
+                  <div className={`absolute -left-[29px] top-0 p-1.5 rounded-full border-2 transition-all duration-300 ${isCompleted ? 'bg-emerald-500 border-emerald-500 text-white shadow-[0_0_10px_rgba(16,185,129,0.4)]' : 'bg-background border-border text-muted-foreground ring-4 ring-background group-hover:border-primary group-hover:text-primary group-hover:shadow-[0_0_10px_rgba(99,102,241,0.2)]'}`}>
+                    <CheckCircle2 className="h-3 w-3" strokeWidth={3} />
                   </div>
-                  <div className="bg-muted/50 rounded-xl p-3 border border-transparent group-hover:border-border transition-colors group-hover:bg-muted">
-                    <p className="text-sm font-semibold text-foreground leading-snug">
-                      Task <span className="font-black text-primary">{todo.title}</span> was {isCompleted ? 'completed' : 'updated'}.
+                  <div className="bg-white/40 dark:bg-black/20 backdrop-blur-sm rounded-xl p-3 border border-border group-hover:border-primary/30 transition-all duration-300 group-hover:bg-primary/5 shadow-sm">
+                    <p className="text-[14px] font-semibold text-foreground leading-snug break-words">
+                      Task <span className="font-black text-primary">{todo.title}</span> was {actionText}.
                     </p>
-                    <p className="text-xs font-semibold text-muted-foreground mt-1.5 flex items-center gap-1">
+                    <p className="text-xs font-semibold text-muted-foreground mt-1.5 flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
                       <Clock className="h-3 w-3" />
                       {new Date(todo.updatedAt || todo.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                     </p>

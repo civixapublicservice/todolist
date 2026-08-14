@@ -1,16 +1,9 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import MainLayout from '../layouts/MainLayout'
 import FilterBar from '../components/FilterBar'
 import TodoForm from '../components/TodoForm'
 import TodoList from '../components/TodoList'
-import {
-  getTodos,
-  createTodo,
-  updateTodo,
-  deleteTodo,
-  toggleTodo,
-} from '../services/todoService'
+import { useTasks } from '../context/TaskContext'
 import { AlertCircle, Plus, Sparkles } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
@@ -19,16 +12,18 @@ export default function MyTasksPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const initialSearch = searchParams.get('q') || ''
   
-  const [todos, setTodos] = useState([])
+  const { todos: allTodos, isLoading: isLoadingTodos, error: contextError, addTodo, editTodo, toggleTaskCompletion, removeTodo } = useTasks()
+  
   const [searchQuery, setSearchQuery] = useState(initialSearch)
   const [debouncedSearch, setDebouncedSearch] = useState(initialSearch)
   const [statusFilter, setStatusFilter] = useState('all')
   const [priorityFilter, setPriorityFilter] = useState('all')
   const [sortBy, setSortBy] = useState('newest')
-  const [isLoadingTodos, setIsLoadingTodos] = useState(true)
   const [isCreating, setIsCreating] = useState(false)
   const [showCreateModal, setShowCreateModal] = useState(false)
-  const [error, setError] = useState('')
+  const [localError, setLocalError] = useState('')
+
+  const error = localError || contextError
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -47,133 +42,132 @@ export default function MyTasksPage() {
   useEffect(() => {
     const q = searchParams.get('q')
     if (q !== null && q !== searchQuery) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSearchQuery(q)
       setDebouncedSearch(q)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams])
 
-  const fetchTodoList = useCallback(async () => {
-    setIsLoadingTodos(true)
-    setError('')
-    try {
-      const data = await getTodos({
-        search: debouncedSearch,
-        status: statusFilter,
-        priority: priorityFilter,
-        sort: sortBy,
-      })
-      setTodos(data)
-    } catch (err) {
-      setError(err.message || 'Failed to load task records')
-      toast.error('Failed to load tasks')
-    } finally {
-      setIsLoadingTodos(false)
+  // Client-side filtering and sorting instead of re-fetching
+  const filteredTodos = useMemo(() => {
+    let result = [...allTodos]
+    
+    if (debouncedSearch) {
+      const lowerQuery = debouncedSearch.toLowerCase()
+      result = result.filter(t => 
+        t.title.toLowerCase().includes(lowerQuery) || 
+        (t.description && t.description.toLowerCase().includes(lowerQuery))
+      )
     }
-  }, [debouncedSearch, statusFilter, priorityFilter, sortBy])
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    fetchTodoList()
-  }, [fetchTodoList])
+    
+    if (statusFilter !== 'all') {
+      const isCompleted = statusFilter === 'completed'
+      result = result.filter(t => t.completed === isCompleted)
+    }
+    
+    if (priorityFilter !== 'all') {
+      result = result.filter(t => t.priority === priorityFilter)
+    }
+    
+    if (sortBy === 'newest') {
+      result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    } else if (sortBy === 'oldest') {
+      result.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+    } else if (sortBy === 'title') {
+      result.sort((a, b) => (a.title || '').localeCompare(b.title || ''))
+    }
+    
+    return result
+  }, [allTodos, debouncedSearch, statusFilter, priorityFilter, sortBy])
 
   const handleAddTodo = async (todoData) => {
     setIsCreating(true)
-    setError('')
+    setLocalError('')
     try {
-      const newTodo = await createTodo(todoData)
-      setTodos((prev) => [newTodo, ...prev])
+      await addTodo(todoData)
       setShowCreateModal(false)
       toast.success('Task created successfully!')
     } catch (err) {
-      setError(err.message || 'Failed to create task')
-      toast.error('Failed to create task')
-      throw err
+      setLocalError(err.message || 'Failed to create task')
     } finally {
       setIsCreating(false)
     }
   }
 
   const handleUpdateTodo = async (id, updates) => {
-    setError('')
+    setLocalError('')
     try {
-      const updated = await updateTodo(id, updates)
-      setTodos((prev) => prev.map((t) => (t.id === id ? updated : t)))
+      await editTodo(id, updates)
       toast.success('Task updated')
     } catch (err) {
-      setError(err.message || 'Failed to update task')
-      toast.error('Failed to update task')
+      setLocalError(err.message || 'Failed to update task')
     }
   }
 
   const handleToggleTodo = async (id) => {
-    setError('')
-    const taskBefore = todos.find(t => t.id === id)
-    const wasCompleted = taskBefore?.completed
-    
-    setTodos((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t))
-    )
-    
+    setLocalError('')
     try {
-      const updated = await toggleTodo(id)
-      setTodos((prev) => prev.map((t) => (t.id === id ? updated : t)))
-      if (!wasCompleted) {
-        toast.success('Task completed! Keep it up.')
-      }
+      await toggleTaskCompletion(id)
     } catch (err) {
-      fetchTodoList()
-      setError(err.message || 'Failed to toggle task completion')
+      setLocalError(err.message || 'Failed to toggle task completion')
     }
   }
 
   const handleDeleteTodo = async (id) => {
-    setError('')
-    setTodos((prev) => prev.filter((t) => t.id !== id))
+    setLocalError('')
     try {
-      await deleteTodo(id)
-      toast.success('Task deleted')
+      await removeTodo(id)
     } catch (err) {
-      fetchTodoList()
-      setError(err.message || 'Failed to delete task')
+      setLocalError(err.message || 'Failed to delete task')
     }
   }
 
   return (
-    <MainLayout>
+    <>
       <div className="max-w-5xl mx-auto w-full">
         {/* Welcome Banner */}
         <motion.div 
-          initial={{ opacity: 0, y: -20, scale: 0.98 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.5, type: 'spring' }}
-          className="bg-gradient-to-r from-primary to-accent text-white rounded-[var(--radius-lg)] p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 relative overflow-hidden mb-8 shadow-glow"
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
+          className="relative overflow-hidden mb-8 rounded-[1.5rem] bg-gradient-to-r from-primary to-accent dark:bg-none dark:bg-[#0A0A0B] shadow-glow dark:shadow-2xl dark:border dark:border-white/5"
         >
-          <div className="relative z-10">
-            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-white text-xs font-semibold tracking-wide uppercase mb-3 border border-white/20">
-              <Sparkles className="h-3.5 w-3.5" />
-              <span>Personal Workspace</span>
-            </div>
-            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight mb-2 text-white">
-              My Tasks
-            </h1>
-            <p className="text-white/80 text-sm max-w-md font-medium">
-              Manage, filter, and track all your personal operational tasks in one beautiful place.
-            </p>
+          {/* Light Mode Decorative Elements */}
+          <div className="absolute right-0 top-0 w-80 h-80 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none mix-blend-overlay block dark:hidden"></div>
+          <div className="absolute left-1/2 bottom-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -mb-32 pointer-events-none mix-blend-overlay block dark:hidden"></div>
+
+          {/* Dark Mode Sophisticated Glows & Patterns */}
+          <div className="absolute inset-0 overflow-hidden pointer-events-none hidden dark:block">
+            <div className="absolute -top-[50%] -left-[10%] w-[70%] h-[150%] bg-violet-600/20 blur-[100px] rounded-full mix-blend-screen" />
+            <div className="absolute -bottom-[50%] -right-[10%] w-[70%] h-[150%] bg-blue-600/20 blur-[100px] rounded-full mix-blend-screen" />
+            {/* Subtle dot pattern */}
+            <div className="absolute inset-0 opacity-[0.05]" style={{ backgroundImage: "radial-gradient(circle at center, currentColor 1px, transparent 1px)", backgroundSize: "24px 24px" }} />
+            {/* Glass reflection line */}
+            <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
           </div>
 
-          <button
-            className="relative z-10 inline-flex items-center justify-center space-x-2 bg-white text-primary hover:bg-white/90 hover:scale-105 active:scale-95 px-6 py-3 rounded-2xl text-sm font-bold transition-all shadow-lg whitespace-nowrap shrink-0"
-            onClick={() => setShowCreateModal(!showCreateModal)}
-          >
-            <Plus className={`h-5 w-5 transition-transform duration-300 ${showCreateModal ? 'rotate-45' : ''}`} strokeWidth={2.5} />
-            <span>{showCreateModal ? 'Cancel' : 'New Task'}</span>
-          </button>
-          
-          {/* Decorative background elements */}
-          <div className="absolute right-0 top-0 w-80 h-80 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none mix-blend-overlay"></div>
-          <div className="absolute left-1/2 bottom-0 w-64 h-64 bg-primary-foreground/10 rounded-full blur-3xl -mb-32 pointer-events-none mix-blend-overlay"></div>
+          <div className="relative z-10 p-6 sm:p-8 lg:p-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 sm:gap-8">
+            <div>
+              <div className="inline-flex items-center space-x-2 px-3 py-1 sm:py-1.5 rounded-full bg-white/20 dark:bg-white/5 border border-white/20 dark:border-white/10 backdrop-blur-md text-white dark:text-white/80 text-xs sm:text-[11px] font-semibold sm:font-bold tracking-wide sm:tracking-widest uppercase mb-3 sm:mb-4">
+                <Sparkles className="h-3.5 w-3.5 text-white dark:text-primary" />
+                <span>Personal Workspace</span>
+              </div>
+              <h1 className="text-3xl sm:text-4xl font-bold sm:font-extrabold tracking-tight mb-2 sm:mb-3 text-white">
+                My Tasks
+              </h1>
+              <p className="text-white/90 dark:text-white/60 text-sm sm:text-base max-w-md font-medium leading-relaxed">
+                Manage, filter, and track all your personal operational tasks in one highly focused environment.
+              </p>
+            </div>
+
+            <button
+              className="relative group inline-flex items-center justify-center space-x-2 bg-white text-primary dark:text-black hover:bg-white/90 active:scale-95 px-6 sm:px-7 py-3 sm:py-3.5 rounded-2xl sm:rounded-[1.25rem] text-sm font-bold transition-all shadow-lg dark:shadow-xl shrink-0"
+              onClick={() => setShowCreateModal(!showCreateModal)}
+            >
+              <div className="absolute inset-0 rounded-2xl sm:rounded-[1.25rem] bg-gradient-to-r from-primary to-accent opacity-0 group-hover:opacity-10 transition-opacity hidden dark:block" />
+              <Plus className={`h-5 w-5 transition-transform duration-300 ${showCreateModal ? 'rotate-45' : ''}`} strokeWidth={2.5} />
+              <span>{showCreateModal ? 'Cancel' : 'New Task'}</span>
+            </button>
+          </div>
         </motion.div>
 
         <AnimatePresence>
@@ -195,24 +189,23 @@ export default function MyTasksPage() {
         <AnimatePresence>
           {showCreateModal && (
             <motion.section 
-              initial={{ opacity: 0, height: 0, y: -20 }}
-              animate={{ opacity: 1, height: 'auto', y: 0 }}
-              exit={{ opacity: 0, height: 0, y: -20, filter: 'blur(4px)' }}
+              initial={{ opacity: 0, height: 0, overflow: 'hidden' }}
+              animate={{ opacity: 1, height: 'auto', overflow: 'visible' }}
+              exit={{ opacity: 0, height: 0, overflow: 'hidden', filter: 'blur(4px)' }}
               transition={{ duration: 0.3 }}
-              className="mb-8 overflow-hidden"
+              className="mb-8"
             >
-              <div className="glass-card border border-glass-border">
+              <div className="mb-4">
                 <TodoForm onAddTodo={handleAddTodo} isSubmitting={isCreating} />
               </div>
             </motion.section>
           )}
         </AnimatePresence>
 
-
         <motion.section 
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
+          transition={{ duration: 0.25, ease: 'easeOut', delay: 0.05 }}
           className="mb-6 relative z-10"
         >
           <div className="glass-panel border border-glass-border p-4 shadow-sm">
@@ -230,12 +223,12 @@ export default function MyTasksPage() {
         </motion.section>
 
         <motion.section
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25, ease: 'easeOut', delay: 0.1 }}
         >
           <TodoList
-            todos={todos}
+            todos={filteredTodos}
             onToggle={handleToggleTodo}
             onDelete={handleDeleteTodo}
             onUpdate={handleUpdateTodo}
@@ -243,6 +236,6 @@ export default function MyTasksPage() {
           />
         </motion.section>
       </div>
-    </MainLayout>
+    </>
   )
 }

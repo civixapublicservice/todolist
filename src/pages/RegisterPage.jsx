@@ -105,7 +105,7 @@ export default function RegisterPage() {
         className="glass-auth flex flex-col items-center"
       >
         <div className="flex flex-col space-y-2 text-center mb-8 relative z-10 w-full mt-4">
-          <h1 className="text-[28px] font-bold tracking-tight text-white flex items-center gap-2">Join TaskFlow <Sparkles className="h-6 w-6 text-white/80" /></h1>
+          <h1 className="text-[28px] font-bold tracking-tight text-white flex flex-wrap justify-center items-center gap-2">Join TaskFlow <Sparkles className="h-6 w-6 text-white/80" /></h1>
           <p className="text-sm text-white/50 leading-relaxed px-4">
             Create an account to get started with the premium workspace for teams.
           </p>
@@ -232,12 +232,6 @@ export default function RegisterPage() {
             </AnimatePresence>
           </div>
 
-          <div className="flex items-center mt-2 mb-2 px-1 space-x-2">
-            <input type="checkbox" id="terms" className="rounded border-white/20 bg-black/50 accent-[#a855f7]" />
-            <label htmlFor="terms" className="text-xs text-white/60">
-              I agree to the <a href="#" className="text-white hover:underline">Terms of service</a> and <a href="#" className="text-white hover:underline">Privacy policies</a>
-            </label>
-          </div>
 
           <Button
             type="submit"

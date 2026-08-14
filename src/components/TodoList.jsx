@@ -1,7 +1,7 @@
 import { CheckCircle2, Inbox } from 'lucide-react'
 import TodoItem from './TodoItem'
 import { motion, AnimatePresence } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import confetti from 'canvas-confetti'
 
 export default function TodoList({
@@ -15,15 +15,38 @@ export default function TodoList({
   const allCompleted = todos.length > 0 && completedCount === todos.length
   const [hasCelebrated, setHasCelebrated] = useState(false)
 
+  // Sort todos so uncompleted ones stay at the top and completed ones move to the bottom
+  const sortedTodos = useMemo(() => {
+    return [...todos].sort((a, b) => {
+      if (a.completed === b.completed) return 0;
+      return a.completed ? 1 : -1;
+    });
+  }, [todos]);
+
   // Confetti when all tasks are completed
   useEffect(() => {
     if (allCompleted && !hasCelebrated) {
+      const colors = ['#7c3aed', '#a855f7', '#c084fc', '#ffffff'];
+      
+      // Fire from left edge
       confetti({
-        particleCount: 150,
-        spread: 80,
-        origin: { y: 0.6 },
-        colors: ['#7c3aed', '#a855f7', '#c084fc', '#ffffff']
-      })
+        particleCount: 400,
+        spread: 120,
+        origin: { x: 0, y: 0.7 },
+        angle: 60,
+        startVelocity: 60,
+        colors: colors
+      });
+      
+      // Fire from right edge
+      confetti({
+        particleCount: 400,
+        spread: 120,
+        origin: { x: 1, y: 0.7 },
+        angle: 120,
+        startVelocity: 60,
+        colors: colors
+      });
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setHasCelebrated(true)
     } else if (!allCompleted) {
@@ -72,7 +95,7 @@ export default function TodoList({
         className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"
       >
         <AnimatePresence mode="popLayout">
-          {todos.map((todo) => (
+          {sortedTodos.map((todo) => (
             <motion.div
               key={todo.id}
               layout

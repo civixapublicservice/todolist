@@ -109,7 +109,7 @@ export default function ResetPasswordPage() {
         className="glass-auth flex flex-col items-center overflow-hidden"
       >
         <div className="flex flex-col space-y-2 text-center mb-8 relative z-10 w-full mt-4">
-          <h1 className="text-[28px] font-bold tracking-tight text-white flex items-center justify-center gap-2">
+          <h1 className="text-[28px] font-bold tracking-tight text-white flex flex-wrap items-center justify-center gap-2 text-center">
             {isSuccess ? 'Password Reset!' : 'New Password'}
           </h1>
           <p className="text-sm text-white/50 leading-relaxed px-4">

@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react'
-import MainLayout from '../layouts/MainLayout'
 import { useAuth } from '../hooks/useAuth'
 import { updateUserProfile, changeUserPassword, getUserSettings, updateUserSettings } from '../services/settingsService'
-import { Settings as SettingsIcon, User, Mail, Lock, LogOut, AlertCircle, Sparkles, Bell, Palette } from 'lucide-react'
+import { Settings as SettingsIcon, User, Mail, Lock, LogOut, AlertCircle, Sparkles, Bell, Palette, CheckCircle2 } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { toast } from 'sonner'
 import ToggleSwitch from '../components/ui/ToggleSwitch'
+import { useTheme } from '../context/ThemeContext'
+import { cn } from '../utils/cn'
 
 export default function SettingsPage() {
   const { user, logout, updateUser } = useAuth()
+  const { theme: globalTheme, setTheme: setGlobalTheme } = useTheme()
 
   const [name, setName] = useState(user?.name || '')
   const [email, setEmail] = useState(user?.email || '')
@@ -101,14 +103,14 @@ export default function SettingsPage() {
   }
 
   return (
-    <MainLayout>
+    <>
       <div className="max-w-4xl mx-auto w-full">
         {/* Banner */}
         <motion.div 
-          initial={{ opacity: 0, y: -20, scale: 0.98 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.5, type: 'spring' }}
-          className="bg-gradient-to-r from-primary to-accent text-white rounded-[var(--radius-lg)] p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 relative overflow-hidden mb-8 shadow-glow"
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.15 }}
+          className="bg-gradient-to-r from-primary to-accent text-white rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 relative overflow-hidden mb-8 shadow-xl"
         >
           <div className="relative z-10">
             <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-white text-xs font-semibold tracking-wide uppercase mb-3 border border-white/20">
@@ -126,12 +128,11 @@ export default function SettingsPage() {
         <motion.div 
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
+          transition={{ duration: 0.3 }}
           className="flex flex-col gap-6"
         >
           {/* Profile Information Form */}
-          <div className="glass-card border border-glass-border rounded-xl p-8 shadow-sm relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-accent opacity-50"></div>
+          <div className="glass-card border border-glass-border rounded-2xl p-8 shadow-sm relative overflow-hidden">
             <div className="flex items-center gap-3 mb-8">
               <div className="bg-primary/10 p-2 rounded-xl text-primary border border-primary/20">
                 <User className="h-6 w-6" strokeWidth={2} />
@@ -143,38 +144,43 @@ export default function SettingsPage() {
               <div className="grid gap-2">
                 <label className="text-sm font-semibold text-foreground">Full Name</label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-muted-foreground">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-muted-foreground z-10">
                     <User className="h-4 w-4" />
                   </div>
                   <input
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="block w-full pl-10 pr-4 py-3 text-sm glass-input font-medium transition-all focus:border-primary focus:ring-1 focus:ring-primary/50 disabled:opacity-50"
+                    className="block w-full pl-10 pr-4 py-3 text-sm glass-input bg-foreground/5 hover:bg-foreground/10 focus:bg-background border-transparent focus:border-primary transition-all duration-300 disabled:opacity-50 !rounded-xl font-medium"
                     disabled={isUpdatingProfile}
                   />
                 </div>
               </div>
 
               <div className="grid gap-2">
-                <label className="text-sm font-semibold text-foreground">Email Address</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-muted-foreground">
-                    <Mail className="h-4 w-4" />
-                  </div>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="block w-full pl-10 pr-4 py-3 text-sm glass-input font-medium transition-all focus:border-primary focus:ring-1 focus:ring-primary/50 disabled:opacity-50"
-                    disabled={isUpdatingProfile}
-                  />
+                <label className="text-sm font-semibold text-foreground flex items-center gap-2">
+                  <span>Email Address</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3" strokeWidth={2.5} />
+                    Verified
+                  </span>
+                </label>
+                <div 
+                  className="flex items-center w-full px-4 py-3 bg-foreground/5 border border-glass-border rounded-xl cursor-not-allowed"
+                  title="Email address cannot be changed from this panel."
+                >
+                  <Mail className="h-4 w-4 text-muted-foreground mr-3" />
+                  <span className="text-sm font-medium text-foreground/80 select-none truncate">{email}</span>
+                  <Lock className="h-4 w-4 text-muted-foreground/40 ml-auto shrink-0" />
                 </div>
+                <p className="text-[11px] text-muted-foreground/80 mt-0.5">
+                  To change your registered email address, please contact support.
+                </p>
               </div>
 
               <button
                 type="submit"
-                className="btn btn-primary self-start shadow-md py-2.5 px-6"
+                className="btn btn-primary self-start shadow-md py-2.5 px-6 !rounded-xl mt-2"
                 disabled={isUpdatingProfile}
               >
                 {isUpdatingProfile ? (
@@ -190,8 +196,7 @@ export default function SettingsPage() {
           </div>
 
           {/* App Preferences */}
-          <div className="glass-card border border-glass-border rounded-xl p-8 shadow-sm relative overflow-hidden">
-             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-accent to-primary opacity-50"></div>
+          <div className="glass-card border border-glass-border rounded-2xl p-8 shadow-sm relative overflow-hidden">
             <div className="flex items-center gap-3 mb-8">
               <div className="bg-accent/10 p-2 rounded-xl text-accent border border-accent/20">
                 <SettingsIcon className="h-6 w-6" strokeWidth={2} />
@@ -206,23 +211,34 @@ export default function SettingsPage() {
             ) : (
               <form onSubmit={handleUpdateSettings} className="flex flex-col gap-6">
                 
-                <div className="flex items-center justify-between border-b border-glass-border pb-4">
+                <div className="flex flex-col gap-3 border-b border-glass-border pb-6">
                   <div>
                     <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
                       <Palette className="h-4 w-4 text-muted-foreground" /> Theme
                     </h4>
                     <p className="text-xs text-muted-foreground mt-1">Select your preferred color scheme.</p>
                   </div>
-                  <select 
-                    value={theme}
-                    onChange={(e) => setTheme(e.target.value)}
-                    className="glass-input text-sm py-2 px-3 rounded-lg border-glass-border focus:border-primary w-32"
-                    disabled={isUpdatingSettings}
-                  >
-                    <option value="dark">Dark</option>
-                    <option value="light">Light</option>
-                    <option value="system">System</option>
-                  </select>
+                  <div className="flex bg-foreground/5 p-1 rounded-xl w-full sm:w-fit border border-glass-border">
+                    {['dark', 'light', 'system'].map((t) => (
+                      <button
+                        key={t}
+                        type="button"
+                        disabled={isUpdatingSettings}
+                        onClick={() => {
+                          setTheme(t);
+                          setGlobalTheme(t);
+                        }}
+                        className={cn(
+                          "flex-1 sm:w-24 px-4 py-2 text-sm font-semibold rounded-lg capitalize transition-all duration-200",
+                          theme === t 
+                            ? "bg-background text-primary shadow-sm ring-1 ring-primary/20" 
+                            : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
+                        )}
+                      >
+                        {t}
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
                 <div className="flex items-center justify-between border-b border-glass-border pb-4">
@@ -295,31 +311,16 @@ export default function SettingsPage() {
                   />
                 </div>
 
-                <div className="flex items-center justify-between border-b border-glass-border pb-4">
-                  <div>
-                    <h4 className="text-sm font-semibold text-foreground flex items-center gap-2">
-                      <AlertCircle className="h-4 w-4 text-muted-foreground" /> Timezone
-                    </h4>
-                    <p className="text-xs text-muted-foreground mt-1">Your local timezone for accurate reminders.</p>
-                  </div>
-                  <select 
-                    value={timezone}
-                    onChange={(e) => setTimezone(e.target.value)}
-                    className="glass-input text-sm py-2 px-3 rounded-lg border-glass-border focus:border-primary w-48 truncate"
-                    disabled={isUpdatingSettings}
-                  >
-                    <option value={timezone}>{timezone}</option>
-                  </select>
-                </div>
+
 
                 <button
                   type="submit"
-                  className="btn glass-button border-primary/50 hover:bg-primary/10 text-primary self-start py-2.5 px-6 font-bold"
+                  className="btn bg-foreground/5 hover:bg-foreground/10 border border-glass-border text-foreground self-start py-2.5 px-6 !rounded-xl font-semibold mt-2 transition-all duration-300"
                   disabled={isUpdatingSettings}
                 >
                   {isUpdatingSettings ? (
                     <>
-                      <div className="spinner mr-2 border-primary border-t-transparent"></div>
+                      <div className="spinner mr-2 border-foreground border-t-transparent"></div>
                       <span>Saving Preferences...</span>
                     </>
                   ) : (
@@ -331,8 +332,7 @@ export default function SettingsPage() {
           </div>
 
           {/* Change Password Form */}
-          <div className="glass-card border border-glass-border rounded-xl p-8 shadow-sm relative overflow-hidden">
-             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-accent opacity-50"></div>
+          <div className="glass-card border border-glass-border rounded-2xl p-8 shadow-sm relative overflow-hidden">
             <div className="flex items-center gap-3 mb-8">
               <div className="bg-primary/10 p-2 rounded-xl text-primary border border-primary/20">
                 <Lock className="h-6 w-6" strokeWidth={2} />
@@ -344,7 +344,7 @@ export default function SettingsPage() {
               <div className="grid gap-2">
                 <label className="text-sm font-semibold text-foreground">Current Password</label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-muted-foreground">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-muted-foreground z-10">
                     <Lock className="h-4 w-4" />
                   </div>
                   <input
@@ -352,7 +352,7 @@ export default function SettingsPage() {
                     placeholder="Enter current password"
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
-                    className="block w-full pl-10 pr-4 py-3 text-sm glass-input font-medium transition-all focus:border-primary focus:ring-1 focus:ring-primary/50 disabled:opacity-50"
+                    className="block w-full pl-10 pr-4 py-3 text-sm glass-input bg-foreground/5 hover:bg-foreground/10 focus:bg-background border-transparent focus:border-primary transition-all duration-300 disabled:opacity-50 !rounded-xl font-medium"
                     disabled={isUpdatingPassword}
                   />
                 </div>
@@ -361,7 +361,7 @@ export default function SettingsPage() {
               <div className="grid gap-2">
                 <label className="text-sm font-semibold text-foreground">New Password</label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-muted-foreground">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-muted-foreground z-10">
                     <Lock className="h-4 w-4" />
                   </div>
                   <input
@@ -369,7 +369,7 @@ export default function SettingsPage() {
                     placeholder="Minimum 6 characters"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="block w-full pl-10 pr-4 py-3 text-sm glass-input font-medium transition-all focus:border-primary focus:ring-1 focus:ring-primary/50 disabled:opacity-50"
+                    className="block w-full pl-10 pr-4 py-3 text-sm glass-input bg-foreground/5 hover:bg-foreground/10 focus:bg-background border-transparent focus:border-primary transition-all duration-300 disabled:opacity-50 !rounded-xl font-medium"
                     disabled={isUpdatingPassword}
                   />
                 </div>
@@ -377,12 +377,12 @@ export default function SettingsPage() {
 
               <button
                 type="submit"
-                className="btn glass-button border-primary/50 hover:bg-primary/10 text-primary self-start py-2.5 px-6 font-bold"
+                className="btn bg-foreground/5 hover:bg-foreground/10 border border-glass-border text-foreground self-start py-2.5 px-6 !rounded-xl font-semibold mt-2 transition-all duration-300"
                 disabled={isUpdatingPassword}
               >
                 {isUpdatingPassword ? (
                   <>
-                    <div className="spinner mr-2 border-primary border-t-transparent"></div>
+                    <div className="spinner mr-2 border-foreground border-t-transparent"></div>
                     <span>Updating Password...</span>
                   </>
                 ) : (
@@ -393,18 +393,17 @@ export default function SettingsPage() {
           </div>
 
           {/* Preferences & Logout Card */}
-          <div className="glass-card border border-glass-border rounded-xl p-8 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-6 relative overflow-hidden">
-             <div className="absolute left-0 top-0 w-1 h-full bg-destructive opacity-50"></div>
+          <div className="glass-card border border-glass-border rounded-2xl p-8 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-6 relative overflow-hidden">
             <div>
-              <h3 className="text-lg font-bold text-foreground">Danger Zone</h3>
+              <h3 className="text-lg font-bold text-foreground">Session Management</h3>
               <p className="text-sm font-medium text-muted-foreground mt-1">
-                Log out of your account on this device.
+                Securely log out of your account on this device.
               </p>
             </div>
 
             <div className="flex flex-wrap gap-3">
               <button
-                className="inline-flex items-center justify-center space-x-2 bg-destructive/10 text-destructive hover:bg-destructive hover:text-destructive-foreground hover:shadow-lg hover:shadow-destructive/20 rounded-xl px-6 py-3 text-sm font-bold transition-all"
+                className="inline-flex items-center justify-center space-x-2 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-500/20 rounded-xl px-6 py-3 text-sm font-bold transition-all border border-rose-200 dark:border-rose-500/20"
                 onClick={logout}
               >
                 <LogOut className="h-5 w-5" strokeWidth={2.5} />
@@ -414,6 +413,6 @@ export default function SettingsPage() {
           </div>
         </motion.div>
       </div>
-    </MainLayout>
+    </>
   )
 }

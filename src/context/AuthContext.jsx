@@ -19,13 +19,17 @@ export function AuthProvider({ children }) {
         const currentUser = await fetchCurrentUser()
         setUser(currentUser)
         
-        // Silently sync timezone for email scheduler
+        // Silently sync timezone and load global settings (Phase 10/24 logic)
         try {
           const tz = Intl.DateTimeFormat().resolvedOptions().timeZone
-          await fetchApi('/settings', {
+          const settings = await fetchApi('/settings', {
             method: 'PUT',
             body: JSON.stringify({ timezone: tz })
           })
+          
+          if (settings && settings.theme) {
+            window.dispatchEvent(new CustomEvent('auth:sync-theme', { detail: settings.theme }))
+          }
         } catch (e) {
           // ignore
         }

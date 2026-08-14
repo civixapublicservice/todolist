@@ -74,7 +74,7 @@ export default function LoginPage() {
         className="glass-auth flex flex-col items-center"
       >
         <div className="flex flex-col space-y-2 text-center mb-8 relative z-10 w-full mt-4">
-          <h1 className="text-[28px] font-bold tracking-tight text-white flex items-center gap-2">Welcome to TaskFlow <Sparkles className="h-6 w-6 text-white/80" /></h1>
+          <h1 className="text-[28px] font-bold tracking-tight text-white flex flex-wrap justify-center items-center gap-2">Welcome to TaskFlow <Sparkles className="h-6 w-6 text-white/80" /></h1>
           <p className="text-sm text-white/50 leading-relaxed px-4">
             Credentials are only used to authenticate in TaskFlow. All saved data will be stored securely.
           </p>
@@ -107,13 +107,9 @@ export default function LoginPage() {
             />
           </div>
 
-          <div className="flex items-center justify-between mt-2 mb-4 px-1">
-            <div className="flex items-center space-x-2">
-              <input type="checkbox" id="remember" className="rounded border-white/20 bg-black/50 accent-[#a855f7]" />
-              <label htmlFor="remember" className="text-xs text-white/60">I agree to the Terms of service</label>
-            </div>
+          <div className="flex items-center justify-end mt-2 mb-4 px-1">
             <Link to="/forgot-password" className="text-xs font-medium text-white/60 hover:text-white transition-colors">
-              Forgot?
+              Forgot Password?
             </Link>
           </div>
 

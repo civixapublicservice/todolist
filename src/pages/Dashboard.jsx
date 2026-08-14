@@ -1,54 +1,25 @@
-import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '../hooks/useAuth'
-import MainLayout from '../layouts/MainLayout'
+import { useTasks } from '../context/TaskContext'
 import StatsBar from '../components/StatsBar'
 import RightWidget from '../components/RightWidget'
-import { getTodos } from '../services/todoService'
-import { AlertCircle, Rocket, Target, ListTodo } from 'lucide-react'
+import { AlertCircle } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
 
 export default function Dashboard() {
   const { user } = useAuth()
-  const [todos, setTodos] = useState([])
-  // eslint-disable-next-line no-unused-vars
-  const [isLoadingTodos, setIsLoadingTodos] = useState(true)
-  const [error, setError] = useState('')
-
-  const fetchTodoList = useCallback(async () => {
-    setIsLoadingTodos(true)
-    setError('')
-    try {
-      // Fetch all tasks for analytics overview
-      const data = await getTodos({
-        search: '',
-        status: 'all',
-        sort: 'newest',
-      })
-      setTodos(data)
-    } catch (err) {
-      setError(err.message || 'Failed to load task records')
-      toast.error('Failed to load tasks')
-    } finally {
-      setIsLoadingTodos(false)
-    }
-  }, [])
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    fetchTodoList()
-  }, [fetchTodoList])
+  const { todos, isLoading: isLoadingTodos, error } = useTasks()
 
   const completedTasks = todos.filter(t => t.completed).length
   const pendingTasks = todos.filter(t => !t.completed).length
   const totalTasks = todos.length
 
   return (
-    <MainLayout>
+    <>
       <motion.div 
-        initial={{ opacity: 0, y: 10 }}
+        initial={{ opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
+        transition={{ duration: 0.25, ease: 'easeOut' }}
         className="flex flex-col xl:flex-row gap-8 max-w-[1400px] mx-auto w-full"
       >
         {/* Main Content Column */}
@@ -56,21 +27,28 @@ export default function Dashboard() {
           
           {/* Welcome Header */}
           <motion.div
-            initial={{ opacity: 0, y: 16 }}
+            initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.08, type: 'spring', stiffness: 380, damping: 30 }}
+            transition={{ duration: 0.25, ease: 'easeOut', delay: 0.05 }}
             className="mb-8"
           >
-            <h1 className="text-3xl font-bold text-foreground tracking-tight leading-snug mb-1">
+            <h1 className="text-4xl font-black tracking-tight leading-snug mb-2">
               {(() => {
                 const h = new Date().getHours()
                 const greeting = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening'
-                const name = user?.name ? user.name.split(' ')[0] : 'there'
-                return `${greeting}, ${name}.`
+                return (
+                  <>
+                    <span className="text-foreground">{greeting}, </span>
+                    <span className="bg-gradient-to-r from-primary to-indigo-500 bg-clip-text text-transparent">
+                      {user?.name ? user.name.split(' ')[0] : 'there'}
+                    </span>
+                    <span className="text-foreground">.</span>
+                  </>
+                )
               })()}
             </h1>
-            <p className="text-sm text-muted-foreground">
-              Here's what's on your plate today.
+            <p className="text-[15px] font-medium text-muted-foreground">
+              Here's what's on your plate today. Let's make it a great one.
             </p>
           </motion.div>
 
@@ -92,45 +70,79 @@ export default function Dashboard() {
 
           {/* Quick Analytics Stats */}
           <motion.section
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+            transition={{ duration: 0.25, ease: 'easeOut', delay: 0.1 }}
           >
             <StatsBar todos={todos} />
           </motion.section>
           
-          {/* We can place additional analytics or a big chart here in the future */}
+          {/* Productivity Ring Widget */}
           <motion.section
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="mt-8 bg-card border border-border shadow-sm rounded-2xl p-8 text-center flex flex-col items-center justify-center min-h-[300px]"
+            transition={{ duration: 0.25, ease: 'easeOut', delay: 0.15 }}
+            className="relative overflow-hidden bg-white/60 dark:bg-black/40 backdrop-blur-xl border border-glass-border shadow-sm hover:shadow-lg transition-all duration-500 rounded-3xl p-8 sm:p-10 flex flex-col sm:flex-row items-center justify-between min-h-[200px] group"
           >
-            {totalTasks === 0 ? (
-              <>
-                <div className="h-20 w-20 bg-muted rounded-full flex items-center justify-center mb-6">
-                  <ListTodo className="h-10 w-10 text-muted-foreground" />
+            {/* Background Glow */}
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-indigo-500/5 pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity duration-500" />
+            
+            {/* Left Side: Text */}
+            <div className="relative z-10 flex flex-col items-center sm:items-start text-center sm:text-left mb-8 sm:mb-0">
+              <h3 className="text-2xl sm:text-3xl font-black text-foreground mb-3">
+                {totalTasks === 0 ? "Let's Get Started" : completedTasks >= pendingTasks ? "Productivity is soaring!" : "Stay Focused"}
+              </h3>
+              <p className="text-[15px] sm:text-base font-semibold text-muted-foreground max-w-[320px] leading-relaxed">
+                {totalTasks === 0 
+                  ? "Create your first task to kick off your productivity journey." 
+                  : completedTasks >= pendingTasks 
+                    ? "You have completed more tasks than you have pending. Keep up the incredible momentum!"
+                    : <>You have <span className="font-black text-amber-500">{pendingTasks}</span> pending task{pendingTasks !== 1 ? 's' : ''}. Prioritize your most important work and conquer it.</>}
+              </p>
+            </div>
+
+            {/* Right Side: Circular Progress */}
+            <div className="relative z-10 flex items-center justify-center shrink-0">
+              <div className="relative w-40 h-40">
+                {/* SVG Ring */}
+                <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
+                  <circle
+                    cx="50"
+                    cy="50"
+                    r="40"
+                    fill="transparent"
+                    stroke="currentColor"
+                    className="text-muted/30"
+                    strokeWidth="8"
+                  />
+                  <motion.circle
+                    cx="50"
+                    cy="50"
+                    r="40"
+                    fill="transparent"
+                    stroke="url(#gradient)"
+                    strokeWidth="8"
+                    strokeLinecap="round"
+                    initial={{ strokeDasharray: "0 251.2" }}
+                    animate={{ strokeDasharray: `${totalTasks === 0 ? 0 : (completedTasks / totalTasks) * 251.2} 251.2` }}
+                    transition={{ duration: 1.5, ease: "easeOut", delay: 0.3 }}
+                  />
+                  <defs>
+                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#6366f1" /> {/* Indigo */}
+                      <stop offset="100%" stopColor="#8b5cf6" /> {/* Violet */}
+                    </linearGradient>
+                  </defs>
+                </svg>
+                {/* Center Text */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span className="text-3xl font-black text-foreground leading-none">
+                    {totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100)}%
+                  </span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mt-1.5 opacity-80">Completed</span>
                 </div>
-                <h3 className="text-xl font-bold text-foreground mb-2">Let's Get Started</h3>
-                <p className="text-muted-foreground max-w-sm">Create your first task to kick off your productivity journey.</p>
-              </>
-            ) : completedTasks >= pendingTasks ? (
-              <>
-                <div className="h-20 w-20 bg-primary/10 rounded-full flex items-center justify-center mb-6 shadow-glow">
-                  <Rocket className="h-10 w-10 text-primary" />
-                </div>
-                <h3 className="text-xl font-bold text-foreground mb-2">Productivity is soaring!</h3>
-                <p className="text-muted-foreground max-w-sm">You have completed more tasks than you have pending. Keep up the incredible momentum!</p>
-              </>
-            ) : (
-              <>
-                <div className="h-20 w-20 bg-amber-500/10 rounded-full flex items-center justify-center mb-6 shadow-[0_0_20px_rgba(245,158,11,0.2)]">
-                  <Target className="h-10 w-10 text-amber-500" />
-                </div>
-                <h3 className="text-xl font-bold text-foreground mb-2">Stay Focused</h3>
-                <p className="text-muted-foreground max-w-sm">You have {pendingTasks} pending task{pendingTasks !== 1 ? 's' : ''}. Prioritize your most important work and conquer it.</p>
-              </>
-            )}
+              </div>
+            </div>
           </motion.section>
 
         </div>
@@ -140,6 +152,6 @@ export default function Dashboard() {
           <RightWidget todos={todos} />
         </div>
       </motion.div>
-    </MainLayout>
+    </>
   )
 }

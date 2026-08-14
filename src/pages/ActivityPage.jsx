@@ -1,30 +1,15 @@
-import { useState, useEffect } from 'react'
-import MainLayout from '../layouts/MainLayout'
-import { getActivities } from '../services/activityService'
+import { useActivities } from '../context/ActivityContext'
 import { Activity, Clock, CheckCircle2, UserPlus, LogIn, Edit, Trash2, PlusCircle, AlertCircle, Sparkles } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '../utils/cn'
+import { useEffect } from 'react'
 
 export default function ActivityPage() {
-  const [activities, setActivities] = useState([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState('')
+  const { activities, isLoading, error, fetchActivities } = useActivities()
 
   useEffect(() => {
-    async function loadActivities() {
-      setIsLoading(true)
-      setError('')
-      try {
-        const data = await getActivities()
-        setActivities(data)
-      } catch (err) {
-        setError(err.message || 'Failed to load activity log')
-      } finally {
-        setIsLoading(false)
-      }
-    }
-    loadActivities()
-  }, [])
+    fetchActivities()
+  }, [fetchActivities])
 
   const getActivityIcon = (action) => {
     switch (action) {
@@ -64,13 +49,13 @@ export default function ActivityPage() {
   }
 
   return (
-    <MainLayout>
+    <>
       <div className="max-w-4xl mx-auto w-full">
         {/* Banner */}
         <motion.div 
-          initial={{ opacity: 0, y: -20, scale: 0.98 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.5, type: 'spring' }}
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25, ease: 'easeOut' }}
           className="bg-gradient-to-r from-primary to-accent text-white rounded-[var(--radius-lg)] p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 relative overflow-hidden mb-8 shadow-glow"
         >
           <div className="relative z-10">
@@ -103,9 +88,9 @@ export default function ActivityPage() {
         </AnimatePresence>
 
         <motion.div 
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
+          initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25, ease: 'easeOut', delay: 0.05 }}
         >
           {isLoading ? (
             <div className="glass-panel border border-glass-border p-12 text-center shadow-sm flex flex-col items-center justify-center space-y-4 min-h-[300px]">
@@ -121,41 +106,52 @@ export default function ActivityPage() {
               <p className="text-sm text-muted-foreground max-w-sm">Events will appear here as you create, update, and manage tasks.</p>
             </div>
           ) : (
-            <div className="glass-panel border border-glass-border shadow-sm p-4 sm:p-8">
-              <div className="relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-glass-border before:to-transparent">
-                {activities.map((item, index) => (
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                    key={item.id}
-                    className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active py-4"
-                  >
-                    <div className={cn(
-                      "flex items-center justify-center w-10 h-10 rounded-full border shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10 relative",
-                      getActivityColor(item.action)
-                    )}>
-                      {getActivityIcon(item.action)}
-                    </div>
-                    <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] glass-card border border-glass-border p-4 rounded-xl shadow-sm hover:shadow-glow transition-all duration-300">
-                      <div className="font-semibold text-sm text-foreground break-words mb-1">
-                        {item.details}
+            <div className="relative pl-2 sm:pl-4 py-2">
+              <div className="flex flex-col relative z-10">
+                {activities.map((item, index) => {
+                  const detailsParts = item.details.split(/"([^"]+)"/g);
+                  
+                  return (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, ease: 'easeOut', delay: index * 0.02 }}
+                      key={item.id}
+                      className="relative flex items-start gap-4 sm:gap-5 group pb-8 last:pb-2"
+                    >
+                      {/* Delicate Timeline Icon */}
+                      <div className={cn(
+                        "relative flex items-center justify-center w-8 h-8 rounded-full border shadow-sm shrink-0 z-10 transition-transform duration-300 group-hover:scale-110",
+                        getActivityColor(item.action)
+                      )}>
+                        {getActivityIcon(item.action)}
                       </div>
-                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground/80 font-medium">
-                        <Clock className="h-3 w-3" />
-                        <span>{new Date(item.createdAt).toLocaleString(undefined, {
-                          month: 'short', day: 'numeric', year: 'numeric',
-                          hour: 'numeric', minute: '2-digit'
-                        })}</span>
+                      
+                      {/* Content - Borderless & Clean */}
+                      <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between flex-1 pt-1.5">
+                        <div className="text-[14px] sm:text-[15px] leading-snug text-muted-foreground">
+                          {detailsParts.map((part, i) => (
+                            i % 2 === 1 
+                              ? <span key={i} className="font-semibold text-foreground tracking-tight">"{part}"</span> 
+                              : <span key={i}>{part}</span>
+                          ))}
+                        </div>
+                        
+                        <div className="text-[11.5px] sm:text-xs text-muted-foreground/50 font-medium tracking-wide shrink-0 mt-1.5 sm:mt-0">
+                          {new Date(item.createdAt).toLocaleString(undefined, {
+                            month: 'short', day: 'numeric', year: 'numeric',
+                            hour: 'numeric', minute: '2-digit'
+                          })}
+                        </div>
                       </div>
-                    </div>
-                  </motion.div>
-                ))}
+                    </motion.div>
+                  )
+                })}
               </div>
             </div>
           )}
         </motion.div>
       </div>
-    </MainLayout>
+    </>
   )
 }

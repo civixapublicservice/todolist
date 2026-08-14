@@ -1,11 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom'
-import { LayoutDashboard } from 'lucide-react'
+import { LayoutDashboard, CheckSquare, Activity, CalendarDays, Settings } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { cn } from '../utils/cn'
-import ThreeDCalendar from './ui/ThreeDCalendar'
-import ThreeDTaskList from './ui/ThreeDTaskList'
-import ThreeDActivity from './ui/ThreeDActivity'
-import ThreeDSettings from './ui/ThreeDSettings'
 
 export default function MobileNav() {
   const location = useLocation()
@@ -13,17 +9,17 @@ export default function MobileNav() {
 
   const navItems = [
     { id: 'dashboard', label: 'Home', path: '/', icon: LayoutDashboard },
-    { id: 'tasks', label: 'Tasks', path: '/tasks', icon: ThreeDTaskList },
-    { id: 'activity', label: 'Activity', path: '/activity', icon: ThreeDActivity },
-    { id: 'calendar', label: 'Calendar', path: '/calendar', icon: ThreeDCalendar },
-    { id: 'settings', label: 'Settings', path: '/settings', icon: ThreeDSettings },
+    { id: 'tasks', label: 'Tasks', path: '/tasks', icon: CheckSquare },
+    { id: 'activity', label: 'Activity', path: '/activity', icon: Activity },
+    { id: 'calendar', label: 'Calendar', path: '/calendar', icon: CalendarDays },
+    { id: 'settings', label: 'Settings', path: '/settings', icon: Settings },
   ]
 
   const currentPath = location.pathname
 
   return (
-    <div className="md:hidden fixed bottom-0 left-0 right-0 glass-panel border-t border-glass-border z-50 px-2 pb-safe pt-2 bg-background/90 backdrop-blur-xl">
-      <div className="flex items-center justify-around h-14">
+    <div className="md:hidden fixed bottom-4 pb-safe left-4 right-4 z-50">
+      <div className="flex items-center justify-around h-16 px-1 bg-background/85 dark:bg-[#121212]/85 backdrop-blur-3xl border border-white/20 dark:border-white/10 shadow-2xl rounded-3xl">
         {navItems.map((item) => {
           const Icon = item.icon
           const isActive = currentPath === item.path
@@ -32,20 +28,20 @@ export default function MobileNav() {
               key={item.id}
               onClick={() => navigate(item.path)}
               className={cn(
-                "flex flex-col items-center justify-center p-1 rounded-xl min-w-[64px] transition-all duration-300",
+                "relative flex flex-col items-center justify-center w-[60px] h-14 rounded-2xl transition-all duration-300 group",
                 isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
               )}
             >
-              <div className="relative flex flex-col items-center">
-                <Icon className={cn("w-5 h-5", isActive ? "text-primary" : "")} />
-                <span className={cn("text-[10px] mt-1 font-medium transition-all duration-300", isActive ? "opacity-100 translate-y-0" : "opacity-70")}>{item.label}</span>
-                {isActive && (
-                  <motion.div
-                    layoutId="mobileNavIndicator"
-                    className="absolute -top-1 right-0 w-1.5 h-1.5 bg-primary rounded-full shadow-[0_0_8px_rgba(124,58,237,0.8)]"
-                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                  />
-                )}
+              {isActive && (
+                <motion.div
+                  layoutId="mobileNavIndicator"
+                  className="absolute inset-0 bg-primary/10 dark:bg-primary/20 rounded-2xl"
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                />
+              )}
+              <div className="relative z-10 flex flex-col items-center">
+                <Icon strokeWidth={isActive ? 2.5 : 2} className={cn("w-5 h-5 mb-1 transition-transform duration-300", isActive ? "scale-110" : "group-hover:scale-110")} />
+                <span className={cn("text-[10px] font-bold tracking-wide transition-all duration-300", isActive ? "opacity-100" : "opacity-80 font-medium")}>{item.label}</span>
               </div>
             </button>
           )

@@ -1,5 +1,8 @@
-import { Navigate, Outlet } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
+import MainLayout from '../layouts/MainLayout'
+import { TaskProvider } from '../context/TaskContext'
+import { ActivityProvider } from '../context/ActivityContext'
 
 export default function ProtectedRoute() {
   const { isAuthenticated, isLoading } = useAuth()
@@ -17,5 +20,11 @@ export default function ProtectedRoute() {
     return <Navigate to="/login" replace />
   }
 
-  return <Outlet />
+  return (
+    <TaskProvider>
+      <ActivityProvider>
+        <MainLayout />
+      </ActivityProvider>
+    </TaskProvider>
+  )
 }
