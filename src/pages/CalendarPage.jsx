@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from 'react'
 import { useTasks } from '../context/TaskContext'
 import { ChevronLeft, ChevronRight, Clock, AlertCircle, Sparkles, CheckCircle2 } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+
 import { cn } from '../utils/cn'
 
 export default function CalendarPage() {
@@ -77,11 +77,8 @@ export default function CalendarPage() {
   return (
     <>
       <div className="max-w-6xl mx-auto w-full">
-        <motion.div 
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.25, ease: 'easeOut' }}
-          className="bg-gradient-to-r from-primary to-accent text-white rounded-[var(--radius-lg)] p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 relative overflow-hidden mb-8 shadow-glow"
+        <div 
+          className="bg-gradient-to-r from-primary to-accent text-white rounded-[var(--radius-lg)] p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 relative overflow-hidden mb-8 shadow-glow animate-in fade-in slide-in-from-bottom-2 duration-500"
         >
           <div className="relative z-10">
             <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-white text-xs font-semibold tracking-wide uppercase mb-3 border border-white/20">
@@ -93,30 +90,22 @@ export default function CalendarPage() {
               View deadlines and manage your scheduled workload month by month.
             </p>
           </div>
-          <div className="absolute right-0 top-0 w-80 h-80 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none mix-blend-overlay"></div>
-        </motion.div>
+          <div className="absolute right-0 top-0 w-80 h-80 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none opacity-50"></div>
+        </div>
 
-        <AnimatePresence>
+        
           {error && (
-            <motion.div 
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="overflow-hidden mb-6"
-            >
+            <div className="overflow-hidden mb-6 animate-in fade-in duration-300">
               <div className="flex items-center space-x-2 bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-xl glass">
                 <AlertCircle className="h-5 w-5 shrink-0" />
                 <span className="text-sm font-medium">{error}</span>
               </div>
-            </motion.div>
+            </div>
           )}
-        </AnimatePresence>
+        
 
-        <motion.div 
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.25, ease: 'easeOut', delay: 0.05 }}
-          className="flex flex-col lg:flex-row gap-6 items-start"
+        <div 
+          className="flex flex-col lg:flex-row gap-6 items-start animate-in fade-in slide-in-from-bottom-2 duration-500 delay-100 fill-mode-both"
         >
           {/* Calendar View Card */}
           <div className="glass-panel border border-glass-border rounded-xl p-4 sm:p-6 shadow-sm flex-1 w-full">
@@ -193,10 +182,7 @@ export default function CalendarPage() {
                       <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-primary mt-0.5 sm:mt-1 z-10 shadow-sm" />
                     )}
                     {isSelected && (
-                      <motion.div 
-                        layoutId="selected-date"
-                        className="absolute inset-0 bg-primary/5 z-0"
-                      />
+                      <div className="absolute inset-0 bg-primary/5 z-0" />
                     )}
                   </button>
                 )
@@ -225,7 +211,7 @@ export default function CalendarPage() {
               </div>
             ) : (
               <div className="flex flex-col gap-6">
-                <AnimatePresence>
+                
                   {(() => {
                     const pendingTodos = selectedDateTodos.filter(t => !t.completed);
                     const completedTodos = selectedDateTodos.filter(t => t.completed);
@@ -240,10 +226,7 @@ export default function CalendarPage() {
                             </h4>
                             <div className="flex flex-col gap-3">
                               {pendingTodos.map((todo) => (
-                                <motion.div
-                                  initial={{ opacity: 0, x: 20 }}
-                                  animate={{ opacity: 1, x: 0 }}
-                                  key={todo.id}
+                                <div key={todo.id}
                                   className="p-3.5 sm:p-4 rounded-[1.25rem] border relative overflow-hidden transition-all duration-300 hover:shadow-glow bg-gradient-to-br from-primary/5 to-accent/5 border-primary/20 shadow-sm group"
                                 >
                                   <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary to-accent" />
@@ -255,7 +238,7 @@ export default function CalendarPage() {
                                       {todo.description}
                                     </div>
                                   )}
-                                </motion.div>
+                                </div>
                               ))}
                             </div>
                           </div>
@@ -269,10 +252,7 @@ export default function CalendarPage() {
                             </h4>
                             <div className="flex flex-col gap-3">
                               {completedTodos.map((todo) => (
-                                <motion.div
-                                  initial={{ opacity: 0, x: 20 }}
-                                  animate={{ opacity: 1, x: 0 }}
-                                  key={todo.id}
+                                <div key={todo.id}
                                   className="p-3.5 sm:p-4 rounded-[1.25rem] border relative overflow-hidden transition-all duration-300 bg-foreground/5 dark:bg-white/5 border-transparent opacity-60 hover:opacity-100"
                                 >
                                   <div className="absolute left-0 top-0 bottom-0 w-1 bg-green-500/40" />
@@ -284,7 +264,7 @@ export default function CalendarPage() {
                                       {todo.description}
                                     </div>
                                   )}
-                                </motion.div>
+                                </div>
                               ))}
                             </div>
                           </div>
@@ -292,11 +272,11 @@ export default function CalendarPage() {
                       </>
                     )
                   })()}
-                </AnimatePresence>
+                
               </div>
             )}
           </div>
-        </motion.div>
+        </div>
       </div>
     </>
   )
