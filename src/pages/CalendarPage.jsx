@@ -167,13 +167,12 @@ export default function CalendarPage() {
                 const isToday = isSameDay(date, new Date())
 
                 return (
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                  <button
                     key={date.toISOString()}
                     onClick={() => setSelectedDate(date)}
                     className={cn(
                       "aspect-square p-1 rounded-xl border flex flex-col items-center justify-center cursor-pointer transition-all duration-300 relative overflow-hidden",
+                      "hover:scale-105 active:scale-95",
                       isSelected
                         ? "border-primary bg-primary/10 shadow-glow ring-2 ring-primary/50"
                         : isToday
@@ -199,7 +198,7 @@ export default function CalendarPage() {
                         className="absolute inset-0 bg-primary/5 z-0"
                       />
                     )}
-                  </motion.div>
+                  </button>
                 )
               })}
             </div>
