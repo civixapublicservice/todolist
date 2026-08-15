@@ -18,3 +18,17 @@ export const markAllNotificationsAsRead = async () => {
   })
   return data
 }
+
+export const deleteNotification = async (id) => {
+  const data = await fetchApi(`/notifications/${id}`, {
+    method: 'DELETE',
+  })
+  return data
+}
+
+export const deleteAllNotifications = async () => {
+  const data = await fetchApi('/notifications', {
+    method: 'DELETE',
+  })
+  return data
+}

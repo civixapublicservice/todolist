@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { LogOut, CheckSquare, Bell, User, Settings as SettingsIcon, Search } from 'lucide-react'
+import { LogOut, CheckSquare, Bell, User, Settings as SettingsIcon, Search, X, Trash2 } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -18,7 +18,7 @@ export default function Header() {
   const [showNotifDropdown, setShowNotifDropdown] = useState(false)
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '')
   
-  const { notifications, unreadCount, handleMarkAsRead, handleMarkAllRead } = useNotifications()
+  const { notifications, unreadCount, handleMarkAsRead, handleMarkAllRead, handleDelete, handleDeleteAll } = useNotifications()
   
   const userDropdownRef = useRef(null)
   const notifDropdownRef = useRef(null)
@@ -190,14 +190,25 @@ export default function Header() {
           >
             <div className="px-4 py-3 border-b border-glass-border mb-2 flex items-center justify-between">
               <p className="text-sm font-semibold tracking-tight text-foreground">Notifications</p>
-              {unreadCount > 0 && (
-                <button
-                  onClick={handleMarkAllRead}
-                  className="text-xs text-primary hover:underline"
-                >
-                  Mark all as read
-                </button>
-              )}
+              <div className="flex items-center gap-3">
+                {unreadCount > 0 && (
+                  <button
+                    onClick={handleMarkAllRead}
+                    className="text-xs text-primary hover:underline font-medium"
+                  >
+                    Mark all read
+                  </button>
+                )}
+                {notifications.length > 0 && (
+                  <button
+                    onClick={handleDeleteAll}
+                    className="text-xs text-destructive hover:underline font-medium flex items-center gap-1"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                    Clear all
+                  </button>
+                )}
+              </div>
             </div>
 
             <div className="max-h-[60vh] sm:max-h-[300px] overflow-y-auto space-y-1 pr-1 custom-scrollbar">
@@ -209,14 +220,28 @@ export default function Header() {
                 notifications.map(notif => (
                   <div
                     key={notif.id}
-                    onClick={() => handleMarkAsRead(notif.id, notif.isRead)}
                     className={cn(
-                      "w-full flex flex-col px-3 py-2 text-sm rounded-xl transition-colors cursor-pointer text-left",
+                      "w-full flex items-start justify-between px-3 py-2 text-sm rounded-xl transition-colors text-left group",
                       notif.isRead ? "text-muted-foreground hover:bg-foreground/5" : "bg-primary/5 text-foreground border border-primary/20 hover:bg-primary/10"
                     )}
                   >
-                    <p className="font-medium text-xs tracking-wide mb-0.5">{notif.type === 'REMINDER' ? 'Task Reminder' : 'Notification'}</p>
-                    <p className="text-xs opacity-80">{notif.message}</p>
+                    <div 
+                      className="flex-1 cursor-pointer pr-2" 
+                      onClick={() => handleMarkAsRead(notif.id, notif.isRead)}
+                    >
+                      <p className="font-bold text-xs tracking-wide mb-0.5">{notif.type === 'REMINDER' ? 'Task Reminder' : 'Notification'}</p>
+                      <p className="text-xs opacity-80">{notif.message}</p>
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(notif.id);
+                      }}
+                      className="opacity-0 group-hover:opacity-100 p-1.5 hover:bg-foreground/10 rounded-full transition-all text-muted-foreground hover:text-destructive shrink-0"
+                      title="Clear notification"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
                   </div>
                 ))
               )}

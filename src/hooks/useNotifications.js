@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { getNotifications, markNotificationAsRead, markAllNotificationsAsRead } from '../services/notificationService'
+import { getNotifications, markNotificationAsRead, markAllNotificationsAsRead, deleteNotification, deleteAllNotifications } from '../services/notificationService'
 
 export function useNotifications() {
   const [notifications, setNotifications] = useState([])
@@ -74,11 +74,34 @@ export function useNotifications() {
     }
   }
 
+  const handleDelete = async (id) => {
+    try {
+      // Optimistic update
+      setNotifications(prev => prev.filter(n => n.id !== id))
+      await deleteNotification(id)
+    } catch (err) {
+      console.error('Failed to delete notification', err)
+      fetchNotifications() // Revert on failure
+    }
+  }
+
+  const handleDeleteAll = async () => {
+    try {
+      setNotifications([]) // Optimistic update
+      await deleteAllNotifications()
+    } catch (err) {
+      console.error('Failed to delete all notifications', err)
+      fetchNotifications() // Revert on failure
+    }
+  }
+
   return {
     notifications,
     unreadCount,
     handleMarkAsRead,
     handleMarkAllRead,
+    handleDelete,
+    handleDeleteAll,
     refresh: fetchNotifications
   }
 }
