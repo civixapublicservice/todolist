@@ -1,4 +1,5 @@
 import { Outlet, Navigate, useLocation } from 'react-router-dom'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '../hooks/useAuth'
 import { Sparkles, CheckCircle2 } from 'lucide-react'
 import ThemeToggle from '../components/ui/ThemeToggle'
@@ -6,7 +7,6 @@ import ThemeToggle from '../components/ui/ThemeToggle'
 export default function AuthLayout() {
   const { user } = useAuth()
   const location = useLocation()
-  const isRegister = location.pathname === '/register'
 
   if (user) {
     return <Navigate to="/dashboard" replace />
@@ -47,11 +47,22 @@ export default function AuthLayout() {
           </div>
         </div>
         {/* Form itself */}
-        <div className={`flex-1 flex flex-col items-center p-6 sm:p-12 z-10 relative ${isRegister ? 'justify-start pt-28 sm:pt-32 lg:pt-40' : 'justify-center'}`}>
-          {/* Constrain width so it looks perfectly balanced and readable. Increased to 440px per user request */}
-          <div className="w-full max-w-[440px] animate-fade-in-up">
-            <Outlet />
-          </div>
+        <div className="flex-1 flex flex-col p-6 sm:p-12 z-10 relative">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={location.pathname}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              className="flex-1 flex flex-col items-center w-full h-full"
+            >
+              {/* Constrain width so it looks perfectly balanced and readable. Increased to 440px per user request */}
+              <div className="w-full max-w-[440px] flex-1 flex flex-col">
+                <Outlet />
+              </div>
+            </motion.div>
+          </AnimatePresence>
         </div>
 
         {/* Professional Footer */}

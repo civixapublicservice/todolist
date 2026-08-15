@@ -81,7 +81,7 @@ export default function RegisterPage() {
   ]
 
   return (
-    <div className="w-full flex flex-col">
+    <div className="w-full flex-1 flex flex-col pt-16 sm:pt-20 lg:pt-28">
       <div className="flex flex-col space-y-2 sm:space-y-3 mb-8 sm:mb-10 w-full mt-2">
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Create an account</h1>
         <p className="text-sm sm:text-base font-medium text-muted-foreground leading-relaxed">
