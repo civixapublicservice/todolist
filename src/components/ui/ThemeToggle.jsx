@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion'
+// Theme Toggle Component
 import { Sun, Moon } from 'lucide-react'
 import { useTheme } from '../../hooks/useTheme'
 import { cn } from '../../utils/cn'
@@ -39,13 +39,11 @@ export default function ThemeToggle() {
       </span>
 
       {/* Glass Thumb */}
-      <motion.div
-        animate={{
-          x: isDark ? 54 : -2, 
-        }}
-        transition={{ type: "spring", stiffness: 400, damping: 25 }}
+      <div
+        style={{ transform: `translate(${isDark ? 54 : -2}px, -50%)` }}
         className={cn(
-          "absolute flex items-center justify-center w-[40px] h-[40px] rounded-full z-10 top-1/2 -translate-y-1/2",
+          "absolute flex items-center justify-center w-[40px] h-[40px] rounded-full z-10 top-1/2",
+          "transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]", // Spring-like easing
           "backdrop-blur-xl border border-white/40 dark:border-white/10",
           // Complex shadow for 3D glass sphere effect
           "bg-white/20 dark:bg-black/20",
@@ -58,7 +56,7 @@ export default function ThemeToggle() {
         ) : (
           <Sun className="w-[18px] h-[18px] text-foreground drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" strokeWidth={2.5} />
         )}
-      </motion.div>
+      </div>
     </button>
   )
 }
