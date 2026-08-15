@@ -227,14 +227,9 @@ export default function CalendarPage() {
                             <div className="flex flex-col gap-3">
                               {pendingTodos.map((todo) => (
                                 <div key={todo.id}
-                                  className="p-3.5 sm:p-4 rounded-[1.25rem] border relative overflow-hidden transition-all duration-300 hover:shadow-glow bg-gradient-to-br from-primary/5 to-accent/5 border-primary/20 shadow-sm group flex items-start gap-3"
+                                  className="p-3.5 sm:p-4 rounded-[1.25rem] border relative overflow-hidden transition-all duration-300 hover:shadow-glow bg-gradient-to-br from-primary/5 to-accent/5 border-primary/20 shadow-sm group flex items-start gap-3 pl-5 sm:pl-6"
                                 >
-                                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary to-accent" />
-                                  
-                                  <button 
-                                    onClick={() => toggleTaskCompletion(todo.id)}
-                                    className="mt-0.5 shrink-0 w-5 h-5 rounded-full border-2 border-primary/50 hover:bg-primary/20 transition-colors flex items-center justify-center"
-                                  />
+                                  <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-primary to-accent" />
                                   
                                   <div>
                                     <div className="font-bold text-sm text-foreground group-hover:text-primary transition-colors">
@@ -261,16 +256,9 @@ export default function CalendarPage() {
                             <div className="flex flex-col gap-3">
                               {completedTodos.map((todo) => (
                                 <div key={todo.id}
-                                  className="p-3.5 sm:p-4 rounded-[1.25rem] border relative overflow-hidden transition-all duration-300 bg-foreground/5 dark:bg-white/5 border-transparent opacity-60 hover:opacity-100 flex items-start gap-3"
+                                  className="p-3.5 sm:p-4 rounded-[1.25rem] border relative overflow-hidden transition-all duration-300 bg-foreground/5 dark:bg-white/5 border-transparent opacity-60 flex items-start gap-3 pl-5 sm:pl-6"
                                 >
-                                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-muted-foreground/30" />
-                                  
-                                  <button 
-                                    onClick={() => toggleTaskCompletion(todo.id)}
-                                    className="mt-0.5 shrink-0 w-5 h-5 rounded-full bg-primary/20 text-primary flex items-center justify-center transition-colors hover:bg-primary/30"
-                                  >
-                                    <Check className="w-3.5 h-3.5" strokeWidth={3} />
-                                  </button>
+                                  <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-muted-foreground/30" />
                                   
                                   <div>
                                     <div className="font-semibold text-sm text-muted-foreground line-through">
