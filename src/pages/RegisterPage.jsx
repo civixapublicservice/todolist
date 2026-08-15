@@ -84,8 +84,8 @@ export default function RegisterPage() {
     <div className="w-full flex flex-col">
       <div className="flex flex-col space-y-2 mb-8 w-full mt-2">
         <h1 className="text-3xl font-bold tracking-tight text-foreground">Create an account</h1>
-        <p className="text-sm font-medium text-muted-foreground leading-relaxed px-4">
-          Join TaskFlow to get started with the premium workspace for teams.
+        <p className="text-sm font-medium text-muted-foreground leading-relaxed">
+          Join us today to start managing your tasks efficiently.
         </p>
       </div>
 

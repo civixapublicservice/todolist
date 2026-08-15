@@ -52,7 +52,7 @@ export default function LoginPage() {
     <div className="w-full flex flex-col">
       <div className="flex flex-col space-y-2 mb-8 w-full mt-2">
         <h1 className="text-3xl font-bold tracking-tight text-foreground">Welcome back</h1>
-        <p className="text-sm font-medium text-muted-foreground leading-relaxed px-4">
+        <p className="text-sm font-medium text-muted-foreground leading-relaxed">
           Please enter your credentials to log in to your account.
         </p>
       </div>
