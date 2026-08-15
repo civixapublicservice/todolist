@@ -83,7 +83,7 @@ export default function RegisterPage() {
   return (
     <div className="w-full flex flex-col">
       <div className="flex flex-col space-y-2 sm:space-y-3 mb-8 sm:mb-10 w-full mt-2">
-        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">Create an account</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Create an account</h1>
         <p className="text-sm sm:text-base font-medium text-muted-foreground leading-relaxed">
           Join us today to start managing your tasks efficiently.
         </p>
@@ -99,7 +99,7 @@ export default function RegisterPage() {
             onChange={(e) => setName(e.target.value)}
             disabled={isSubmitting}
             error={fieldErrors.name}
-            placeholder="John Doe"
+            placeholder="Enter your full name"
             className="h-12 sm:h-14 text-base px-4 sm:px-5 rounded-xl sm:rounded-2xl"
           />
         </div>
@@ -113,7 +113,7 @@ export default function RegisterPage() {
             onChange={(e) => setEmail(e.target.value)}
             disabled={isSubmitting}
             error={fieldErrors.email}
-            placeholder="name@company.com"
+            placeholder="Enter your email address"
             className="h-12 sm:h-14 text-base px-4 sm:px-5 rounded-xl sm:rounded-2xl"
           />
         </div>
