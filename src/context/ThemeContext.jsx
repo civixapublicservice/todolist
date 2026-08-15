@@ -76,10 +76,15 @@ export function ThemeProvider({ children }) {
   }, []);
 
   const setTheme = useCallback((newTheme) => {
+    document.documentElement.classList.add('theme-transition')
     setThemeState(newTheme)
+    setTimeout(() => {
+      document.documentElement.classList.remove('theme-transition')
+    }, 200)
   }, [])
 
   const toggleTheme = useCallback(() => {
+    document.documentElement.classList.add('theme-transition')
     setThemeState((prev) => {
       if (prev === 'system') {
         const isCurrentlyDark = window.matchMedia('(prefers-color-scheme: dark)').matches
@@ -87,6 +92,9 @@ export function ThemeProvider({ children }) {
       }
       return prev === 'dark' ? 'light' : 'dark'
     })
+    setTimeout(() => {
+      document.documentElement.classList.remove('theme-transition')
+    }, 200)
   }, [])
 
   const value = {

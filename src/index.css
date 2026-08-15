@@ -181,7 +181,7 @@
     @apply border-border;
   }
   body {
-    @apply text-foreground min-h-screen bg-background transition-colors duration-300 relative;
+    @apply text-foreground min-h-screen bg-background relative;
     font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;
@@ -449,5 +449,24 @@
   .dark input:-webkit-autofill:active {
       -webkit-box-shadow: 0 0 0 30px #121214 inset !important;
       -webkit-text-fill-color: #EDEDED !important;
+  }
+}
+
+/* Theme Transition System */
+.theme-transition,
+.theme-transition *,
+.theme-transition *::before,
+.theme-transition *::after {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow !important;
+  transition-duration: 200ms !important;
+  transition-timing-function: ease-in-out !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-transition,
+  .theme-transition *,
+  .theme-transition *::before,
+  .theme-transition *::after {
+    transition-duration: 0ms !important;
   }
 }
