@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Loader2, Check, X, Sparkles } from 'lucide-react'
+import { Loader2, Check, X } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import { validateEmail, validateName, analyzePassword } from '../utils/validators'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -81,185 +81,162 @@ export default function RegisterPage() {
   ]
 
   return (
-    <div className="w-full max-w-[400px] mx-auto relative z-20 flex flex-col items-center">
-      
-      {/* Floating Glowing Icon from Image 2 */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, type: 'spring', damping: 20 }}
-        className="relative z-30 -mb-10"
-      >
-        <div className="absolute inset-0 bg-white/20 blur-2xl rounded-full" />
-        <div className="relative h-20 w-20 rounded-[28px] bg-white/10 backdrop-blur-3xl border border-white/30 flex items-center justify-center shadow-[0_0_40px_rgba(255,255,255,0.1)]">
-          <div className="h-8 w-8 text-white flex items-center justify-center">
-            <Sparkles className="h-6 w-6" />
-          </div>
-        </div>
-      </motion.div>
+    <div className="w-full flex flex-col items-center sm:items-start text-center sm:text-left">
+      <div className="flex flex-col space-y-2 mb-8 w-full mt-4">
+        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">Create an account</h1>
+        <p className="text-sm font-medium text-muted-foreground leading-relaxed">
+          Join TaskFlow to get started with the premium workspace for teams.
+        </p>
+      </div>
 
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-        className="glass-auth flex flex-col items-center"
-      >
-        <div className="flex flex-col space-y-2 text-center mb-8 relative z-10 w-full mt-4">
-          <h1 className="text-[28px] font-bold tracking-tight text-white flex flex-wrap justify-center items-center gap-2">Join TaskFlow <Sparkles className="h-6 w-6 text-white/80" /></h1>
-          <p className="text-sm text-white/50 leading-relaxed px-4">
-            Create an account to get started with the premium workspace for teams.
-          </p>
+      <form onSubmit={handleSubmit} className="w-full grid gap-5">
+        <div className="grid gap-2 text-left">
+          <label htmlFor="register-name" className="text-sm font-semibold text-foreground ml-0.5">Full Name</label>
+          <Input
+            id="register-name"
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            disabled={isSubmitting}
+            error={fieldErrors.name}
+            placeholder="John Doe"
+          />
         </div>
 
-        <form onSubmit={handleSubmit} className="w-full grid gap-4">
-          <div className="grid gap-1.5">
-            <label htmlFor="register-name" className="text-sm font-medium text-white/70 ml-1">Full Name</label>
-            <Input
-              id="register-name"
-              type="text"
-              variant="auth"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              disabled={isSubmitting}
-              error={fieldErrors.name}
-            />
-          </div>
+        <div className="grid gap-2 text-left">
+          <label htmlFor="register-email" className="text-sm font-semibold text-foreground ml-0.5">Email address</label>
+          <Input
+            id="register-email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            disabled={isSubmitting}
+            error={fieldErrors.email}
+            placeholder="name@company.com"
+          />
+        </div>
 
-          <div className="grid gap-1.5">
-            <label htmlFor="register-email" className="text-sm font-medium text-white/70 ml-1">Email</label>
-            <Input
-              id="register-email"
-              type="email"
-              variant="auth"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              disabled={isSubmitting}
-              error={fieldErrors.email}
-            />
-          </div>
+        <div className="grid gap-2 text-left">
+          <label htmlFor="register-password" className="text-sm font-semibold text-foreground ml-0.5">Password</label>
+          <Input
+            id="register-password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            disabled={isSubmitting}
+            placeholder="••••••••"
+          />
+          
+          {/* Password Strength and Rules Checklist */}
+          <AnimatePresence>
+            {password.length > 0 && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="overflow-hidden mt-1 px-1"
+              >
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-xs font-medium text-muted-foreground">Strength</span>
+                  <span className={cn("text-xs font-semibold transition-colors", 
+                    passwordAnalysis.strength === 'Very Weak' ? 'text-red-500' :
+                    passwordAnalysis.strength === 'Weak' ? 'text-orange-500' :
+                    passwordAnalysis.strength === 'Fair' ? 'text-yellow-500' :
+                    passwordAnalysis.strength === 'Good' ? 'text-primary' :
+                    passwordAnalysis.strength === 'Strong' ? 'text-emerald-500' : 'text-primary'
+                  )}>
+                    {passwordAnalysis.strength}
+                  </span>
+                </div>
+                
+                <div className="flex gap-1 h-1.5 w-full bg-border rounded-full overflow-hidden mb-3">
+                  {[1, 2, 3, 4, 5].map((level) => (
+                    <div 
+                      key={level} 
+                      className={cn("h-full flex-1 transition-all duration-300", 
+                        level <= passwordAnalysis.score ? (
+                          passwordAnalysis.score <= 2 ? 'bg-orange-500' :
+                          passwordAnalysis.score <= 3 ? 'bg-yellow-500' :
+                          passwordAnalysis.score <= 4 ? 'bg-primary' : 'bg-emerald-500'
+                        ) : 'bg-transparent'
+                      )}
+                    />
+                  ))}
+                </div>
 
-          <div className="grid gap-1.5">
-            <label htmlFor="register-password" className="text-sm font-medium text-white/70 ml-1">Password</label>
-            <Input
-              id="register-password"
-              type="password"
-              variant="auth"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              disabled={isSubmitting}
-            />
-            
-            {/* Password Strength and Rules Checklist */}
-            <AnimatePresence>
-              {password.length > 0 && (
-                <motion.div 
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="overflow-hidden mt-1 px-1"
-                >
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-xs font-medium text-white/60">Strength</span>
-                    <span className={cn("text-xs font-semibold transition-colors", 
-                      passwordAnalysis.strength === 'Very Weak' ? 'text-red-400' :
-                      passwordAnalysis.strength === 'Weak' ? 'text-orange-400' :
-                      passwordAnalysis.strength === 'Fair' ? 'text-yellow-400' :
-                      passwordAnalysis.strength === 'Good' ? 'text-[#d8b4fe]' :
-                      passwordAnalysis.strength === 'Strong' ? 'text-[#a855f7]' : 'text-purple-400'
-                    )}>
-                      {passwordAnalysis.strength}
-                    </span>
-                  </div>
-                  
-                  <div className="flex gap-1 h-1 w-full bg-white/10 rounded-full overflow-hidden mb-3">
-                    {[1, 2, 3, 4, 5].map((level) => (
-                      <div 
-                        key={level} 
-                        className={cn("h-full flex-1 transition-all duration-300", 
-                          level <= passwordAnalysis.score ? (
-                            passwordAnalysis.score <= 2 ? 'bg-orange-400' :
-                            passwordAnalysis.score <= 3 ? 'bg-yellow-400' :
-                            passwordAnalysis.score <= 4 ? 'bg-[#d8b4fe]' : 'bg-[#a855f7]'
-                          ) : 'bg-transparent'
-                        )}
-                      />
-                    ))}
-                  </div>
-
-                  <div className="flex flex-wrap gap-x-3 gap-y-1.5">
-                    {checklistItems.map((item, i) => (
-                      <div key={i} className="flex items-center space-x-1.5 text-xs">
-                        <div className={cn("flex items-center justify-center transition-colors", 
-                          item.met ? "text-[#a855f7]" : "text-white/30"
-                        )}>
-                          {item.met ? <Check size={12} strokeWidth={3} /> : <X size={12} strokeWidth={3} />}
-                        </div>
-                        <span className={item.met ? "text-white font-medium" : "text-white/50"}>
-                          {item.label}
-                        </span>
+                <div className="flex flex-wrap gap-x-3 gap-y-1.5">
+                  {checklistItems.map((item, i) => (
+                    <div key={i} className="flex items-center space-x-1.5 text-xs">
+                      <div className={cn("flex items-center justify-center transition-colors", 
+                        item.met ? "text-primary" : "text-muted-foreground/40"
+                      )}>
+                        {item.met ? <Check size={14} strokeWidth={3} /> : <X size={14} strokeWidth={3} />}
                       </div>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
-          <div className="grid gap-1.5">
-            <label htmlFor="register-confirm-password" className="text-sm font-medium text-white/70 ml-1">Confirm Password</label>
-            <Input
-              id="register-confirm-password"
-              type="password"
-              variant="auth"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              disabled={isSubmitting}
-            />
-            
-            <AnimatePresence>
-              {confirmPassword.length > 0 && (
-                <motion.div 
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="overflow-hidden mt-1 px-1"
-                >
-                  <p className={cn("text-xs font-medium pl-1", passwordsMatch ? "text-[#a855f7]" : "text-red-400")}>
-                    {passwordsMatch ? 'Passwords match' : 'Passwords do not match'}
-                  </p>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
-
-          <Button
-            type="submit"
-            variant="gradient"
-            className="w-full mt-2"
-            disabled={isSubmitting || !isFormValid}
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                Creating account...
-              </>
-            ) : (
-              'SIGN UP'
+                      <span className={item.met ? "text-foreground font-medium" : "text-muted-foreground"}>
+                        {item.label}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
             )}
-          </Button>
-        </form>
-
-        <div className="mt-8 text-center text-sm w-full border-t border-white/10 pt-6">
-          <span className="text-white/40">Already have an account? </span>
-          <Link 
-            to="/login" 
-            className="font-medium text-[#d8b4fe] hover:text-white transition-colors"
-          >
-            Sign in
-          </Link>
+          </AnimatePresence>
         </div>
-      </motion.div>
+
+        <div className="grid gap-2 text-left">
+          <label htmlFor="register-confirm-password" className="text-sm font-semibold text-foreground ml-0.5">Confirm Password</label>
+          <Input
+            id="register-confirm-password"
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            disabled={isSubmitting}
+            placeholder="••••••••"
+          />
+          
+          <AnimatePresence>
+            {confirmPassword.length > 0 && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="overflow-hidden mt-1 px-1"
+              >
+                <p className={cn("text-xs font-medium", passwordsMatch ? "text-emerald-500" : "text-red-500")}>
+                  {passwordsMatch ? 'Passwords match' : 'Passwords do not match'}
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+
+        <Button
+          type="submit"
+          variant="primary"
+          className="w-full mt-2 h-11 text-base"
+          disabled={isSubmitting || !isFormValid}
+        >
+          {isSubmitting ? (
+            <>
+              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+              Creating account...
+            </>
+          ) : (
+            'Sign Up'
+          )}
+        </Button>
+      </form>
+
+      <div className="mt-8 text-center text-sm w-full">
+        <span className="text-muted-foreground font-medium">Already have an account? </span>
+        <Link 
+          to="/login" 
+          className="font-semibold text-primary hover:text-primary/80 transition-colors"
+        >
+          Sign in
+        </Link>
+      </div>
     </div>
   )
 }

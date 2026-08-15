@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
-import { AlertCircle, Loader2, CheckCircle2, LockKeyhole } from 'lucide-react'
+import { AlertCircle, Loader2 } from 'lucide-react'
 import { resetPassword } from '../services/authService'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Input } from '../components/ui/Input'
@@ -85,129 +85,104 @@ export default function ResetPasswordPage() {
   if (!resetToken) return null
 
   return (
-    <div className="w-full max-w-[400px] mx-auto relative z-20 flex flex-col items-center">
-      
-      {/* Floating Glowing Icon */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, type: 'spring', damping: 20 }}
-        className="relative z-30 -mb-10"
-      >
-        <div className="absolute inset-0 bg-white/20 blur-2xl rounded-full" />
-        <div className="relative h-20 w-20 rounded-[28px] bg-white/10 backdrop-blur-3xl border border-white/30 flex items-center justify-center shadow-[0_0_40px_rgba(255,255,255,0.1)]">
-          <div className="h-8 w-8 text-white flex items-center justify-center">
-            {isSuccess ? <CheckCircle2 className="h-6 w-6 text-emerald-400" /> : <LockKeyhole className="h-6 w-6" />}
-          </div>
+    <div className="w-full flex flex-col items-center sm:items-start text-center sm:text-left">
+      <div className="flex flex-col space-y-2 mb-8 w-full mt-4">
+        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
+          {isSuccess ? 'Password Reset!' : 'New Password'}
+        </h1>
+        <p className="text-sm font-medium text-muted-foreground leading-relaxed">
+          {isSuccess 
+            ? 'Your password has been changed successfully. Redirecting to login...' 
+            : 'Create a strong, new password for your account.'}
+        </p>
+      </div>
+
+      {error && !isSuccess && (
+        <div className="flex items-start space-x-3 bg-red-500/10 border border-red-500/20 text-red-500 p-3 rounded-xl text-sm font-medium mb-6 w-full text-left">
+          <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+          <span>{error}</span>
         </div>
-      </motion.div>
+      )}
 
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-        className="glass-auth flex flex-col items-center overflow-hidden"
-      >
-        <div className="flex flex-col space-y-2 text-center mb-8 relative z-10 w-full mt-4">
-          <h1 className="text-[28px] font-bold tracking-tight text-white flex flex-wrap items-center justify-center gap-2 text-center">
-            {isSuccess ? 'Password Reset!' : 'New Password'}
-          </h1>
-          <p className="text-sm text-white/50 leading-relaxed px-4">
-            {isSuccess 
-              ? 'Your password has been changed successfully. Redirecting to login...' 
-              : 'Create a strong, new password for your account.'}
-          </p>
-        </div>
-
-        {error && !isSuccess && (
-          <div className="flex items-start space-x-3 bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-xl text-sm font-medium mb-6 w-full">
-            <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
-            <span>{error}</span>
-          </div>
-        )}
-
-        <AnimatePresence mode="wait">
-          {!isSuccess ? (
-            <motion.form 
-              key="reset-form"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              onSubmit={handleSubmit} 
-              className="w-full grid gap-4"
-            >
-              <div className="grid gap-4">
-                <div className="grid gap-1.5">
-                  <label htmlFor="new-password" className="text-sm font-medium text-white/70 ml-1">New Password</label>
-                  <Input
-                    id="new-password"
-                    type="password"
-                    variant="auth"
-                    value={newPassword}
-                    onChange={(e) => {
-                      setNewPassword(e.target.value)
-                      if (fieldErrors.newPassword) setFieldErrors(p => ({...p, newPassword: null}))
-                    }}
-                    disabled={isSubmitting}
-                    error={fieldErrors.newPassword}
-                  />
-                </div>
-
-                <div className="grid gap-1.5">
-                  <label htmlFor="confirm-password" className="text-sm font-medium text-white/70 ml-1">Confirm New Password</label>
-                  <Input
-                    id="confirm-password"
-                    type="password"
-                    variant="auth"
-                    value={confirmPassword}
-                  onChange={(e) => {
-                    setConfirmPassword(e.target.value)
-                    if (fieldErrors.confirmPassword) setFieldErrors(p => ({...p, confirmPassword: null}))
-                  }}
-                  disabled={isSubmitting}
-                  error={fieldErrors.confirmPassword}
-                />
-              </div>
+      <AnimatePresence mode="wait">
+        {!isSuccess ? (
+          <motion.form 
+            key="reset-form"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
+            onSubmit={handleSubmit} 
+            className="w-full grid gap-5"
+          >
+            <div className="grid gap-2 text-left">
+              <label htmlFor="new-password" className="text-sm font-semibold text-foreground ml-0.5">New Password</label>
+              <Input
+                id="new-password"
+                type="password"
+                value={newPassword}
+                onChange={(e) => {
+                  setNewPassword(e.target.value)
+                  if (fieldErrors.newPassword) setFieldErrors(p => ({...p, newPassword: null}))
+                }}
+                disabled={isSubmitting}
+                error={fieldErrors.newPassword}
+                placeholder="••••••••"
+              />
             </div>
 
-              <Button
-                type="submit"
-                variant="gradient"
-                className="w-full mt-4"
-                disabled={isSubmitting || !newPassword || !confirmPassword}
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    Resetting...
-                  </>
-                ) : (
-                  'RESET PASSWORD'
-                )}
-              </Button>
-            </motion.form>
-          ) : (
-             <motion.div 
-               key="success"
-               initial={{ opacity: 0, scale: 0.9 }}
-               animate={{ opacity: 1, scale: 1 }}
-               className="w-full flex flex-col items-center justify-center py-6"
-             >
-                <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
-                <p className="text-white/60 text-sm">Logging you in...</p>
-             </motion.div>
-          )}
-        </AnimatePresence>
+            <div className="grid gap-2 text-left">
+              <label htmlFor="confirm-password" className="text-sm font-semibold text-foreground ml-0.5">Confirm New Password</label>
+              <Input
+                id="confirm-password"
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value)
+                  if (fieldErrors.confirmPassword) setFieldErrors(p => ({...p, confirmPassword: null}))
+                }}
+                disabled={isSubmitting}
+                error={fieldErrors.confirmPassword}
+                placeholder="••••••••"
+              />
+            </div>
 
-        <div className="mt-8 text-center text-sm w-full border-t border-white/10 pt-6">
-          <Link 
-            to="/login" 
-            className="font-medium text-[#d8b4fe] hover:text-white transition-colors"
-          >
-            Cancel and return to log in
-          </Link>
-        </div>
-      </motion.div>
+            <Button
+              type="submit"
+              variant="primary"
+              className="w-full mt-2 h-11 text-base"
+              disabled={isSubmitting || !newPassword || !confirmPassword}
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  Resetting...
+                </>
+              ) : (
+                'Reset Password'
+              )}
+            </Button>
+          </motion.form>
+        ) : (
+            <motion.div 
+              key="success"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="w-full flex flex-col items-center justify-center py-6"
+            >
+              <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+              <p className="text-muted-foreground text-sm font-medium">Logging you in...</p>
+            </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="mt-8 text-center text-sm w-full">
+        <Link 
+          to="/login" 
+          className="font-semibold text-primary hover:text-primary/80 transition-colors"
+        >
+          Cancel and return to log in
+        </Link>
+      </div>
     </div>
   )
 }

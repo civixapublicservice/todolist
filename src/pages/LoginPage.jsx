@@ -1,9 +1,8 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Loader2, Sparkles } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import { validateEmail } from '../utils/validators'
-import { motion } from 'framer-motion'
 import { toast } from 'sonner'
 import { Input } from '../components/ui/Input'
 import { Button } from '../components/ui/Button'
@@ -50,96 +49,72 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="w-full max-w-[400px] mx-auto relative z-20 flex flex-col items-center">
-      
-      {/* Floating Glowing Icon from Image 2 */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, type: 'spring', damping: 20 }}
-        className="relative z-30 -mb-10"
-      >
-        <div className="absolute inset-0 bg-white/20 blur-2xl rounded-full" />
-        <div className="relative h-20 w-20 rounded-[28px] bg-white/10 backdrop-blur-3xl border border-white/30 flex items-center justify-center shadow-[0_0_40px_rgba(255,255,255,0.1)]">
-          <div className="h-8 w-8 text-white flex items-center justify-center">
-            <Sparkles className="h-6 w-6" />
-          </div>
-        </div>
-      </motion.div>
+    <div className="w-full flex flex-col items-center sm:items-start text-center sm:text-left">
+      <div className="flex flex-col space-y-2 mb-8 w-full mt-4">
+        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">Welcome back</h1>
+        <p className="text-sm font-medium text-muted-foreground leading-relaxed">
+          Please enter your credentials to log in to your account.
+        </p>
+      </div>
 
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-        className="glass-auth flex flex-col items-center"
-      >
-        <div className="flex flex-col space-y-2 text-center mb-8 relative z-10 w-full mt-4">
-          <h1 className="text-[28px] font-bold tracking-tight text-white flex flex-wrap justify-center items-center gap-2">Welcome to TaskFlow <Sparkles className="h-6 w-6 text-white/80" /></h1>
-          <p className="text-sm text-white/50 leading-relaxed px-4">
-            Credentials are only used to authenticate in TaskFlow. All saved data will be stored securely.
-          </p>
+      <form onSubmit={handleSubmit} className="w-full grid gap-5">
+        <div className="grid gap-2 text-left">
+          <label htmlFor="login-email" className="text-sm font-semibold text-foreground ml-0.5">Email address</label>
+          <Input
+            id="login-email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            disabled={isSubmitting}
+            error={fieldErrors.email}
+            placeholder="name@company.com"
+          />
         </div>
 
-        <form onSubmit={handleSubmit} className="w-full grid gap-4">
-          <div className="grid gap-1.5">
-            <label htmlFor="login-email" className="text-sm font-medium text-white/70 ml-1">Email</label>
-            <Input
-              id="login-email"
-              type="email"
-              variant="auth"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              disabled={isSubmitting}
-              error={fieldErrors.email}
-            />
-          </div>
-
-          <div className="grid gap-1.5">
-            <label htmlFor="login-password" className="text-sm font-medium text-white/70 ml-1">Password</label>
-            <Input
-              id="login-password"
-              type="password"
-              variant="auth"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              disabled={isSubmitting}
-              error={fieldErrors.password}
-            />
-          </div>
-
-          <div className="flex items-center justify-end mt-2 mb-4 px-1">
-            <Link to="/forgot-password" className="text-xs font-medium text-white/60 hover:text-white transition-colors">
+        <div className="grid gap-2 text-left">
+          <div className="flex items-center justify-between ml-0.5">
+            <label htmlFor="login-password" className="text-sm font-semibold text-foreground">Password</label>
+            <Link to="/forgot-password" className="text-sm font-medium text-primary hover:text-primary/80 transition-colors">
               Forgot Password?
             </Link>
           </div>
-
-          <Button
-            type="submit"
-            variant="gradient"
-            className="w-full"
+          <Input
+            id="login-password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             disabled={isSubmitting}
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                Signing in...
-              </>
-            ) : (
-              'SIGN IN'
-            )}
-          </Button>
-        </form>
-
-        <div className="mt-8 text-center text-sm w-full border-t border-white/10 pt-6">
-          <span className="text-white/40">Don't have an account? </span>
-          <Link 
-            to="/register" 
-            className="font-medium text-[#d8b4fe] hover:text-white transition-colors"
-          >
-            Sign up
-          </Link>
+            error={fieldErrors.password}
+            placeholder="••••••••"
+          />
         </div>
-      </motion.div>
+
+        <Button
+          type="submit"
+          variant="primary"
+          className="w-full mt-2 h-11 text-base"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? (
+            <>
+              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+              Signing in...
+            </>
+          ) : (
+            'Sign In'
+          )}
+        </Button>
+      </form>
+
+      <div className="mt-8 text-center text-sm w-full">
+        <span className="text-muted-foreground font-medium">Don't have an account? </span>
+        <Link 
+          to="/register" 
+          className="font-semibold text-primary hover:text-primary/80 transition-colors"
+        >
+          Create account
+        </Link>
+      </div>
     </div>
   )
 }
