@@ -12,9 +12,14 @@ export default function ActivityPage() {
   }, [fetchActivities])
 
   const groupedActivities = useMemo(() => {
+    if (!activities || !Array.isArray(activities)) return [];
     const groups = {};
+    
     activities.forEach(item => {
+      if (!item || !item.createdAt) return;
       const date = new Date(item.createdAt);
+      if (isNaN(date.getTime())) return;
+      
       // Group by midnight of that date
       const dateKey = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
       
@@ -25,13 +30,16 @@ export default function ActivityPage() {
     });
     
     // Sort keys descending (newest dates first)
-    return Object.keys(groups).sort((a, b) => b - a).map(key => ({
-      date: new Date(Number(key)),
-      items: groups[key]
-    }));
+    return Object.keys(groups)
+      .sort((a, b) => Number(b) - Number(a))
+      .map(key => ({
+        date: new Date(Number(key)),
+        items: groups[key]
+      }));
   }, [activities]);
 
   const getRelativeDateLabel = (date) => {
+    if (!date || isNaN(date.getTime())) return 'Unknown Date';
     const today = new Date();
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
@@ -42,6 +50,10 @@ export default function ActivityPage() {
   };
 
   const formatActionText = (action, details) => {
+    if (!details || typeof details !== 'string') {
+      return <span className="text-muted-foreground">{action}</span>;
+    }
+
     // Try to extract the task name in quotes
     const match = details.match(/"([^"]+)"/);
     const targetName = match ? match[1] : null;
@@ -62,7 +74,7 @@ export default function ActivityPage() {
         return <><span className="text-muted-foreground">Deleted task </span><span className="font-bold text-foreground line-through opacity-70">"{targetName}"</span></>;
       case 'TASK_REOPENED': 
         return <><span className="text-muted-foreground">Reopened task </span><span className="font-bold text-amber-500">"{targetName}"</span></>;
-      default:
+      default: {
         // Generic fallback for any other quoted text
         const parts = details.split(/"([^"]+)"/g);
         return (
@@ -70,6 +82,7 @@ export default function ActivityPage() {
             {parts.map((part, i) => i % 2 === 1 ? <span key={i} className="font-bold text-foreground">"{part}"</span> : <span key={i}>{part}</span>)}
           </span>
         );
+      }
     }
   };
 
