@@ -2,7 +2,7 @@ import { CheckCircle2, Inbox } from 'lucide-react'
 import TodoItem from './TodoItem'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useEffect, useState, useMemo } from 'react'
-import confetti from 'canvas-confetti'
+
 
 export default function TodoList({
   todos,
@@ -12,8 +12,7 @@ export default function TodoList({
   isLoading,
 }) {
   const completedCount = todos.filter((t) => t.completed).length
-  const allCompleted = todos.length > 0 && completedCount === todos.length
-  const [hasCelebrated, setHasCelebrated] = useState(false)
+
 
   // Sort todos so uncompleted ones stay at the top and completed ones move to the bottom
   const sortedTodos = useMemo(() => {
@@ -23,36 +22,7 @@ export default function TodoList({
     });
   }, [todos]);
 
-  // Confetti when all tasks are completed
-  useEffect(() => {
-    if (allCompleted && !hasCelebrated) {
-      const colors = ['#7c3aed', '#a855f7', '#c084fc', '#ffffff'];
-      
-      // Fire from left edge
-      confetti({
-        particleCount: 400,
-        spread: 120,
-        origin: { x: 0, y: 0.7 },
-        angle: 60,
-        startVelocity: 60,
-        colors: colors
-      });
-      
-      // Fire from right edge
-      confetti({
-        particleCount: 400,
-        spread: 120,
-        origin: { x: 1, y: 0.7 },
-        angle: 120,
-        startVelocity: 60,
-        colors: colors
-      });
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setHasCelebrated(true)
-    } else if (!allCompleted) {
-      setHasCelebrated(false)
-    }
-  }, [allCompleted, hasCelebrated])
+
 
   if (isLoading) {
     return (

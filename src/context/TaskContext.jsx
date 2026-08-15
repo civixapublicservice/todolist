@@ -58,7 +58,24 @@ export const TaskProvider = ({ children }) => {
     const wasCompleted = taskBefore?.completed
     
     // Optimistic toggle
-    setTodos(prev => prev.map(t => t.id === id ? { ...t, completed: !t.completed } : t))
+    setTodos(prev => {
+      const updated = prev.map(t => t.id === id ? { ...t, completed: !t.completed } : t);
+      
+      // Check if this action completed all tasks
+      if (!wasCompleted) {
+        const allCompletedNow = updated.length > 0 && updated.every(t => t.completed);
+        if (allCompletedNow) {
+          import('canvas-confetti').then((confettiModule) => {
+            const confetti = confettiModule.default;
+            const colors = ['#7c3aed', '#a855f7', '#c084fc', '#ffffff'];
+            confetti({ particleCount: 400, spread: 120, origin: { x: 0, y: 0.7 }, angle: 60, startVelocity: 60, colors });
+            confetti({ particleCount: 400, spread: 120, origin: { x: 1, y: 0.7 }, angle: 120, startVelocity: 60, colors });
+          });
+        }
+      }
+      
+      return updated;
+    })
     
     // Instant optimistic toast
     if (!wasCompleted) {
