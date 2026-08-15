@@ -57,7 +57,7 @@ export default function LoginPage() {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6 w-full">
+      <form onSubmit={handleSubmit} autoComplete="off" className="space-y-5 sm:space-y-6 w-full">
         <div className="space-y-1.5 sm:space-y-2 w-full">
           <label htmlFor="login-email" className="text-sm font-semibold text-foreground tracking-wide ml-1">Email address</label>
           <Input
@@ -66,6 +66,7 @@ export default function LoginPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             disabled={isSubmitting}
+            autoComplete="off"
             error={fieldErrors.email}
             placeholder="Enter your email address"
             className="h-12 sm:h-14 text-base px-4 sm:px-5 rounded-xl sm:rounded-2xl"
@@ -85,6 +86,7 @@ export default function LoginPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             disabled={isSubmitting}
+            autoComplete="new-password"
             error={fieldErrors.password}
             placeholder="Enter your password"
             className="h-12 sm:h-14 text-base px-4 sm:px-5 rounded-xl sm:rounded-2xl"

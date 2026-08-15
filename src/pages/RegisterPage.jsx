@@ -89,7 +89,7 @@ export default function RegisterPage() {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6 w-full">
+      <form onSubmit={handleSubmit} autoComplete="off" className="space-y-5 sm:space-y-6 w-full">
         <div className="space-y-1.5 sm:space-y-2 w-full">
           <label htmlFor="register-name" className="text-sm font-semibold text-foreground tracking-wide ml-1">Full Name</label>
           <Input
@@ -98,6 +98,7 @@ export default function RegisterPage() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             disabled={isSubmitting}
+            autoComplete="off"
             error={fieldErrors.name}
             placeholder="Enter your full name"
             className="h-12 sm:h-14 text-base px-4 sm:px-5 rounded-xl sm:rounded-2xl"
@@ -112,6 +113,7 @@ export default function RegisterPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             disabled={isSubmitting}
+            autoComplete="off"
             error={fieldErrors.email}
             placeholder="Enter your email address"
             className="h-12 sm:h-14 text-base px-4 sm:px-5 rounded-xl sm:rounded-2xl"
@@ -126,6 +128,7 @@ export default function RegisterPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             disabled={isSubmitting}
+            autoComplete="new-password"
             placeholder="Create a password"
             className="h-12 sm:h-14 text-base px-4 sm:px-5 rounded-xl sm:rounded-2xl"
           />
@@ -193,6 +196,7 @@ export default function RegisterPage() {
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             disabled={isSubmitting}
+            autoComplete="new-password"
             placeholder="Confirm your password"
             className="h-12 sm:h-14 text-base px-4 sm:px-5 rounded-xl sm:rounded-2xl"
           />
