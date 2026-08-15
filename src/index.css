@@ -199,6 +199,7 @@
     -webkit-backdrop-filter: blur(20px) saturate(160%);
     border: 1px solid rgba(0, 0, 0, 0.07);
     box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,1);
+    transition: all 0.3s ease;
   }
   
   .dark .apple-glass-panel {
@@ -213,6 +214,7 @@
     -webkit-backdrop-filter: blur(24px) saturate(160%);
     border: 1px solid rgba(0, 0, 0, 0.08);
     box-shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 16px 40px -4px rgba(0,0,0,0.12);
+    transition: all 0.3s ease;
   }
   
   .dark .apple-glass-dropdown {
@@ -312,11 +314,11 @@
 
   /* Glassmorphism utility classes */
   .glass-pill {
-    @apply bg-white/10 dark:bg-black/20 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-full shadow-float;
+    @apply bg-white/10 dark:bg-black/20 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-full shadow-float transition-all duration-300;
   }
 
   .glass {
-    @apply bg-glass-bg border border-glass-border shadow-float;
+    @apply bg-glass-bg border border-glass-border shadow-float transition-all duration-300;
   }
   
   .glass-card {
@@ -328,7 +330,7 @@
   }
 
   .glass-panel {
-    @apply bg-glass-bg border border-glass-border shadow-float rounded-[var(--radius-lg)];
+    @apply bg-glass-bg border border-glass-border shadow-float rounded-[var(--radius-lg)] transition-all duration-300;
   }
   
   .glass-input {
