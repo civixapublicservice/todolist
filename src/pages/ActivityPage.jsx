@@ -93,7 +93,7 @@ export default function ActivityPage() {
       case 'TASK_UPDATED': 
         return <><span className="text-muted-foreground">Updated task </span><span className="font-bold text-foreground">"{targetName}"</span></>;
       case 'TASK_COMPLETED': 
-        return <><span className="text-muted-foreground">Completed task </span><span className="font-bold text-emerald-500">"{targetName}"</span></>;
+        return <><span className="font-semibold text-foreground">Completed task </span><span className="font-bold text-emerald-500">"{targetName}"</span></>;
       case 'TASK_DELETED': 
         return <><span className="text-muted-foreground">Deleted task </span><span className="font-bold text-foreground line-through opacity-70">"{targetName}"</span></>;
       case 'TASK_REOPENED': 
@@ -172,7 +172,7 @@ export default function ActivityPage() {
               {groupedActivities.map((group, groupIdx) => (
                 <div key={group.date.getTime()} className="relative">
                   {/* Date Header */}
-                  <div className="flex items-center gap-4 mb-6 sticky top-20 z-20">
+                  <div className="flex items-center gap-4 mb-6 z-20">
                     <div className="bg-background/80 backdrop-blur-md px-4 py-1.5 rounded-full border border-border shadow-sm">
                       <h3 className="text-xs font-bold uppercase tracking-widest text-foreground">
                         {getRelativeDateLabel(group.date)}
