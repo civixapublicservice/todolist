@@ -112,7 +112,7 @@ export default function VerifyEmailPage() {
   if (!initialEmail) return null
 
   return (
-    <div className="w-full flex flex-col items-center text-center">
+    <div className="w-full flex flex-col">
       <div className="flex flex-col space-y-2 mb-8 w-full mt-2">
         <h1 className="text-3xl font-bold tracking-tight text-foreground">
           {isSuccess ? 'Email Verified!' : 'Check your email'}
