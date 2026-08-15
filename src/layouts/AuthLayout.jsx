@@ -44,8 +44,8 @@ export default function AuthLayout() {
 
         {/* Form itself */}
         <div className="flex-1 flex items-center justify-center p-6 sm:p-12 pt-28 pb-12">
-          {/* Constrain width so it looks perfectly balanced and readable */}
-          <div className="w-full max-w-[380px] animate-fade-in-up">
+          {/* Constrain width so it looks perfectly balanced and readable. Increased to 440px per user request */}
+          <div className="w-full max-w-[440px] animate-fade-in-up">
             <Outlet />
           </div>
         </div>

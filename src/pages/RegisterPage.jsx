@@ -82,16 +82,16 @@ export default function RegisterPage() {
 
   return (
     <div className="w-full flex flex-col">
-      <div className="flex flex-col space-y-2 mb-8 w-full mt-2">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Create an account</h1>
-        <p className="text-sm font-medium text-muted-foreground leading-relaxed">
+      <div className="flex flex-col space-y-3 mb-10 w-full mt-2">
+        <h1 className="text-4xl font-extrabold tracking-tight text-foreground">Create an account</h1>
+        <p className="text-base font-medium text-muted-foreground leading-relaxed">
           Join us today to start managing your tasks efficiently.
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="w-full grid gap-5">
-        <div className="grid gap-2 text-left">
-          <label htmlFor="register-name" className="text-sm font-semibold text-foreground ml-0.5">Full Name</label>
+      <form onSubmit={handleSubmit} className="space-y-6 w-full">
+        <div className="space-y-2 w-full">
+          <label htmlFor="register-name" className="text-sm font-semibold text-foreground tracking-wide ml-1">Full Name</label>
           <Input
             id="register-name"
             type="text"
@@ -100,11 +100,12 @@ export default function RegisterPage() {
             disabled={isSubmitting}
             error={fieldErrors.name}
             placeholder="John Doe"
+            className="h-14 text-base px-5"
           />
         </div>
 
-        <div className="grid gap-2 text-left">
-          <label htmlFor="register-email" className="text-sm font-semibold text-foreground ml-0.5">Email address</label>
+        <div className="space-y-2 w-full">
+          <label htmlFor="register-email" className="text-sm font-semibold text-foreground tracking-wide ml-1">Email address</label>
           <Input
             id="register-email"
             type="email"
@@ -113,21 +114,22 @@ export default function RegisterPage() {
             disabled={isSubmitting}
             error={fieldErrors.email}
             placeholder="name@company.com"
+            className="h-14 text-base px-5"
           />
         </div>
 
-        <div className="grid gap-2 text-left">
-          <label htmlFor="register-password" className="text-sm font-semibold text-foreground ml-0.5">Password</label>
+        <div className="space-y-2 w-full">
+          <label htmlFor="register-password" className="text-sm font-semibold text-foreground tracking-wide ml-1">Password</label>
           <Input
             id="register-password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             disabled={isSubmitting}
-            placeholder="••••••••"
+            placeholder="Create a password"
+            className="h-14 text-base px-5"
           />
           
-          {/* Password Strength and Rules Checklist */}
           <AnimatePresence>
             {password.length > 0 && (
               <motion.div 
@@ -183,15 +185,16 @@ export default function RegisterPage() {
           </AnimatePresence>
         </div>
 
-        <div className="grid gap-2 text-left">
-          <label htmlFor="register-confirm-password" className="text-sm font-semibold text-foreground ml-0.5">Confirm Password</label>
+        <div className="space-y-2 w-full">
+          <label htmlFor="register-confirm-password" className="text-sm font-semibold text-foreground tracking-wide ml-1">Confirm Password</label>
           <Input
             id="register-confirm-password"
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             disabled={isSubmitting}
-            placeholder="••••••••"
+            placeholder="Confirm your password"
+            className="h-14 text-base px-5"
           />
           
           <AnimatePresence>
@@ -200,22 +203,19 @@ export default function RegisterPage() {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="overflow-hidden mt-1 px-1"
+                className={cn("text-xs font-medium pl-1", passwordsMatch ? "text-emerald-500" : "text-destructive")}
               >
-                <p className={cn("text-xs font-medium", passwordsMatch ? "text-emerald-500" : "text-red-500")}>
-                  {passwordsMatch ? 'Passwords match' : 'Passwords do not match'}
-                </p>
+                {passwordsMatch ? "Passwords match" : "Passwords do not match"}
               </motion.div>
             )}
           </AnimatePresence>
         </div>
 
-
         <Button
           type="submit"
           variant="primary"
-          className="w-full mt-2 h-11 text-base"
-          disabled={isSubmitting || !isFormValid}
+          className="w-full mt-8 h-14 text-lg font-bold shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all rounded-2xl"
+          disabled={isSubmitting}
         >
           {isSubmitting ? (
             <>
@@ -223,7 +223,7 @@ export default function RegisterPage() {
               Creating account...
             </>
           ) : (
-            'Sign Up'
+            'Create Account'
           )}
         </Button>
       </form>

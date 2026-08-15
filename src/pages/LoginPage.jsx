@@ -50,16 +50,16 @@ export default function LoginPage() {
 
   return (
     <div className="w-full flex flex-col">
-      <div className="flex flex-col space-y-2 mb-8 w-full mt-2">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground">Welcome back</h1>
-        <p className="text-sm font-medium text-muted-foreground leading-relaxed">
+      <div className="flex flex-col space-y-3 mb-10 w-full mt-2">
+        <h1 className="text-4xl font-extrabold tracking-tight text-foreground">Welcome back</h1>
+        <p className="text-base font-medium text-muted-foreground leading-relaxed">
           Please enter your credentials to log in to your account.
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="w-full grid gap-5">
-        <div className="grid gap-2 text-left">
-          <label htmlFor="login-email" className="text-sm font-semibold text-foreground ml-0.5">Email address</label>
+      <form onSubmit={handleSubmit} className="space-y-6 w-full">
+        <div className="space-y-2 w-full">
+          <label htmlFor="login-email" className="text-sm font-semibold text-foreground tracking-wide ml-1">Email address</label>
           <Input
             id="login-email"
             type="email"
@@ -68,13 +68,14 @@ export default function LoginPage() {
             disabled={isSubmitting}
             error={fieldErrors.email}
             placeholder="name@company.com"
+            className="h-14 text-base px-5"
           />
         </div>
 
-        <div className="grid gap-2 text-left">
-          <div className="flex items-center justify-between ml-0.5">
-            <label htmlFor="login-password" className="text-sm font-semibold text-foreground">Password</label>
-            <Link to="/forgot-password" className="text-sm font-medium text-primary hover:text-primary/80 transition-colors">
+        <div className="space-y-2 w-full">
+          <div className="flex items-center justify-between ml-1">
+            <label htmlFor="login-password" className="text-sm font-semibold text-foreground tracking-wide">Password</label>
+            <Link to="/forgot-password" className="text-sm font-bold text-primary hover:text-primary/80 transition-colors">
               Forgot Password?
             </Link>
           </div>
@@ -85,14 +86,15 @@ export default function LoginPage() {
             onChange={(e) => setPassword(e.target.value)}
             disabled={isSubmitting}
             error={fieldErrors.password}
-            placeholder="••••••••"
+            placeholder="Enter your password"
+            className="h-14 text-base px-5"
           />
         </div>
 
         <Button
           type="submit"
           variant="primary"
-          className="w-full mt-2 h-11 text-base"
+          className="w-full mt-8 h-14 text-lg font-bold shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all rounded-2xl"
           disabled={isSubmitting}
         >
           {isSubmitting ? (
@@ -105,12 +107,11 @@ export default function LoginPage() {
           )}
         </Button>
       </form>
-
-      <div className="mt-8 text-center text-sm w-full">
+      <div className="mt-10 text-center text-sm w-full">
         <span className="text-muted-foreground font-medium">Don't have an account? </span>
         <Link 
           to="/register" 
-          className="font-semibold text-primary hover:text-primary/80 transition-colors"
+          className="font-bold text-primary hover:text-primary/80 transition-colors"
         >
           Create account
         </Link>
