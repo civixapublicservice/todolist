@@ -36,18 +36,17 @@ export default function AuthLayout() {
         <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-purple-500/10 rounded-full mix-blend-multiply filter blur-[100px] opacity-70 animate-blob animation-delay-2000 pointer-events-none dark:mix-blend-screen dark:bg-purple-500/20" />
 
         {/* Top Header */}
-        <div className="absolute top-0 right-0 w-full p-6 sm:p-12 flex justify-between items-center z-10">
-          <div className="flex items-center gap-2 sm:gap-3">
+        <div className="absolute top-0 right-0 w-full p-6 sm:p-12 flex justify-between items-center z-50 pointer-events-none">
+          <div className="flex items-center gap-2 sm:gap-3 pointer-events-auto">
             <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-primary/10 flex items-center justify-center">
               <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
             </div>
             <span className="font-bold text-lg sm:text-xl text-foreground tracking-tight">TaskFlow</span>
           </div>
-          <div className="lg:ml-auto">
+          <div className="lg:ml-auto pointer-events-auto">
             <ThemeToggle />
           </div>
         </div>
-
         {/* Form itself */}
         <div className="flex-1 flex flex-col items-center justify-center p-6 sm:p-12 z-10 relative">
           {/* Constrain width so it looks perfectly balanced and readable. Increased to 440px per user request */}

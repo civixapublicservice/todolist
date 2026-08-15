@@ -8,6 +8,7 @@ export default function ThemeToggle() {
 
   return (
     <button
+      type="button"
       onClick={toggleTheme}
       className={cn(
         "relative flex items-center justify-center w-11 h-11 rounded-full",
