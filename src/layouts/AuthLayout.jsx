@@ -15,40 +15,40 @@ export default function AuthLayout() {
       
       {/* Left Side: Stunning Productivity Image (Hidden on mobile) */}
       {/* We use a high-quality, professional workspace image to establish the "todo/productivity" context */}
-      <div className="hidden lg:block lg:w-1/2 relative bg-zinc-100 dark:bg-zinc-900 overflow-hidden">
+      <div className="hidden lg:block lg:w-1/2 relative bg-zinc-50 dark:bg-zinc-900 overflow-hidden">
         <img 
-          src="https://images.unsplash.com/photo-1484480974693-6ca0a78fb36cb?q=80&w=2564&auto=format&fit=crop" 
+          src="/auth-bg.png" 
           alt="Productive workspace" 
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-10000 hover:scale-105"
         />
-        {/* Soft overlay to make text highly readable and add a premium cinematic feel */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+        {/* Soft, light overlay to make text highly readable without adding ANY heavy black colors */}
+        <div className="absolute inset-0 bg-gradient-to-t from-white/90 via-white/40 to-transparent dark:from-black/90 dark:via-black/50" />
         
         {/* Branding over the image */}
-        <div className="absolute bottom-0 left-0 p-12 xl:p-16 w-full text-white">
+        <div className="absolute bottom-0 left-0 p-12 xl:p-16 w-full text-zinc-900 dark:text-white">
           <div className="flex items-center gap-3 mb-8">
-            <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30 shadow-2xl">
-              <Sparkles className="w-7 h-7 text-white" />
+            <div className="w-12 h-12 rounded-2xl bg-primary/10 backdrop-blur-md flex items-center justify-center border border-primary/20 shadow-xl dark:bg-white/10 dark:border-white/20">
+              <Sparkles className="w-7 h-7 text-primary dark:text-white" />
             </div>
-            <span className="text-3xl font-extrabold tracking-tight text-white drop-shadow-md">TaskFlow</span>
+            <span className="text-3xl font-extrabold tracking-tight drop-shadow-sm">TaskFlow</span>
           </div>
           
-          <h2 className="text-4xl xl:text-5xl font-bold leading-tight mb-6 drop-shadow-lg max-w-lg">
+          <h2 className="text-4xl xl:text-5xl font-bold leading-tight mb-6 max-w-lg">
             Organize your work and life, finally.
           </h2>
           
           <div className="space-y-4 max-w-md">
             <div className="flex items-center gap-3">
-              <CheckCircle2 className="w-5 h-5 text-indigo-400 drop-shadow-md" />
-              <p className="text-lg text-white/95 drop-shadow-sm font-medium">Intuitive task management</p>
+              <CheckCircle2 className="w-5 h-5 text-primary" />
+              <p className="text-lg font-medium">Intuitive task management</p>
             </div>
             <div className="flex items-center gap-3">
-              <CheckCircle2 className="w-5 h-5 text-indigo-400 drop-shadow-md" />
-              <p className="text-lg text-white/95 drop-shadow-sm font-medium">Seamless cross-device sync</p>
+              <CheckCircle2 className="w-5 h-5 text-primary" />
+              <p className="text-lg font-medium">Seamless cross-device sync</p>
             </div>
             <div className="flex items-center gap-3">
-              <CheckCircle2 className="w-5 h-5 text-indigo-400 drop-shadow-md" />
-              <p className="text-lg text-white/95 drop-shadow-sm font-medium">Beautiful, distraction-free design</p>
+              <CheckCircle2 className="w-5 h-5 text-primary" />
+              <p className="text-lg font-medium">Beautiful, distraction-free design</p>
             </div>
           </div>
         </div>
