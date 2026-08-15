@@ -188,59 +188,67 @@ export default function Header() {
             transition={{ duration: 0.15 }}
             className="absolute top-[76px] right-4 sm:right-6 lg:right-8 w-[calc(100vw-2rem)] max-w-[380px] sm:w-80 apple-glass-dropdown rounded-3xl overflow-hidden z-50 origin-top p-2 shadow-2xl"
           >
-            <div className="px-4 py-3 border-b border-glass-border mb-2 flex items-center justify-between">
+            <div className="px-4 py-3 border-b border-glass-border mb-2 flex items-center justify-between bg-foreground/[0.02]">
               <p className="text-sm font-semibold tracking-tight text-foreground">Notifications</p>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 {unreadCount > 0 && (
                   <button
                     onClick={handleMarkAllRead}
-                    className="text-xs text-primary hover:underline font-medium"
+                    className="text-[10px] sm:text-[11px] uppercase tracking-wider font-bold text-primary/70 hover:text-primary transition-all px-2 py-1 rounded-md hover:bg-primary/10"
                   >
-                    Mark all read
+                    Mark read
                   </button>
                 )}
                 {notifications.length > 0 && (
                   <button
                     onClick={handleDeleteAll}
-                    className="text-xs text-destructive hover:underline font-medium flex items-center gap-1"
+                    className="text-[10px] sm:text-[11px] uppercase tracking-wider font-bold text-destructive/60 hover:text-destructive transition-all px-2 py-1 rounded-md hover:bg-destructive/10 flex items-center gap-1"
                   >
-                    <Trash2 className="w-3 h-3" />
-                    Clear all
+                    <Trash2 className="w-[14px] h-[14px] sm:w-3 sm:h-3" />
+                    <span className="hidden sm:inline">Clear all</span>
                   </button>
                 )}
               </div>
             </div>
 
-            <div className="max-h-[60vh] sm:max-h-[300px] overflow-y-auto space-y-1 pr-1 custom-scrollbar">
+            <div className="max-h-[60vh] sm:max-h-[300px] overflow-y-auto space-y-1.5 px-2 pb-2 custom-scrollbar">
               {notifications.length === 0 ? (
-                <div className="py-8 text-center text-muted-foreground text-sm">
-                  No notifications yet.
+                <div className="py-10 text-center text-muted-foreground/60 text-sm flex flex-col items-center justify-center gap-3">
+                  <Bell className="w-8 h-8 opacity-20" />
+                  <p>No notifications yet</p>
                 </div>
               ) : (
                 notifications.map(notif => (
                   <div
                     key={notif.id}
                     className={cn(
-                      "w-full flex items-start justify-between px-3 py-2 text-sm rounded-xl transition-colors text-left group",
-                      notif.isRead ? "text-muted-foreground hover:bg-foreground/5" : "bg-primary/5 text-foreground border border-primary/20 hover:bg-primary/10"
+                      "w-full flex items-start justify-between p-3 text-sm rounded-xl transition-all text-left group border",
+                      notif.isRead 
+                        ? "bg-transparent border-transparent hover:bg-foreground/5 text-muted-foreground" 
+                        : "bg-primary/[0.03] border-primary/10 hover:border-primary/20 hover:bg-primary/[0.06] text-foreground shadow-sm"
                     )}
                   >
                     <div 
-                      className="flex-1 cursor-pointer pr-2" 
+                      className="flex-1 cursor-pointer pr-3" 
                       onClick={() => handleMarkAsRead(notif.id, notif.isRead)}
                     >
-                      <p className="font-bold text-xs tracking-wide mb-0.5">{notif.type === 'REMINDER' ? 'Task Reminder' : 'Notification'}</p>
-                      <p className="text-xs opacity-80">{notif.message}</p>
+                      <div className="flex items-center gap-2 mb-1">
+                        {!notif.isRead && <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />}
+                        <p className={cn("text-xs tracking-wide", notif.isRead ? "font-medium" : "font-bold text-primary")}>
+                          {notif.type === 'REMINDER' ? 'Task Reminder' : 'Notification'}
+                        </p>
+                      </div>
+                      <p className="text-xs leading-relaxed opacity-90">{notif.message}</p>
                     </div>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         handleDelete(notif.id);
                       }}
-                      className="opacity-0 group-hover:opacity-100 p-1.5 hover:bg-foreground/10 rounded-full transition-all text-muted-foreground hover:text-destructive shrink-0"
+                      className="p-1.5 hover:bg-destructive/10 rounded-full transition-all text-muted-foreground/30 hover:text-destructive shrink-0 mt-0.5"
                       title="Clear notification"
                     >
-                      <X className="w-3.5 h-3.5" />
+                      <X className="w-4 h-4" />
                     </button>
                   </div>
                 ))
