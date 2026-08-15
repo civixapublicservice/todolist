@@ -152,6 +152,7 @@ export default function CalendarPage() {
 
                 const dayTodos = getTodosForDate(date)
                 const hasTodos = dayTodos.length > 0
+                const allCompleted = hasTodos && dayTodos.every(t => t.completed)
                 const isSelected = isSameDay(date, selectedDate)
                 const isToday = isSameDay(date, new Date())
 
@@ -179,7 +180,10 @@ export default function CalendarPage() {
                       {date.getDate()}
                     </div>
                     {hasTodos && (
-                      <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-primary mt-0.5 sm:mt-1 z-10 shadow-sm" />
+                      <div className={cn(
+                        "w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full mt-0.5 sm:mt-1 z-10 shadow-sm",
+                        allCompleted ? "bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.4)]" : "bg-primary"
+                      )} />
                     )}
                     {isSelected && (
                       <div className="absolute inset-0 bg-primary/5 z-0" />
