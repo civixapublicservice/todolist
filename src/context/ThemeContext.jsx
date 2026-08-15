@@ -80,7 +80,7 @@ export function ThemeProvider({ children }) {
     setThemeState(newTheme)
     setTimeout(() => {
       document.documentElement.classList.remove('theme-transition')
-    }, 500)
+    }, 300)
   }, [])
 
   const toggleTheme = useCallback(() => {
@@ -94,7 +94,7 @@ export function ThemeProvider({ children }) {
     })
     setTimeout(() => {
       document.documentElement.classList.remove('theme-transition')
-    }, 500)
+    }, 300)
   }, [])
 
   const value = {
