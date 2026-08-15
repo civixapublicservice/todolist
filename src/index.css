@@ -373,3 +373,58 @@
     @apply animate-spin rounded-full border-2 border-primary border-t-transparent h-5 w-5;
   }
 }
+
+@keyframes mesh-pulse {
+  0% { transform: scale(1) translate(0, 0); opacity: 0.6; }
+  33% { transform: scale(1.1) translate(5%, -5%); opacity: 0.8; }
+  66% { transform: scale(0.9) translate(-5%, 5%); opacity: 0.6; }
+  100% { transform: scale(1) translate(0, 0); opacity: 0.6; }
+}
+
+@layer components {
+  .bg-mesh-auth {
+    @apply min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-background transition-colors duration-500;
+  }
+  .bg-mesh-auth::before {
+    content: '';
+    position: absolute;
+    top: -20%;
+    left: -10%;
+    width: 60%;
+    height: 60%;
+    background: var(--color-primary);
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.15;
+    animation: mesh-pulse 15s ease-in-out infinite;
+    pointer-events: none;
+  }
+  .bg-mesh-auth::after {
+    content: '';
+    position: absolute;
+    bottom: -20%;
+    right: -10%;
+    width: 60%;
+    height: 60%;
+    background: var(--color-accent);
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.15;
+    animation: mesh-pulse 20s ease-in-out infinite reverse;
+    pointer-events: none;
+  }
+
+  .dark .bg-mesh-auth::before,
+  .dark .bg-mesh-auth::after {
+    opacity: 0.12;
+  }
+
+  .glass-auth-card {
+    @apply w-full max-w-[440px] bg-card/80 backdrop-blur-3xl border border-border/60 rounded-[32px] p-8 sm:p-10 relative z-10 transition-all duration-300 mx-4;
+    box-shadow: 0 20px 40px -10px rgba(0,0,0,0.08), 0 0 0 1px rgba(255,255,255,0.2) inset;
+  }
+  .dark .glass-auth-card {
+    @apply bg-[#111111]/70 border-white/[0.06];
+    box-shadow: 0 24px 48px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04);
+  }
+}

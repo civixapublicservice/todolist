@@ -106,12 +106,12 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="w-full flex flex-col items-center sm:items-start text-center sm:text-left">
-      <div className="flex flex-col space-y-2 mb-8 w-full mt-4">
-        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
+    <div className="w-full flex flex-col items-center text-center">
+      <div className="flex flex-col space-y-2 mb-8 w-full mt-2">
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">
           {step === 'email' ? 'Reset Password' : 'Verify OTP'}
         </h1>
-        <p className="text-sm font-medium text-muted-foreground leading-relaxed">
+        <p className="text-sm font-medium text-muted-foreground leading-relaxed px-4">
           {step === 'email' 
             ? 'Enter your email to receive a secure 6-digit OTP.' 
             : 'Enter the 6-digit code sent to your email.'}

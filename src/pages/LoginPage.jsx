@@ -49,10 +49,10 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="w-full flex flex-col items-center sm:items-start text-center sm:text-left">
-      <div className="flex flex-col space-y-2 mb-8 w-full mt-4">
-        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">Welcome back</h1>
-        <p className="text-sm font-medium text-muted-foreground leading-relaxed">
+    <div className="w-full flex flex-col items-center text-center">
+      <div className="flex flex-col space-y-2 mb-8 w-full mt-2">
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">Welcome back</h1>
+        <p className="text-sm font-medium text-muted-foreground leading-relaxed px-4">
           Please enter your credentials to log in to your account.
         </p>
       </div>
