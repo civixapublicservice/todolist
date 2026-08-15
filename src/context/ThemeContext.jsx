@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import { flushSync } from 'react-dom'
 
 const ThemeContext = createContext(null)
 const THEME_STORAGE_KEY = 'todo-app-theme-preference'
@@ -76,26 +77,41 @@ export function ThemeProvider({ children }) {
   }, []);
 
   const setTheme = useCallback((newTheme) => {
-    document.documentElement.classList.add('theme-transition')
-    setThemeState(newTheme)
-    setTimeout(() => {
-      document.documentElement.classList.remove('theme-transition')
-    }, 300)
-  }, [])
+    const execute = () => {
+      applyTheme(newTheme)
+      setThemeState(newTheme)
+    }
+
+    if (!document.startViewTransition) {
+      flushSync(() => execute())
+      return
+    }
+
+    document.startViewTransition(() => {
+      flushSync(() => execute())
+    })
+  }, [applyTheme])
 
   const toggleTheme = useCallback(() => {
-    document.documentElement.classList.add('theme-transition')
-    setThemeState((prev) => {
-      if (prev === 'system') {
-        const isCurrentlyDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-        return isCurrentlyDark ? 'light' : 'dark'
-      }
-      return prev === 'dark' ? 'light' : 'dark'
+    const isCurrentlyDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const newTheme = theme === 'system' 
+      ? (isCurrentlyDark ? 'light' : 'dark')
+      : (theme === 'dark' ? 'light' : 'dark')
+
+    const execute = () => {
+      applyTheme(newTheme)
+      setThemeState(newTheme)
+    }
+
+    if (!document.startViewTransition) {
+      flushSync(() => execute())
+      return
+    }
+
+    document.startViewTransition(() => {
+      flushSync(() => execute())
     })
-    setTimeout(() => {
-      document.documentElement.classList.remove('theme-transition')
-    }, 300)
-  }, [])
+  }, [theme, applyTheme])
 
   const value = {
     theme,

@@ -452,21 +452,16 @@
   }
 }
 
-/* Theme Transition System */
-.theme-transition,
-.theme-transition *,
-.theme-transition *::before,
-.theme-transition *::after {
-  transition-property: background-color, border-color, color, fill, stroke !important;
-  transition-duration: 300ms !important;
-  transition-timing-function: ease !important;
+/* Theme Transition System using Native View Transitions API */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 400ms;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .theme-transition,
-  .theme-transition *,
-  .theme-transition *::before,
-  .theme-transition *::after {
-    transition-duration: 0ms !important;
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
   }
 }
