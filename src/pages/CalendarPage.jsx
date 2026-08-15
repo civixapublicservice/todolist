@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from 'react'
 import { useTasks } from '../context/TaskContext'
-import { ChevronLeft, ChevronRight, Clock, AlertCircle, Sparkles, CheckCircle2 } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Clock, AlertCircle, Sparkles, CheckCircle2, Check } from 'lucide-react'
 
 import { cn } from '../utils/cn'
 
@@ -212,80 +212,56 @@ export default function CalendarPage() {
             ) : (
               <div className="flex flex-col gap-6">
                 
-                  {(() => {
-                    const pendingTodos = selectedDateTodos.filter(t => !t.completed);
-                    const completedTodos = selectedDateTodos.filter(t => t.completed);
-                    
-                    return (
-                      <>
-                        {pendingTodos.length > 0 && (
-                          <div>
-                            <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3 flex items-center space-x-2">
-                              <span className="w-2 h-2 rounded-full bg-primary"></span>
-                              <span>Pending Tasks</span>
-                            </h4>
-                            <div className="flex flex-col gap-3">
-                              {pendingTodos.map((todo) => (
-                                <div key={todo.id}
-                                  className="p-3.5 sm:p-4 rounded-[1.25rem] border relative overflow-hidden transition-all duration-300 hover:shadow-glow bg-gradient-to-br from-primary/5 to-accent/5 border-primary/20 shadow-sm group flex items-start gap-3"
-                                >
-                                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary to-accent" />
-                                  <button 
-                                    onClick={() => toggleTaskCompletion(todo.id)}
-                                    className="mt-0.5 shrink-0 w-5 h-5 rounded-full border-2 border-primary/50 hover:bg-primary/20 transition-colors flex items-center justify-center"
-                                  />
-                                  <div>
-                                    <div className="font-bold text-sm text-foreground group-hover:text-primary transition-colors">
-                                      {todo.title}
-                                    </div>
-                                    {todo.description && (
-                                      <div className="text-xs font-medium text-muted-foreground/80 mt-1 line-clamp-2">
-                                        {todo.description}
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
+                  <div className="flex flex-col gap-3">
+                    {selectedDateTodos.map((todo) => (
+                      <div key={todo.id}
+                        className={cn(
+                          "p-3.5 sm:p-4 rounded-[1.25rem] border relative overflow-hidden transition-all duration-300 flex items-start gap-3",
+                          todo.completed 
+                            ? "bg-foreground/5 dark:bg-white/5 border-transparent opacity-60 hover:opacity-100" 
+                            : "bg-gradient-to-br from-primary/5 to-accent/5 border-primary/20 shadow-sm hover:shadow-glow group"
                         )}
-
-                        {completedTodos.length > 0 && (
-                          <div className={pendingTodos.length > 0 ? "pt-4 border-t border-black/5 dark:border-white/5" : ""}>
-                            <h4 className="text-xs font-bold text-muted-foreground/60 uppercase tracking-widest mb-3 flex items-center space-x-2">
-                              <CheckCircle2 className="w-3.5 h-3.5" />
-                              <span>Completed</span>
-                            </h4>
-                            <div className="flex flex-col gap-3">
-                              {completedTodos.map((todo) => (
-                                <div key={todo.id}
-                                  className="p-3.5 sm:p-4 rounded-[1.25rem] border relative overflow-hidden transition-all duration-300 bg-foreground/5 dark:bg-white/5 border-transparent opacity-60 hover:opacity-100 flex items-start gap-3"
-                                >
-                                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-green-500/40" />
-                                  <button 
-                                    onClick={() => toggleTaskCompletion(todo.id)}
-                                    className="mt-0.5 shrink-0 w-5 h-5 rounded-full bg-green-500/20 text-green-500 flex items-center justify-center transition-colors hover:bg-green-500/30"
-                                  >
-                                    <CheckCircle2 className="w-3.5 h-3.5" />
-                                  </button>
-                                  <div>
-                                    <div className="font-semibold text-sm text-muted-foreground line-through">
-                                      {todo.title}
-                                    </div>
-                                    {todo.description && (
-                                      <div className="text-xs font-medium text-muted-foreground/50 mt-1 line-clamp-1 line-through">
-                                        {todo.description}
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
+                      >
+                        <div className={cn(
+                          "absolute left-0 top-0 bottom-0 w-1",
+                          todo.completed ? "bg-green-500/40" : "bg-gradient-to-b from-primary to-accent"
+                        )} />
+                        
+                        <button 
+                          onClick={() => toggleTaskCompletion(todo.id)}
+                          className={cn(
+                            "mt-0.5 shrink-0 w-5 h-5 rounded-full flex items-center justify-center transition-colors",
+                            todo.completed 
+                              ? "bg-green-500 text-white shadow-[0_0_10px_rgba(34,197,94,0.4)]" 
+                              : "border-2 border-primary/50 hover:bg-primary/20"
+                          )}
+                        >
+                          {todo.completed && <Check className="w-3.5 h-3.5" strokeWidth={3} />}
+                        </button>
+                        
+                        <div>
+                          <div className={cn(
+                            "font-bold text-sm transition-colors",
+                            todo.completed 
+                              ? "text-muted-foreground line-through" 
+                              : "text-foreground group-hover:text-primary"
+                          )}>
+                            {todo.title}
                           </div>
-                        )}
-                      </>
-                    )
-                  })()}
+                          {todo.description && (
+                            <div className={cn(
+                              "text-xs font-medium mt-1",
+                              todo.completed 
+                                ? "text-muted-foreground/50 line-clamp-1 line-through" 
+                                : "text-muted-foreground/80 line-clamp-2"
+                            )}>
+                              {todo.description}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 
               </div>
             )}
