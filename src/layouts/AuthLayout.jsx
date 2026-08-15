@@ -1,7 +1,7 @@
 import { Outlet, Navigate, Link } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { Sparkles } from 'lucide-react'
-import { ThemeToggle } from '../components/ui/ThemeToggle'
+import ThemeToggle from '../components/ui/ThemeToggle'
 
 export default function AuthLayout() {
   const { isAuthenticated } = useAuth()
