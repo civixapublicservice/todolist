@@ -82,15 +82,15 @@ export default function RegisterPage() {
 
   return (
     <div className="w-full flex flex-col">
-      <div className="flex flex-col space-y-3 mb-10 w-full mt-2">
-        <h1 className="text-4xl font-extrabold tracking-tight text-foreground">Create an account</h1>
-        <p className="text-base font-medium text-muted-foreground leading-relaxed">
+      <div className="flex flex-col space-y-2 sm:space-y-3 mb-8 sm:mb-10 w-full mt-2">
+        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">Create an account</h1>
+        <p className="text-sm sm:text-base font-medium text-muted-foreground leading-relaxed">
           Join us today to start managing your tasks efficiently.
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6 w-full">
-        <div className="space-y-2 w-full">
+      <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6 w-full">
+        <div className="space-y-1.5 sm:space-y-2 w-full">
           <label htmlFor="register-name" className="text-sm font-semibold text-foreground tracking-wide ml-1">Full Name</label>
           <Input
             id="register-name"
@@ -100,11 +100,11 @@ export default function RegisterPage() {
             disabled={isSubmitting}
             error={fieldErrors.name}
             placeholder="John Doe"
-            className="h-14 text-base px-5"
+            className="h-12 sm:h-14 text-sm sm:text-base px-4 sm:px-5 rounded-xl sm:rounded-2xl"
           />
         </div>
 
-        <div className="space-y-2 w-full">
+        <div className="space-y-1.5 sm:space-y-2 w-full">
           <label htmlFor="register-email" className="text-sm font-semibold text-foreground tracking-wide ml-1">Email address</label>
           <Input
             id="register-email"
@@ -114,11 +114,11 @@ export default function RegisterPage() {
             disabled={isSubmitting}
             error={fieldErrors.email}
             placeholder="name@company.com"
-            className="h-14 text-base px-5"
+            className="h-12 sm:h-14 text-sm sm:text-base px-4 sm:px-5 rounded-xl sm:rounded-2xl"
           />
         </div>
 
-        <div className="space-y-2 w-full">
+        <div className="space-y-1.5 sm:space-y-2 w-full">
           <label htmlFor="register-password" className="text-sm font-semibold text-foreground tracking-wide ml-1">Password</label>
           <Input
             id="register-password"
@@ -127,7 +127,7 @@ export default function RegisterPage() {
             onChange={(e) => setPassword(e.target.value)}
             disabled={isSubmitting}
             placeholder="Create a password"
-            className="h-14 text-base px-5"
+            className="h-12 sm:h-14 text-sm sm:text-base px-4 sm:px-5 rounded-xl sm:rounded-2xl"
           />
           
           <AnimatePresence>
@@ -185,7 +185,7 @@ export default function RegisterPage() {
           </AnimatePresence>
         </div>
 
-        <div className="space-y-2 w-full">
+        <div className="space-y-1.5 sm:space-y-2 w-full">
           <label htmlFor="register-confirm-password" className="text-sm font-semibold text-foreground tracking-wide ml-1">Confirm Password</label>
           <Input
             id="register-confirm-password"
@@ -194,7 +194,7 @@ export default function RegisterPage() {
             onChange={(e) => setConfirmPassword(e.target.value)}
             disabled={isSubmitting}
             placeholder="Confirm your password"
-            className="h-14 text-base px-5"
+            className="h-12 sm:h-14 text-sm sm:text-base px-4 sm:px-5 rounded-xl sm:rounded-2xl"
           />
           
           <AnimatePresence>
@@ -214,7 +214,7 @@ export default function RegisterPage() {
         <Button
           type="submit"
           variant="primary"
-          className="w-full mt-8 h-14 text-lg font-bold shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all rounded-2xl"
+          className="w-full mt-6 sm:mt-8 h-12 sm:h-14 text-base sm:text-lg font-bold shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all rounded-xl sm:rounded-2xl"
           disabled={isSubmitting}
         >
           {isSubmitting ? (

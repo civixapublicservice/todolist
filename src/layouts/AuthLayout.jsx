@@ -37,11 +37,11 @@ export default function AuthLayout() {
 
         {/* Top Header */}
         <div className="absolute top-0 right-0 w-full p-6 sm:p-12 flex justify-between items-center z-10">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center">
-              <Sparkles className="w-4 h-4 text-primary" />
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-primary/10 flex items-center justify-center">
+              <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
             </div>
-            <span className="font-bold text-lg text-foreground tracking-tight">TaskFlow</span>
+            <span className="font-bold text-lg sm:text-xl text-foreground tracking-tight">TaskFlow</span>
           </div>
           <div className="lg:ml-auto">
             <ThemeToggle />

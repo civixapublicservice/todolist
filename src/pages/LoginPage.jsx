@@ -50,15 +50,15 @@ export default function LoginPage() {
 
   return (
     <div className="w-full flex flex-col">
-      <div className="flex flex-col space-y-3 mb-10 w-full mt-2">
-        <h1 className="text-4xl font-extrabold tracking-tight text-foreground">Welcome back</h1>
-        <p className="text-base font-medium text-muted-foreground leading-relaxed">
+      <div className="flex flex-col space-y-2 sm:space-y-3 mb-8 sm:mb-10 w-full mt-2">
+        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">Welcome back</h1>
+        <p className="text-sm sm:text-base font-medium text-muted-foreground leading-relaxed">
           Please enter your credentials to log in to your account.
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6 w-full">
-        <div className="space-y-2 w-full">
+      <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6 w-full">
+        <div className="space-y-1.5 sm:space-y-2 w-full">
           <label htmlFor="login-email" className="text-sm font-semibold text-foreground tracking-wide ml-1">Email address</label>
           <Input
             id="login-email"
@@ -68,11 +68,11 @@ export default function LoginPage() {
             disabled={isSubmitting}
             error={fieldErrors.email}
             placeholder="name@company.com"
-            className="h-14 text-base px-5"
+            className="h-12 sm:h-14 text-sm sm:text-base px-4 sm:px-5 rounded-xl sm:rounded-2xl"
           />
         </div>
 
-        <div className="space-y-2 w-full">
+        <div className="space-y-1.5 sm:space-y-2 w-full">
           <div className="flex items-center justify-between ml-1">
             <label htmlFor="login-password" className="text-sm font-semibold text-foreground tracking-wide">Password</label>
             <Link to="/forgot-password" className="text-sm font-bold text-primary hover:text-primary/80 transition-colors">
@@ -87,14 +87,14 @@ export default function LoginPage() {
             disabled={isSubmitting}
             error={fieldErrors.password}
             placeholder="Enter your password"
-            className="h-14 text-base px-5"
+            className="h-12 sm:h-14 text-sm sm:text-base px-4 sm:px-5 rounded-xl sm:rounded-2xl"
           />
         </div>
 
         <Button
           type="submit"
           variant="primary"
-          className="w-full mt-8 h-14 text-lg font-bold shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all rounded-2xl"
+          className="w-full mt-6 sm:mt-8 h-12 sm:h-14 text-base sm:text-lg font-bold shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all rounded-xl sm:rounded-2xl"
           disabled={isSubmitting}
         >
           {isSubmitting ? (
