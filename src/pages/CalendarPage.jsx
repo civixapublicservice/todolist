@@ -227,10 +227,8 @@ export default function CalendarPage() {
                             <div className="flex flex-col gap-3">
                               {pendingTodos.map((todo) => (
                                 <div key={todo.id}
-                                  className="p-3.5 sm:p-4 rounded-[1.25rem] border relative overflow-hidden transition-all duration-300 hover:shadow-glow bg-gradient-to-br from-primary/5 to-accent/5 border-primary/20 shadow-sm group flex items-start gap-3 pl-5 sm:pl-6"
+                                  className="p-3.5 sm:p-4 rounded-[1.25rem] border relative overflow-hidden transition-all duration-300 hover:shadow-glow bg-gradient-to-br from-primary/5 to-accent/5 border-primary/20 shadow-sm group flex items-start gap-3"
                                 >
-                                  <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-primary to-accent" />
-                                  
                                   <div>
                                     <div className="font-bold text-sm text-foreground group-hover:text-primary transition-colors">
                                       {todo.title}
@@ -256,10 +254,8 @@ export default function CalendarPage() {
                             <div className="flex flex-col gap-3">
                               {completedTodos.map((todo) => (
                                 <div key={todo.id}
-                                  className="p-3.5 sm:p-4 rounded-[1.25rem] border relative overflow-hidden transition-all duration-300 bg-foreground/5 dark:bg-white/5 border-transparent opacity-60 flex items-start gap-3 pl-5 sm:pl-6"
+                                  className="p-3.5 sm:p-4 rounded-[1.25rem] border relative overflow-hidden transition-all duration-300 bg-foreground/5 dark:bg-white/5 border-transparent flex items-start gap-3"
                                 >
-                                  <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-muted-foreground/30" />
-                                  
                                   <div>
                                     <div className="font-semibold text-sm text-muted-foreground line-through">
                                       {todo.title}
