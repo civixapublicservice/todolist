@@ -257,7 +257,7 @@ export default function CalendarPage() {
                                 <div key={todo.id}
                                   className="p-3.5 sm:p-4 rounded-[1.25rem] border relative overflow-hidden transition-all duration-300 bg-foreground/5 dark:bg-white/5 border-transparent flex items-start gap-3"
                                 >
-                                  <div className="mt-0.5 shrink-0 text-muted-foreground/40">
+                                  <div className="mt-0.5 shrink-0 text-emerald-500/70">
                                     <CheckCircle2 className="w-4 h-4" />
                                   </div>
                                   <div>
