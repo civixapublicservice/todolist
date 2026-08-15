@@ -107,7 +107,7 @@
 
     /* Glass */
     --glass-border: rgba(0, 0, 0, 0.06);
-    --glass-bg: rgba(255, 255, 255, 0.92);
+    --glass-bg: rgba(255, 255, 255, 0.96);
   }
 
   :root.dark {
@@ -142,7 +142,7 @@
 
     /* Glass */
     --glass-border: rgba(255, 255, 255, 0.08);
-    --glass-bg: rgba(23, 23, 23, 0.90);
+    --glass-bg: rgba(23, 23, 23, 0.96);
   }
 }
 
@@ -316,11 +316,11 @@
   }
 
   .glass {
-    @apply bg-glass-bg backdrop-blur-md border border-glass-border shadow-float;
+    @apply bg-glass-bg border border-glass-border shadow-float;
   }
   
   .glass-card {
-    @apply bg-glass-bg backdrop-blur-md border border-glass-border shadow-float rounded-[var(--radius-lg)] p-6 transition-all duration-300;
+    @apply bg-glass-bg border border-glass-border shadow-float rounded-[var(--radius-lg)] p-6 transition-all duration-300;
   }
   
   .glass-card:hover {
@@ -328,11 +328,11 @@
   }
 
   .glass-panel {
-    @apply bg-glass-bg backdrop-blur-md border border-glass-border shadow-float rounded-[var(--radius-lg)];
+    @apply bg-glass-bg border border-glass-border shadow-float rounded-[var(--radius-lg)];
   }
   
   .glass-input {
-    @apply bg-input backdrop-blur-sm border border-glass-border rounded-[var(--radius-md)] px-4 py-2 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-transparent text-foreground placeholder:text-muted-foreground;
+    @apply bg-input border border-glass-border rounded-[var(--radius-md)] px-4 py-2 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:border-transparent text-foreground placeholder:text-muted-foreground;
   }
 
   .btn {
@@ -345,6 +345,10 @@
   
   .btn-gradient {
     @apply w-full bg-gradient-to-r from-[#e9d5ff] to-[#a855f7] text-[#30164c] hover:text-white hover:from-[#d8b4fe] hover:to-[#9333ea] font-bold rounded-2xl px-6 py-3.5 hover:shadow-[0_0_20px_rgba(168,85,247,0.5)] hover:-translate-y-0.5 transition-all duration-300;
+  }
+  
+  .glass-button {
+    @apply bg-glass-bg border border-glass-border shadow-float rounded-[var(--radius-lg)] hover:bg-muted text-foreground px-6 py-2.5 transition-all duration-300;
   }
   
   .btn-secondary {

@@ -200,7 +200,7 @@ export default function ActivityPage() {
                         </div>
                         
                         {/* Activity Card */}
-                        <div className="bg-white/40 dark:bg-black/20 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-border group-hover:border-primary/30 transition-all duration-300 shadow-sm group-hover:shadow-md hover:bg-white/60 dark:hover:bg-white/5">
+                        <div className="bg-white/95 dark:bg-black/90 rounded-2xl p-4 sm:p-5 border border-border group-hover:border-primary/30 transition-all duration-300 shadow-sm group-hover:shadow-md">
                           <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 sm:gap-4">
                             <div className="text-[14px] sm:text-[15px] leading-relaxed">
                               {formatActionText(item.action, item.details)}
