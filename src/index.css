@@ -144,6 +144,31 @@
     --glass-border: rgba(255, 255, 255, 0.08);
     --glass-bg: rgba(23, 23, 23, 0.96);
   }
+
+  .force-light {
+    --background: #F6F6F5;
+    --background-end: #F6F6F5;
+    --foreground: #111111;
+    --card: #FFFFFF;
+    --card-foreground: #111111;
+    --popover: rgba(255, 255, 255, 0.98);
+    --popover-foreground: #111111;
+    --primary: #4F46E5;
+    --primary-foreground: #FFFFFF;
+    --secondary: #6366F1;
+    --secondary-foreground: #FFFFFF;
+    --muted: #EFEFED;
+    --muted-foreground: #6B7280;
+    --accent: #4338CA;
+    --accent-foreground: #FFFFFF;
+    --destructive: #EF4444;
+    --destructive-foreground: #FFFFFF;
+    --border: #E5E5E3;
+    --input: #FFFFFF;
+    --ring: rgba(79, 70, 229, 0.4);
+    --glass-border: rgba(0, 0, 0, 0.06);
+    --glass-bg: rgba(255, 255, 255, 0.96);
+  }
 }
 
 @layer base {

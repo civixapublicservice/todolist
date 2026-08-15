@@ -11,29 +11,29 @@ export default function AuthLayout() {
   }
 
   return (
-    <div className="min-h-screen w-full flex bg-white dark:bg-zinc-950 transition-colors duration-500">
+    <div className="min-h-screen w-full flex bg-white transition-colors duration-500 force-light">
       
       {/* Left Side: Stunning Productivity Image (Hidden on mobile) */}
       {/* We use a high-quality image, but we DO NOT put text over it to avoid messy contrast issues. It stands alone as art. */}
-      <div className="hidden lg:block lg:w-[45%] relative bg-zinc-50 dark:bg-zinc-900 overflow-hidden">
+      <div className="hidden lg:block lg:w-[45%] relative bg-zinc-50 overflow-hidden">
         <img 
           src="/auth-bg.png" 
           alt="Productive workspace" 
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-10000 hover:scale-105"
         />
         {/* Extremely subtle inner shadow just to blend the edges into the UI, no heavy colors */}
-        <div className="absolute inset-0 bg-black/5 dark:bg-black/20 pointer-events-none" />
+        <div className="absolute inset-0 bg-black/5 pointer-events-none" />
       </div>
 
       {/* Right Side: Auth Form Container */}
       {/* Pure, clean background to make the form the absolute focus */}
       <div className="w-full lg:w-[55%] flex flex-col relative bg-background overflow-hidden">
         {/* Decorative subtle background pattern */}
-        <div className="absolute inset-0 bg-grid-pattern pointer-events-none opacity-50 dark:opacity-40" />
+        <div className="absolute inset-0 bg-grid-pattern pointer-events-none opacity-50" />
         
         {/* Animated ambient blobs */}
-        <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-primary/10 rounded-full mix-blend-multiply filter blur-[100px] opacity-70 animate-blob pointer-events-none dark:mix-blend-screen dark:bg-primary/20" />
-        <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-purple-500/10 rounded-full mix-blend-multiply filter blur-[100px] opacity-70 animate-blob animation-delay-2000 pointer-events-none dark:mix-blend-screen dark:bg-purple-500/20" />
+        <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-primary/10 rounded-full mix-blend-multiply filter blur-[100px] opacity-70 animate-blob pointer-events-none" />
+        <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-purple-500/10 rounded-full mix-blend-multiply filter blur-[100px] opacity-70 animate-blob animation-delay-2000 pointer-events-none" />
 
         {/* Top Header */}
         <div className="absolute top-0 right-0 w-full p-6 sm:p-12 flex justify-between items-center z-50 pointer-events-none">
@@ -42,9 +42,6 @@ export default function AuthLayout() {
               <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
             </div>
             <span className="font-bold text-lg sm:text-xl text-foreground tracking-tight">TaskFlow</span>
-          </div>
-          <div className="lg:ml-auto pointer-events-auto">
-            <ThemeToggle />
           </div>
         </div>
         {/* Form itself */}
