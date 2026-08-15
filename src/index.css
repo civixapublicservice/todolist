@@ -172,6 +172,10 @@
 }
 
 @layer base {
+  html {
+    overflow-y: scroll; /* Prevents layout shift when scrollbar appears */
+  }
+
   * {
     @apply border-border;
   }

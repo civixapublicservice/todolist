@@ -68,7 +68,7 @@ export default function LoginPage() {
             disabled={isSubmitting}
             error={fieldErrors.email}
             placeholder="name@company.com"
-            className="h-12 sm:h-14 text-sm sm:text-base px-4 sm:px-5 rounded-xl sm:rounded-2xl"
+            className="h-12 sm:h-14 text-base px-4 sm:px-5 rounded-xl sm:rounded-2xl"
           />
         </div>
 
@@ -87,7 +87,7 @@ export default function LoginPage() {
             disabled={isSubmitting}
             error={fieldErrors.password}
             placeholder="Enter your password"
-            className="h-12 sm:h-14 text-sm sm:text-base px-4 sm:px-5 rounded-xl sm:rounded-2xl"
+            className="h-12 sm:h-14 text-base px-4 sm:px-5 rounded-xl sm:rounded-2xl"
           />
         </div>
 

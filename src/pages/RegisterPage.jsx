@@ -100,7 +100,7 @@ export default function RegisterPage() {
             disabled={isSubmitting}
             error={fieldErrors.name}
             placeholder="John Doe"
-            className="h-12 sm:h-14 text-sm sm:text-base px-4 sm:px-5 rounded-xl sm:rounded-2xl"
+            className="h-12 sm:h-14 text-base px-4 sm:px-5 rounded-xl sm:rounded-2xl"
           />
         </div>
 
@@ -114,7 +114,7 @@ export default function RegisterPage() {
             disabled={isSubmitting}
             error={fieldErrors.email}
             placeholder="name@company.com"
-            className="h-12 sm:h-14 text-sm sm:text-base px-4 sm:px-5 rounded-xl sm:rounded-2xl"
+            className="h-12 sm:h-14 text-base px-4 sm:px-5 rounded-xl sm:rounded-2xl"
           />
         </div>
 
@@ -127,7 +127,7 @@ export default function RegisterPage() {
             onChange={(e) => setPassword(e.target.value)}
             disabled={isSubmitting}
             placeholder="Create a password"
-            className="h-12 sm:h-14 text-sm sm:text-base px-4 sm:px-5 rounded-xl sm:rounded-2xl"
+            className="h-12 sm:h-14 text-base px-4 sm:px-5 rounded-xl sm:rounded-2xl"
           />
           
           <AnimatePresence>
@@ -194,7 +194,7 @@ export default function RegisterPage() {
             onChange={(e) => setConfirmPassword(e.target.value)}
             disabled={isSubmitting}
             placeholder="Confirm your password"
-            className="h-12 sm:h-14 text-sm sm:text-base px-4 sm:px-5 rounded-xl sm:rounded-2xl"
+            className="h-12 sm:h-14 text-base px-4 sm:px-5 rounded-xl sm:rounded-2xl"
           />
           
           <AnimatePresence>
