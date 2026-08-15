@@ -183,11 +183,8 @@ export default function ActivityPage() {
 
                   {/* Timeline Container */}
                   <div className="relative pl-6 sm:pl-8 ml-6 border-l-2 border-border/60 space-y-6">
-                    {group.items.map((item, idx) => (
-                      <motion.div
-                        initial={{ opacity: 0, y: 10, x: -10 }}
-                        animate={{ opacity: 1, y: 0, x: 0 }}
-                        transition={{ duration: 0.3, ease: 'easeOut', delay: (groupIdx * 0.1) + (idx * 0.03) }}
+                    {group.items.map((item) => (
+                      <div
                         key={item.id}
                         className="relative group cursor-default"
                       >
@@ -213,7 +210,7 @@ export default function ActivityPage() {
                             </div>
                           </div>
                         </div>
-                      </motion.div>
+                      </div>
                     ))}
                   </div>
                 </div>

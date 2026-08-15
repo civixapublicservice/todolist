@@ -61,14 +61,12 @@ export default function TodoList({
       </div>
 
       <motion.div 
-        layout
         className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"
       >
-        <AnimatePresence mode="popLayout">
+        <AnimatePresence>
           {sortedTodos.map((todo) => (
             <motion.div
               key={todo.id}
-              layout
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
