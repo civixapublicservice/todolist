@@ -1,10 +1,12 @@
-import { Outlet, Navigate } from 'react-router-dom'
+import { Outlet, Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { Sparkles, CheckCircle2 } from 'lucide-react'
 import ThemeToggle from '../components/ui/ThemeToggle'
 
 export default function AuthLayout() {
   const { user } = useAuth()
+  const location = useLocation()
+  const isRegister = location.pathname === '/register'
 
   if (user) {
     return <Navigate to="/dashboard" replace />
@@ -45,7 +47,7 @@ export default function AuthLayout() {
           </div>
         </div>
         {/* Form itself */}
-        <div className="flex-1 flex flex-col items-center justify-start p-6 sm:p-12 pt-28 sm:pt-32 lg:pt-40 z-10 relative">
+        <div className={`flex-1 flex flex-col items-center p-6 sm:p-12 z-10 relative ${isRegister ? 'justify-start pt-28 sm:pt-32 lg:pt-40' : 'justify-center'}`}>
           {/* Constrain width so it looks perfectly balanced and readable. Increased to 440px per user request */}
           <div className="w-full max-w-[440px] animate-fade-in-up">
             <Outlet />
