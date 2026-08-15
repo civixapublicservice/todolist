@@ -49,6 +49,30 @@ export default function ActivityPage() {
     return date.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
   };
 
+  const getActivityIcon = (action) => {
+    switch (action) {
+      case 'TASK_CREATED': return <PlusCircle className="w-4 h-4" />;
+      case 'TASK_UPDATED': return <Edit className="w-4 h-4" />;
+      case 'TASK_COMPLETED': return <CheckCircle2 className="w-4 h-4" />;
+      case 'TASK_DELETED': return <Trash2 className="w-4 h-4" />;
+      case 'USER_REGISTERED': return <UserPlus className="w-4 h-4" />;
+      case 'USER_LOGIN': return <LogIn className="w-4 h-4" />;
+      default: return <Activity className="w-4 h-4" />;
+    }
+  };
+
+  const getActivityColor = (action) => {
+    switch (action) {
+      case 'TASK_CREATED': return 'text-blue-500 border-blue-500/30 bg-blue-500/10 dark:bg-blue-500/20';
+      case 'TASK_UPDATED': return 'text-purple-500 border-purple-500/30 bg-purple-500/10 dark:bg-purple-500/20';
+      case 'TASK_COMPLETED': return 'text-emerald-500 border-emerald-500/30 bg-emerald-500/10 dark:bg-emerald-500/20';
+      case 'TASK_DELETED': return 'text-red-500 border-red-500/30 bg-red-500/10 dark:bg-red-500/20';
+      case 'USER_REGISTERED': return 'text-indigo-500 border-indigo-500/30 bg-indigo-500/10 dark:bg-indigo-500/20';
+      case 'USER_LOGIN': return 'text-cyan-500 border-cyan-500/30 bg-cyan-500/10 dark:bg-cyan-500/20';
+      default: return 'text-gray-500 border-gray-500/30 bg-gray-500/10 dark:bg-gray-500/20';
+    }
+  };
+
   const formatActionText = (action, details) => {
     if (!details || typeof details !== 'string') {
       return <span className="text-muted-foreground">{action}</span>;
