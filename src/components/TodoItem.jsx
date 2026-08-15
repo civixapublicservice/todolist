@@ -102,20 +102,13 @@ export default function TodoItem({
   }
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      whileHover={!isEditing ? { y: -2 } : {}}
+    <div 
       className={cn(
-        "glass-card relative flex flex-col p-4 sm:p-5 gap-3 transition-all duration-300",
-        !isEditing && "overflow-hidden",
-        isEditing 
-          ? "border border-primary/40 shadow-glow bg-white/95 dark:bg-[#151515]/95 z-20" 
-          : cn(
-              "group cursor-default shadow-sm hover:shadow-md border border-glass-border bg-white/60 dark:bg-black/40",
-              todo.completed && "opacity-60 bg-muted/10 grayscale-[0.3]"
-            )
+        "group relative flex flex-col justify-between p-4 sm:p-5 rounded-2xl sm:rounded-[1.5rem] transition-all duration-300 border backdrop-blur-xl",
+        !isEditing ? "hover:-translate-y-1" : "",
+        todo.completed
+          ? "bg-foreground/5 dark:bg-white/5 border-transparent shadow-sm"
+          : "bg-white/95 dark:bg-black/90 border-glass-border hover:border-primary/30 shadow-md hover:shadow-xl"
       )}
     >
       {showDeleteConfirm ? (
@@ -382,6 +375,6 @@ export default function TodoItem({
           </div>
         </div>
       )}
-    </motion.div>
+    </div>
   )
 }

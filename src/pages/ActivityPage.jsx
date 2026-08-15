@@ -114,11 +114,8 @@ export default function ActivityPage() {
     <>
       <div className="max-w-4xl mx-auto w-full pb-10">
         {/* Banner */}
-        <motion.div 
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.25, ease: 'easeOut' }}
-          className="bg-gradient-to-r from-primary to-accent text-white rounded-[var(--radius-lg)] p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 relative overflow-hidden mb-10 shadow-glow"
+        <div 
+          className="relative overflow-hidden mb-8 rounded-[1.5rem] bg-gradient-to-r from-primary to-accent dark:bg-none dark:bg-[#0A0A0B] shadow-glow dark:shadow-2xl dark:border dark:border-white/5 p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6"
         >
           <div className="relative z-10">
             <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-white text-xs font-semibold tracking-wide uppercase mb-3 border border-white/20">
@@ -131,29 +128,22 @@ export default function ActivityPage() {
             </p>
           </div>
           <div className="absolute right-0 top-0 w-80 h-80 bg-white/10 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none mix-blend-overlay"></div>
-        </motion.div>
+        </div>
 
         <AnimatePresence>
           {error && (
-            <motion.div 
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
+            <div 
               className="overflow-hidden mb-6"
             >
               <div className="flex items-center space-x-2 bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-xl glass">
                 <AlertCircle className="h-5 w-5 shrink-0" />
                 <span className="text-sm font-medium">{error}</span>
               </div>
-            </motion.div>
+            </div>
           )}
         </AnimatePresence>
 
-        <motion.div 
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.25, ease: 'easeOut', delay: 0.05 }}
-        >
+        <div>
           {isLoading ? (
             <div className="glass-panel border border-glass-border p-12 text-center shadow-sm flex flex-col items-center justify-center space-y-4 min-h-[300px]">
               <div className="animate-spin rounded-full border-4 border-primary border-t-transparent h-10 w-10"></div>
@@ -217,7 +207,7 @@ export default function ActivityPage() {
               ))}
             </div>
           )}
-        </motion.div>
+        </div>
       </div>
     </>
   )

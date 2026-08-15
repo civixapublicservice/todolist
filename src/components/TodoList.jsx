@@ -60,28 +60,21 @@ export default function TodoList({
         </div>
       </div>
 
-      <motion.div 
+      <div 
         className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"
       >
         <AnimatePresence>
           {sortedTodos.map((todo) => (
-            <motion.div
+            <TodoItem
               key={todo.id}
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
-              transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-            >
-              <TodoItem
-                todo={todo}
-                onToggle={onToggle}
-                onDelete={onDelete}
-                onUpdate={onUpdate}
-              />
-            </motion.div>
+              todo={todo}
+              onToggle={onToggle}
+              onDelete={onDelete}
+              onUpdate={onUpdate}
+            />
           ))}
         </AnimatePresence>
-      </motion.div>
+      </div>
 
       <AnimatePresence>
         {completedCount > 0 && (

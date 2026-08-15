@@ -125,10 +125,7 @@ export default function MyTasksPage() {
     <>
       <div className="max-w-5xl mx-auto w-full">
         {/* Welcome Banner */}
-        <motion.div 
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease: 'easeOut' }}
+        <div 
           className="relative overflow-hidden mb-8 rounded-[1.5rem] bg-gradient-to-r from-primary to-accent dark:bg-none dark:bg-[#0A0A0B] shadow-glow dark:shadow-2xl dark:border dark:border-white/5"
         >
           {/* Light Mode Decorative Elements */}
@@ -202,10 +199,7 @@ export default function MyTasksPage() {
           )}
         </AnimatePresence>
 
-        <motion.section 
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.25, ease: 'easeOut', delay: 0.05 }}
+        <section 
           className="mb-6 relative z-10"
         >
           <div className="glass-panel border border-glass-border p-4 shadow-sm">
@@ -220,13 +214,9 @@ export default function MyTasksPage() {
               onSortChange={setSortBy}
             />
           </div>
-        </motion.section>
+        </section>
 
-        <motion.section
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.25, ease: 'easeOut', delay: 0.1 }}
-        >
+        <section>
           <TodoList
             todos={filteredTodos}
             onToggle={handleToggleTodo}
@@ -234,7 +224,7 @@ export default function MyTasksPage() {
             onUpdate={handleUpdateTodo}
             isLoading={isLoadingTodos}
           />
-        </motion.section>
+        </section>
       </div>
     </>
   )
