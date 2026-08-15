@@ -229,6 +229,7 @@ export default function CalendarPage() {
                                 <div key={todo.id}
                                   className="p-3.5 sm:p-4 rounded-[1.25rem] border relative overflow-hidden transition-all duration-300 hover:shadow-glow bg-gradient-to-br from-primary/5 to-accent/5 border-primary/20 shadow-sm group flex items-start gap-3"
                                 >
+                                  <div className="mt-0.5 shrink-0 w-4 h-4 rounded-full border-2 border-primary/40" />
                                   <div>
                                     <div className="font-bold text-sm text-foreground group-hover:text-primary transition-colors">
                                       {todo.title}
@@ -256,6 +257,9 @@ export default function CalendarPage() {
                                 <div key={todo.id}
                                   className="p-3.5 sm:p-4 rounded-[1.25rem] border relative overflow-hidden transition-all duration-300 bg-foreground/5 dark:bg-white/5 border-transparent flex items-start gap-3"
                                 >
+                                  <div className="mt-0.5 shrink-0 text-muted-foreground/40">
+                                    <CheckCircle2 className="w-4 h-4" />
+                                  </div>
                                   <div>
                                     <div className="font-semibold text-sm text-muted-foreground line-through">
                                       {todo.title}
