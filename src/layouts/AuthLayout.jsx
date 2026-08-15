@@ -13,6 +13,11 @@ export default function AuthLayout() {
   return (
     <div className="bg-mesh-auth">
       
+      {/* Animated Background Blobs */}
+      <div className="bg-mesh-auth-blob-1" />
+      <div className="bg-mesh-auth-blob-2" />
+      <div className="bg-mesh-auth-blob-3" />
+
       {/* Top right theme toggle */}
       <div className="absolute top-6 right-6 z-50">
          <ThemeToggle />
