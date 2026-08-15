@@ -165,7 +165,7 @@ export default function MyTasksPage() {
               <span>{showCreateModal ? 'Cancel' : 'New Task'}</span>
             </button>
           </div>
-        </motion.div>
+        </div>
 
         <AnimatePresence>
           {error && (
