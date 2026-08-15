@@ -2,7 +2,7 @@ import { useActivities } from '../context/ActivityContext'
 import { Activity, Clock, CheckCircle2, UserPlus, LogIn, Edit, Trash2, PlusCircle, AlertCircle, Sparkles } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '../utils/cn'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 
 export default function ActivityPage() {
   const { activities, isLoading, error, fetchActivities } = useActivities()
@@ -11,52 +11,77 @@ export default function ActivityPage() {
     fetchActivities()
   }, [fetchActivities])
 
-  const getActivityIcon = (action) => {
-    switch (action) {
-      case 'USER_REGISTERED':
-        return <UserPlus size={18} className="text-emerald-500" />
-      case 'USER_LOGGED_IN':
-        return <LogIn size={18} className="text-blue-500" />
-      case 'TASK_CREATED':
-        return <PlusCircle size={18} className="text-primary" />
-      case 'TASK_UPDATED':
-        return <Edit size={18} className="text-amber-500" />
-      case 'TASK_COMPLETED':
-        return <CheckCircle2 size={18} className="text-emerald-500" />
-      case 'TASK_DELETED':
-        return <Trash2 size={18} className="text-destructive" />
-      default:
-        return <Activity size={18} className="text-accent" />
-    }
-  }
+  const groupedActivities = useMemo(() => {
+    const groups = {};
+    activities.forEach(item => {
+      const date = new Date(item.createdAt);
+      // Group by midnight of that date
+      const dateKey = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+      
+      if (!groups[dateKey]) {
+        groups[dateKey] = [];
+      }
+      groups[dateKey].push(item);
+    });
+    
+    // Sort keys descending (newest dates first)
+    return Object.keys(groups).sort((a, b) => b - a).map(key => ({
+      date: new Date(Number(key)),
+      items: groups[key]
+    }));
+  }, [activities]);
 
-  const getActivityColor = (action) => {
-    switch (action) {
-      case 'USER_REGISTERED':
-      case 'TASK_COMPLETED':
-        return 'bg-emerald-500/10 border-emerald-500/20'
-      case 'USER_LOGGED_IN':
-        return 'bg-blue-500/10 border-blue-500/20'
-      case 'TASK_CREATED':
-        return 'bg-primary/10 border-primary/20'
-      case 'TASK_UPDATED':
-        return 'bg-amber-500/10 border-amber-500/20'
-      case 'TASK_DELETED':
-        return 'bg-destructive/10 border-destructive/20'
-      default:
-        return 'bg-accent/10 border-accent/20'
+  const getRelativeDateLabel = (date) => {
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    
+    if (date.toDateString() === today.toDateString()) return 'Today';
+    if (date.toDateString() === yesterday.toDateString()) return 'Yesterday';
+    return date.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  };
+
+  const formatActionText = (action, details) => {
+    // Try to extract the task name in quotes
+    const match = details.match(/"([^"]+)"/);
+    const targetName = match ? match[1] : null;
+    
+    if (!targetName) {
+      // Fallback for non-quoted details (like "User logged in")
+      return <span className="text-muted-foreground">{details}</span>;
     }
-  }
+
+    switch (action) {
+      case 'TASK_CREATED': 
+        return <><span className="text-muted-foreground">Created task </span><span className="font-bold text-foreground">"{targetName}"</span></>;
+      case 'TASK_UPDATED': 
+        return <><span className="text-muted-foreground">Updated task </span><span className="font-bold text-foreground">"{targetName}"</span></>;
+      case 'TASK_COMPLETED': 
+        return <><span className="text-muted-foreground">Completed task </span><span className="font-bold text-emerald-500">"{targetName}"</span></>;
+      case 'TASK_DELETED': 
+        return <><span className="text-muted-foreground">Deleted task </span><span className="font-bold text-foreground line-through opacity-70">"{targetName}"</span></>;
+      case 'TASK_REOPENED': 
+        return <><span className="text-muted-foreground">Reopened task </span><span className="font-bold text-amber-500">"{targetName}"</span></>;
+      default:
+        // Generic fallback for any other quoted text
+        const parts = details.split(/"([^"]+)"/g);
+        return (
+          <span className="text-muted-foreground">
+            {parts.map((part, i) => i % 2 === 1 ? <span key={i} className="font-bold text-foreground">"{part}"</span> : <span key={i}>{part}</span>)}
+          </span>
+        );
+    }
+  };
 
   return (
     <>
-      <div className="max-w-4xl mx-auto w-full">
+      <div className="max-w-4xl mx-auto w-full pb-10">
         {/* Banner */}
         <motion.div 
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.25, ease: 'easeOut' }}
-          className="bg-gradient-to-r from-primary to-accent text-white rounded-[var(--radius-lg)] p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 relative overflow-hidden mb-8 shadow-glow"
+          className="bg-gradient-to-r from-primary to-accent text-white rounded-[var(--radius-lg)] p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 relative overflow-hidden mb-10 shadow-glow"
         >
           <div className="relative z-10">
             <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-white text-xs font-semibold tracking-wide uppercase mb-3 border border-white/20">
@@ -89,8 +114,8 @@ export default function ActivityPage() {
 
         <motion.div 
           initial={{ opacity: 0, y: 6 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.25, ease: 'easeOut', delay: 0.05 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25, ease: 'easeOut', delay: 0.05 }}
         >
           {isLoading ? (
             <div className="glass-panel border border-glass-border p-12 text-center shadow-sm flex flex-col items-center justify-center space-y-4 min-h-[300px]">
@@ -106,48 +131,56 @@ export default function ActivityPage() {
               <p className="text-sm text-muted-foreground max-w-sm">Events will appear here as you create, update, and manage tasks.</p>
             </div>
           ) : (
-            <div className="relative pl-2 sm:pl-4 py-2">
-              <div className="flex flex-col relative z-10">
-                {activities.map((item, index) => {
-                  const detailsParts = item.details.split(/"([^"]+)"/g);
-                  
-                  return (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, ease: 'easeOut', delay: index * 0.02 }}
-                      key={item.id}
-                      className="relative flex items-start gap-4 sm:gap-5 group pb-8 last:pb-2"
-                    >
-                      {/* Delicate Timeline Icon */}
-                      <div className={cn(
-                        "relative flex items-center justify-center w-8 h-8 rounded-full border shadow-sm shrink-0 z-10 transition-transform duration-300 group-hover:scale-110",
-                        getActivityColor(item.action)
-                      )}>
-                        {getActivityIcon(item.action)}
-                      </div>
-                      
-                      {/* Content - Borderless & Clean */}
-                      <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between flex-1 pt-1.5">
-                        <div className="text-[14px] sm:text-[15px] leading-snug text-muted-foreground">
-                          {detailsParts.map((part, i) => (
-                            i % 2 === 1 
-                              ? <span key={i} className="font-semibold text-foreground tracking-tight">"{part}"</span> 
-                              : <span key={i}>{part}</span>
-                          ))}
+            <div className="space-y-10">
+              {groupedActivities.map((group, groupIdx) => (
+                <div key={group.date.getTime()} className="relative">
+                  {/* Date Header */}
+                  <div className="flex items-center gap-4 mb-6 sticky top-20 z-20">
+                    <div className="bg-background/80 backdrop-blur-md px-4 py-1.5 rounded-full border border-border shadow-sm">
+                      <h3 className="text-xs font-bold uppercase tracking-widest text-foreground">
+                        {getRelativeDateLabel(group.date)}
+                      </h3>
+                    </div>
+                    <div className="h-px bg-border/60 flex-1"></div>
+                  </div>
+
+                  {/* Timeline Container */}
+                  <div className="relative pl-6 sm:pl-8 ml-6 border-l-2 border-border/60 space-y-6">
+                    {group.items.map((item, idx) => (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10, x: -10 }}
+                        animate={{ opacity: 1, y: 0, x: 0 }}
+                        transition={{ duration: 0.3, ease: 'easeOut', delay: (groupIdx * 0.1) + (idx * 0.03) }}
+                        key={item.id}
+                        className="relative group cursor-default"
+                      >
+                        {/* Timeline Node Icon */}
+                        <div className={cn(
+                          "absolute -left-[43px] sm:-left-[51px] top-1.5 flex items-center justify-center w-9 h-9 rounded-full border-2 bg-background z-10 transition-transform duration-300 group-hover:scale-110 shadow-sm",
+                          getActivityColor(item.action)
+                        )}>
+                          {getActivityIcon(item.action)}
                         </div>
                         
-                        <div className="text-[11.5px] sm:text-xs text-muted-foreground/50 font-medium tracking-wide shrink-0 mt-1.5 sm:mt-0">
-                          {new Date(item.createdAt).toLocaleString(undefined, {
-                            month: 'short', day: 'numeric', year: 'numeric',
-                            hour: 'numeric', minute: '2-digit'
-                          })}
+                        {/* Activity Card */}
+                        <div className="bg-white/40 dark:bg-black/20 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-border group-hover:border-primary/30 transition-all duration-300 shadow-sm group-hover:shadow-md hover:bg-white/60 dark:hover:bg-white/5">
+                          <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 sm:gap-4">
+                            <div className="text-[14px] sm:text-[15px] leading-relaxed">
+                              {formatActionText(item.action, item.details)}
+                            </div>
+                            <div className="text-[11.5px] font-semibold text-muted-foreground/60 flex items-center gap-1.5 shrink-0 bg-background/50 px-2.5 py-1 rounded-md border border-border/50">
+                              <Clock className="w-3.5 h-3.5" />
+                              {new Date(item.createdAt).toLocaleTimeString(undefined, {
+                                hour: 'numeric', minute: '2-digit'
+                              })}
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </motion.div>
-                  )
-                })}
-              </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </motion.div>
