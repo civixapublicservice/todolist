@@ -173,7 +173,8 @@
 
 @layer base {
   html {
-    overflow-y: scroll; /* Prevents layout shift when scrollbar appears */
+    overflow-y: auto;
+    scrollbar-gutter: stable; /* Perfectly prevents the horizontal layout shift (zooming effect) */
   }
 
   * {
