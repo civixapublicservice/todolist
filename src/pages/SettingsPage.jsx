@@ -218,7 +218,7 @@ export default function SettingsPage() {
                     </h4>
                     <p className="text-xs text-muted-foreground mt-1">Select your preferred color scheme.</p>
                   </div>
-                  <div className="flex bg-foreground/5 p-1 rounded-xl w-full sm:w-fit border border-glass-border">
+                  <div className="flex bg-foreground/5 p-1.5 sm:p-2 rounded-xl sm:rounded-2xl w-full sm:w-fit border border-glass-border">
                     {['dark', 'light', 'system'].map((t) => (
                       <button
                         key={t}
@@ -229,9 +229,9 @@ export default function SettingsPage() {
                           setGlobalTheme(t);
                         }}
                         className={cn(
-                          "flex-1 sm:w-24 px-4 py-2 text-sm font-semibold rounded-lg capitalize transition-all duration-200",
+                          "flex-1 sm:w-32 px-4 py-2.5 sm:py-3 sm:px-6 text-sm sm:text-base font-bold rounded-lg sm:rounded-xl capitalize transition-all duration-200",
                           theme === t 
-                            ? "bg-background text-primary shadow-sm ring-1 ring-primary/20" 
+                            ? "bg-background text-primary shadow-md ring-1 ring-primary/20 scale-[1.02]" 
                             : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
                         )}
                       >
