@@ -61,7 +61,7 @@ export default function TodoList({
       </div>
 
       <div 
-        className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 items-start"
+        className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"
       >
         <AnimatePresence>
           {sortedTodos.map((todo) => (

@@ -102,15 +102,59 @@ export default function TodoItem({
   }
 
   return (
-    <div 
-      className={cn(
-        "group relative flex flex-col justify-between p-4 sm:p-5 rounded-2xl sm:rounded-[1.5rem] transition-all duration-300 border backdrop-blur-xl",
-        isEditing ? "z-50 shadow-2xl scale-[1.01]" : "z-10 hover:z-20 hover:-translate-y-1",
-        todo.completed
-          ? "bg-foreground/5 dark:bg-white/5 border-transparent shadow-sm"
-          : "bg-white/95 dark:bg-black/90 border-glass-border hover:border-primary/30 shadow-md hover:shadow-xl"
+    <div className="relative h-full w-full">
+      {/* Placeholder to maintain exact grid cell height when editing/deleting so the row doesn't stretch */}
+      {(isEditing || showDeleteConfirm) && (
+        <div 
+          className="opacity-0 pointer-events-none p-4 sm:p-5 h-full flex flex-col justify-between"
+          aria-hidden="true"
+        >
+          <div className="flex flex-col h-full gap-3">
+            <div className="flex items-start gap-3">
+              <div className="mt-0.5 shrink-0 w-5 h-5 rounded-full border-[1.5px]" />
+              <div className="flex-1 min-w-0">
+                <h3 className="text-[15px] font-bold leading-snug break-words">
+                  {todo.title}
+                </h3>
+                {todo.description && (
+                  <p className="text-[13px] mt-1.5 line-clamp-2 break-words leading-relaxed font-medium">
+                    {todo.description}
+                  </p>
+                )}
+              </div>
+            </div>
+            <div className="mt-auto pt-3 flex items-center justify-between border-t border-transparent">
+              <div className="flex flex-wrap items-center gap-2">
+                {todo.dueDate && (
+                  <div className="flex items-center space-x-1.5 text-[11px] font-semibold px-2 py-1 border">
+                    <CalendarIcon className="h-3 w-3" strokeWidth={2} />
+                    <span>{formatFriendlyDate(todo.dueDate)}</span>
+                  </div>
+                )}
+                <div className="px-2 py-1 rounded-md text-[10px] font-bold border">
+                  {todo.priority || 'MEDIUM'}
+                </div>
+                {todo.reminderEnabled && !todo.completed && (
+                  <div className="p-1 rounded-full border">
+                    <Bell className="h-3 w-3" strokeWidth={2.5} />
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
       )}
-    >
+
+      {/* Actual Card Content */}
+      <div 
+        className={cn(
+          "group flex flex-col justify-between p-4 sm:p-5 rounded-2xl sm:rounded-[1.5rem] transition-all duration-300 border backdrop-blur-xl",
+          (isEditing || showDeleteConfirm) ? "absolute top-0 left-0 w-full z-50 shadow-2xl scale-[1.02]" : "relative h-full z-10 hover:z-20 hover:-translate-y-1",
+          todo.completed
+            ? "bg-foreground/5 dark:bg-white/5 border-transparent shadow-sm"
+            : "bg-white/95 dark:bg-black/90 border-glass-border hover:border-primary/30 shadow-md hover:shadow-xl"
+        )}
+      >
       {showDeleteConfirm ? (
         <div className="flex flex-col items-center justify-center h-full gap-3 py-3 animate-in fade-in zoom-in-95 duration-300">
           <div className="h-12 w-12 bg-destructive/10 rounded-full flex items-center justify-center border border-destructive/20 shadow-sm">
@@ -375,6 +419,7 @@ export default function TodoItem({
           </div>
         </div>
       )}
+      </div>
     </div>
   )
 }
