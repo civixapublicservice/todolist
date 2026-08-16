@@ -21,13 +21,17 @@ export default function Header() {
   const { notifications, unreadCount, handleMarkAsRead, handleMarkAllRead, handleDelete, handleDeleteAll } = useNotifications()
   
   const userDropdownRef = useRef(null)
+  const userDropdownContentRef = useRef(null)
   const notifDropdownRef = useRef(null)
   const notifDropdownContentRef = useRef(null)
 
   // Close dropdowns when clicking outside
   useEffect(() => {
     function handleClickOutside(event) {
-      if (userDropdownRef.current && !userDropdownRef.current.contains(event.target)) {
+      const isOutsideUserBtn = userDropdownRef.current && !userDropdownRef.current.contains(event.target)
+      const isOutsideUserContent = !userDropdownContentRef.current || !userDropdownContentRef.current.contains(event.target)
+      
+      if (isOutsideUserBtn && isOutsideUserContent) {
         setShowUserDropdown(false)
       }
       
@@ -137,6 +141,7 @@ export default function Header() {
       <AnimatePresence>
         {showUserDropdown && (
           <motion.div
+            ref={userDropdownContentRef}
             initial={{ opacity: 0, y: 10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
