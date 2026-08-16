@@ -115,7 +115,7 @@ export default function ActivityPage() {
       <div className="max-w-4xl mx-auto w-full pb-10">
         {/* Banner */}
         <div 
-          className="relative overflow-hidden mb-8 rounded-[1.5rem] bg-gradient-to-r from-primary to-accent dark:bg-none dark:bg-[#0A0A0B] shadow-glow dark:shadow-2xl dark:border dark:border-white/5 p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6"
+          className="relative overflow-hidden mb-8 rounded-[1.5rem] bg-gradient-to-r from-primary to-accent shadow-glow dark:shadow-2xl dark:border dark:border-white/5 p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6"
         >
           <div className="relative z-10">
             <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-white text-xs font-semibold tracking-wide uppercase mb-3 border border-white/20">
