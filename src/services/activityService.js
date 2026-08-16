@@ -1,6 +1,6 @@
 import { fetchApi } from './api'
 
 export const getActivities = async () => {
-  const data = await fetchApi('/activities')
+  const data = await fetchApi('/api/activities')
   return data.activities || []
 }

@@ -18,15 +18,15 @@ export function AuthProvider({ children }) {
       try {
         const currentUser = await fetchCurrentUser()
         setUser(currentUser)
-        
+
         // Silently sync timezone and load global settings (Phase 10/24 logic)
         try {
           const tz = Intl.DateTimeFormat().resolvedOptions().timeZone
-          const settings = await fetchApi('/settings', {
+          const settings = await fetchApi('/api/settings', {
             method: 'PUT',
             body: JSON.stringify({ timezone: tz })
           })
-          
+
           if (settings && settings.theme) {
             window.dispatchEvent(new CustomEvent('auth:sync-theme', { detail: settings.theme }))
           }
@@ -45,7 +45,7 @@ export function AuthProvider({ children }) {
       logoutUser()
       setUser(null)
     }
-    
+
     window.addEventListener('auth:unauthorized', handleUnauthorized)
     return () => window.removeEventListener('auth:unauthorized', handleUnauthorized)
   }, [])

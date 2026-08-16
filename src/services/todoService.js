@@ -10,12 +10,12 @@ export const getTodos = async (filters = {}) => {
   if (sort) params.append('sort', sort)
 
   const queryString = params.toString() ? `?${params.toString()}` : ''
-  const data = await fetchApi(`/todos${queryString}`)
+  const data = await fetchApi(`/api/todos${queryString}`)
   return data.todos || []
 }
 
 export const createTodo = async (todoData) => {
-  const data = await fetchApi('/todos', {
+  const data = await fetchApi('/api/todos', {
     method: 'POST',
     body: JSON.stringify(todoData),
   })
@@ -23,7 +23,7 @@ export const createTodo = async (todoData) => {
 }
 
 export const updateTodo = async (id, updates) => {
-  const data = await fetchApi(`/todos/${id}`, {
+  const data = await fetchApi(`/api/todos/${id}`, {
     method: 'PUT',
     body: JSON.stringify(updates),
   })
@@ -31,14 +31,14 @@ export const updateTodo = async (id, updates) => {
 }
 
 export const toggleTodo = async (id) => {
-  const data = await fetchApi(`/todos/${id}/toggle`, {
+  const data = await fetchApi(`/api/todos/${id}/toggle`, {
     method: 'PATCH',
   })
   return data.todo
 }
 
 export const deleteTodo = async (id) => {
-  const data = await fetchApi(`/todos/${id}`, {
+  const data = await fetchApi(`/api/todos/${id}`, {
     method: 'DELETE',
   })
   return data

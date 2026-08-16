@@ -1,7 +1,7 @@
 import { fetchApi } from './api'
 
 export const registerUser = async (name, email, password) => {
-  const data = await fetchApi('/auth/register', {
+  const data = await fetchApi('/api/auth/register', {
     method: 'POST',
     body: JSON.stringify({ name, email, password }),
   })
@@ -24,7 +24,7 @@ export const fetchCurrentUser = async () => {
   const token = localStorage.getItem('auth_token')
   if (!token) return null
   try {
-    const data = await fetchApi('/auth/me')
+    const data = await fetchApi('/api/auth/me')
     return data.user
   } catch {
     localStorage.removeItem('auth_token')
@@ -37,7 +37,7 @@ export const logoutUser = () => {
 }
 
 export const forgotPassword = async (email) => {
-  const data = await fetchApi('/auth/forgot-password', {
+  const data = await fetchApi('/api/auth/forgot-password', {
     method: 'POST',
     body: JSON.stringify({ email }),
   })
@@ -45,7 +45,7 @@ export const forgotPassword = async (email) => {
 }
 
 export const verifyOtp = async (email, otp) => {
-  const data = await fetchApi('/auth/verify-reset-otp', {
+  const data = await fetchApi('/api/auth/verify-reset-otp', {
     method: 'POST',
     body: JSON.stringify({ email, otp }),
   })
@@ -53,7 +53,7 @@ export const verifyOtp = async (email, otp) => {
 }
 
 export const resetPassword = async (resetToken, newPassword) => {
-  const data = await fetchApi('/auth/reset-password', {
+  const data = await fetchApi('/api/auth/reset-password', {
     method: 'POST',
     body: JSON.stringify({ resetToken, newPassword }),
   })
@@ -61,7 +61,7 @@ export const resetPassword = async (resetToken, newPassword) => {
 }
 
 export const verifyRegistration = async (email, otp) => {
-  const data = await fetchApi('/auth/verify-registration', {
+  const data = await fetchApi('/api/auth/verify-registration', {
     method: 'POST',
     body: JSON.stringify({ email, otp }),
   })
@@ -69,7 +69,7 @@ export const verifyRegistration = async (email, otp) => {
 }
 
 export const resendRegistrationOtp = async (email) => {
-  const data = await fetchApi('/auth/resend-registration-otp', {
+  const data = await fetchApi('/api/auth/resend-registration-otp', {
     method: 'POST',
     body: JSON.stringify({ email }),
   })
@@ -77,7 +77,7 @@ export const resendRegistrationOtp = async (email) => {
 }
 
 export const changeRegistrationEmail = async (oldEmail, newEmail) => {
-  const data = await fetchApi('/auth/change-registration-email', {
+  const data = await fetchApi('/api/auth/change-registration-email', {
     method: 'POST',
     body: JSON.stringify({ oldEmail, newEmail }),
   })

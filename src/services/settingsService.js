@@ -1,7 +1,7 @@
 import { fetchApi } from './api'
 
 export const updateUserProfile = async (name, email) => {
-  const data = await fetchApi('/settings/profile', {
+  const data = await fetchApi('/api/settings/profile', {
     method: 'PUT',
     body: JSON.stringify({ name, email }),
   })
@@ -9,7 +9,7 @@ export const updateUserProfile = async (name, email) => {
 }
 
 export const changeUserPassword = async (currentPassword, newPassword) => {
-  const data = await fetchApi('/settings/change-password', {
+  const data = await fetchApi('/api/settings/change-password', {
     method: 'POST',
     body: JSON.stringify({ currentPassword, newPassword }),
   })
@@ -17,12 +17,12 @@ export const changeUserPassword = async (currentPassword, newPassword) => {
 }
 
 export const getUserSettings = async () => {
-  const data = await fetchApi('/settings')
+  const data = await fetchApi('/api/settings')
   return data
 }
 
 export const updateUserSettings = async (settingsUpdates) => {
-  const data = await fetchApi('/settings', {
+  const data = await fetchApi('/api/settings', {
     method: 'PUT',
     body: JSON.stringify(settingsUpdates),
   })
