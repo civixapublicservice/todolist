@@ -85,7 +85,7 @@ export default function ResetPasswordPage() {
   if (!resetToken) return null
 
   return (
-    <div className="w-full flex-1 flex flex-col pt-24 sm:pt-0 sm:justify-center pb-8 sm:pb-0">
+    <div className="w-full flex-1 flex flex-col justify-center">
       <div className="flex flex-col space-y-2 sm:space-y-3 mb-6 sm:mb-8 w-full mt-2 sm:mt-0">
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
           {isSuccess ? 'Password Reset!' : 'Set new password'}

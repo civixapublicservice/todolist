@@ -38,8 +38,8 @@ export default function AuthLayout() {
         <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-purple-500/10 rounded-full mix-blend-multiply filter blur-[100px] opacity-70 animate-blob animation-delay-2000 pointer-events-none" />
 
         {/* Top Header */}
-        <div className="absolute top-0 right-0 w-full p-6 sm:p-12 flex justify-between items-center z-50 pointer-events-none">
-          <div className="flex items-center gap-2 sm:gap-3 pointer-events-auto">
+        <div className="w-full p-6 sm:p-12 pb-0 sm:pb-0 flex justify-between items-center z-50">
+          <div className="flex items-center gap-2 sm:gap-3">
             <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-primary/10 flex items-center justify-center">
               <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
             </div>
@@ -47,7 +47,7 @@ export default function AuthLayout() {
           </div>
         </div>
         {/* Form itself */}
-        <div className="flex-1 flex flex-col p-6 sm:p-12 z-10 relative">
+        <div className="flex-1 flex flex-col p-6 sm:p-12 pt-8 sm:pt-8 z-10 relative">
           <AnimatePresence mode="wait">
             <motion.div
               key={location.pathname}
