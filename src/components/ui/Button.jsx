@@ -15,7 +15,8 @@ export const Button = React.forwardRef(({
     secondary: 'btn-secondary',
     danger: 'btn-danger',
     gradient: 'btn-gradient',
-    icon: 'btn-icon'
+    icon: 'btn-icon',
+    outline: 'btn-outline'
   };
 
   const sizes = {
@@ -27,6 +28,7 @@ export const Button = React.forwardRef(({
     <motion.button
       whileTap={{ scale: 0.98 }}
       ref={ref}
+      {...props}
       disabled={isLoading || props.disabled}
       className={cn(
         'btn',
@@ -34,7 +36,6 @@ export const Button = React.forwardRef(({
         sizes[size],
         className
       )}
-      {...props}
     >
       {isLoading ? (
         <span className="spinner mr-2" />

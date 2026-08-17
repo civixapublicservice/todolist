@@ -17,6 +17,7 @@ export const Input = React.forwardRef(({ className, error, leftIcon: LeftIcon, t
       
       <input
         ref={ref}
+        {...props}
         type={inputType}
         className={cn(
           variant === 'auth' ? 'input-dark' : 'glass-input w-full py-3.5 text-sm font-bold tracking-wide transition-all focus:border-primary focus:ring-2 focus:ring-primary/60 disabled:opacity-50 placeholder:text-muted-foreground/80',
@@ -25,7 +26,6 @@ export const Input = React.forwardRef(({ className, error, leftIcon: LeftIcon, t
           error && 'border-destructive focus-visible:ring-destructive focus:border-destructive focus:ring-destructive/50',
           className
         )}
-        {...props}
       />
       
       {isPassword && (
