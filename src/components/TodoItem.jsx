@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Trash2, Edit2, Check, Calendar as CalendarIcon, CheckCircle2, Clock, Bell } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { cn } from '../utils/cn'
@@ -12,8 +12,10 @@ export default function TodoItem({
   onToggle,
   onDelete,
   onUpdate,
+  isEditing,
+  onEditStart,
+  onEditEnd,
 }) {
-  const [isEditing, setIsEditing] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [editTitle, setEditTitle] = useState(todo.title)
   const [editDescription, setEditDescription] = useState(todo.description || '')
@@ -26,9 +28,20 @@ export default function TodoItem({
   )
   const [editReminderEnabled, setEditReminderEnabled] = useState(todo.reminderEnabled || false)
   const [editReminderTime, setEditReminderTime] = useState(todo.reminderTime || '15m')
-  const [editReminderType, setEditReminderType] = useState(todo.reminderType || 'BOTH')
   const [isUpdating, setIsUpdating] = useState(false)
 
+  useEffect(() => {
+    if (isEditing) {
+      setEditTitle(todo.title)
+      setEditDescription(todo.description || '')
+      setEditPriority(todo.priority || 'MEDIUM')
+      setEditDueDate(todo.dueDate ? getLocalYYYYMMDD(todo.dueDate) : '')
+      setEditDueTime(todo.dueDate ? getLocalHHMM(todo.dueDate) : '')
+      setEditReminderEnabled(todo.reminderEnabled || false)
+      setEditReminderTime(todo.reminderTime || '15m')
+      setEditReminderType(todo.reminderType || 'BOTH')
+    }
+  }, [isEditing, todo])
   const handleSaveEdit = async () => {
     if (!editTitle.trim()) {
       alert('Todo title cannot be empty')
@@ -68,7 +81,7 @@ export default function TodoItem({
         reminderTime: editReminderTime,
         reminderType: editReminderType,
       })
-      setIsEditing(false)
+      if (onEditEnd) onEditEnd()
     } catch (err) {
       alert(err.message || 'Failed to update task')
     } finally {
@@ -85,7 +98,7 @@ export default function TodoItem({
     setEditReminderEnabled(todo.reminderEnabled || false)
     setEditReminderTime(todo.reminderTime || '15m')
     setEditReminderType(todo.reminderType || 'BOTH')
-    setIsEditing(false)
+    if (onEditEnd) onEditEnd()
   }
 
   const getPriorityClasses = (priority) => {
@@ -149,10 +162,11 @@ export default function TodoItem({
       <div 
         className={cn(
           "group flex flex-col justify-between p-4 sm:p-5 rounded-2xl sm:rounded-[1.5rem] transition-all duration-300 border backdrop-blur-xl",
-          (isEditing || showDeleteConfirm) ? "absolute top-0 left-0 w-full z-50 shadow-2xl scale-[1.02]" : "relative h-full z-10 hover:z-20 hover:-translate-y-1",
-          todo.completed
-            ? "bg-foreground/5 dark:bg-white/5 border-transparent shadow-sm"
-            : "bg-white/95 dark:bg-black/90 border-glass-border hover:border-primary/30 shadow-md hover:shadow-xl"
+          (isEditing || showDeleteConfirm) 
+            ? "absolute top-0 left-0 w-full z-50 shadow-2xl scale-[1.02] bg-background border-glass-border" 
+            : "relative h-full z-10 hover:z-20 hover:-translate-y-1 " + (todo.completed 
+                ? "bg-foreground/5 dark:bg-white/5 border-transparent shadow-sm" 
+                : "bg-white/95 dark:bg-black/90 border-glass-border hover:border-primary/30 shadow-md hover:shadow-xl")
         )}
       >
       {showDeleteConfirm ? (
@@ -400,7 +414,7 @@ export default function TodoItem({
             {/* Actions */}
             <div className="flex items-center gap-1 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
               <button
-                onClick={() => setIsEditing(true)}
+                onClick={() => { if (onEditStart) onEditStart() }}
                 aria-label="Edit task"
                 className="p-1.5 text-muted-foreground hover:text-primary transition-colors rounded-lg hover:bg-foreground/5"
                 title="Edit task"

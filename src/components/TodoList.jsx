@@ -11,6 +11,8 @@ export default function TodoList({
   onUpdate,
   isLoading,
 }) {
+  const [editingId, setEditingId] = useState(null)
+  
   const completedCount = todos.filter((t) => t.completed).length
 
 
@@ -71,6 +73,9 @@ export default function TodoList({
               onToggle={onToggle}
               onDelete={onDelete}
               onUpdate={onUpdate}
+              isEditing={editingId === todo.id}
+              onEditStart={() => setEditingId(todo.id)}
+              onEditEnd={() => setEditingId(null)}
             />
           ))}
         </AnimatePresence>

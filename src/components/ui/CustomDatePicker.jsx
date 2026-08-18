@@ -101,10 +101,11 @@ export default function CustomDatePicker({ value, onChange, minDate, align = 'le
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.15, ease: "easeOut" }}
             className={cn(
-              "absolute top-full mt-2 z-50 w-64 p-4",
+              "z-[100] w-[280px] p-4",
+              "fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 sm:absolute sm:top-full sm:left-auto sm:translate-x-0 sm:translate-y-0 sm:mt-2",
+              align === 'right' ? 'sm:right-0' : 'sm:left-0',
               "bg-white/95 dark:bg-[#1a1a1a]/95 backdrop-blur-xl border border-glass-border rounded-2xl shadow-2xl"
             )}
-            style={{ [align]: 0 }}
           >
             {/* Header */}
             <div className="flex items-center justify-between mb-4">
