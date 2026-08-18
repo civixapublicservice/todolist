@@ -28,6 +28,7 @@ export default function TodoItem({
   )
   const [editReminderEnabled, setEditReminderEnabled] = useState(todo.reminderEnabled || false)
   const [editReminderTime, setEditReminderTime] = useState(todo.reminderTime || '15m')
+  const [editReminderType, setEditReminderType] = useState(todo.reminderType || 'BOTH')
   const [isUpdating, setIsUpdating] = useState(false)
 
   useEffect(() => {
