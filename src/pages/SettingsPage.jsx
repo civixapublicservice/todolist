@@ -18,7 +18,6 @@ export default function SettingsPage() {
   const [newPassword, setNewPassword] = useState('')
 
   // App settings state
-  const [theme, setTheme] = useState('dark')
   const [emailAlerts, setEmailAlerts] = useState(true)
   const [pushNotifications, setPushNotifications] = useState(true)
   const [timezone, setTimezone] = useState(Intl.DateTimeFormat().resolvedOptions().timeZone)
@@ -34,7 +33,6 @@ export default function SettingsPage() {
     async function loadSettings() {
       try {
         const data = await getUserSettings()
-        setTheme(data.theme || 'dark')
         setEmailAlerts(data.emailAlerts ?? true)
         setPushNotifications(data.pushNotifications ?? true)
         setTimezone(data.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone)
@@ -87,7 +85,7 @@ export default function SettingsPage() {
 
     try {
       await updateUserSettings({ 
-        theme, 
+        theme: globalTheme, 
         emailAlerts, 
         pushNotifications,
         timezone,
@@ -225,12 +223,11 @@ export default function SettingsPage() {
                         type="button"
                         disabled={isUpdatingSettings}
                         onClick={() => {
-                          setTheme(t);
                           setGlobalTheme(t);
                         }}
                         className={cn(
                           "flex-1 sm:w-32 px-4 py-2.5 sm:py-3 sm:px-6 text-sm sm:text-base font-bold rounded-lg sm:rounded-xl capitalize transition-all duration-200",
-                          theme === t 
+                          globalTheme === t 
                             ? "bg-background text-primary shadow-md ring-1 ring-primary/20 scale-[1.02]" 
                             : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
                         )}
