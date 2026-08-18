@@ -3,10 +3,18 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '../hooks/useAuth'
 import { Sparkles, CheckCircle2 } from 'lucide-react'
 import ThemeToggle from '../components/ui/ThemeToggle'
+import { useThemeContext } from '../context/ThemeContext'
+import { useEffect } from 'react'
 
 export default function AuthLayout() {
   const { user } = useAuth()
   const location = useLocation()
+  const { setForceTheme } = useThemeContext()
+
+  useEffect(() => {
+    setForceTheme('light')
+    return () => setForceTheme(null)
+  }, [setForceTheme])
 
   if (user) {
     return <Navigate to="/" replace />

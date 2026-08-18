@@ -22,15 +22,17 @@ export function ThemeProvider({ children }) {
   })
 
   const [isDark, setIsDark] = useState(false)
+  const [forceTheme, setForceTheme] = useState(null)
 
-  const applyTheme = useCallback((currentTheme) => {
+  const applyTheme = useCallback((currentTheme, forcedThemeStr = null) => {
     let effectiveIsDark = false
+    const themeToEvaluate = forcedThemeStr || currentTheme
     
-    if (currentTheme === 'dark') {
+    if (themeToEvaluate === 'dark') {
       effectiveIsDark = true
-    } else if (currentTheme === 'light') {
+    } else if (themeToEvaluate === 'light') {
       effectiveIsDark = false
-    } else if (currentTheme === 'system') {
+    } else if (themeToEvaluate === 'system') {
       effectiveIsDark = window.matchMedia('(prefers-color-scheme: dark)').matches
     }
 
@@ -45,20 +47,20 @@ export function ThemeProvider({ children }) {
 
   useEffect(() => {
     localStorage.setItem(THEME_STORAGE_KEY, theme)
-    applyTheme(theme)
-  }, [theme, applyTheme])
+    applyTheme(theme, forceTheme)
+  }, [theme, forceTheme, applyTheme])
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
     const handleChange = () => {
       if (theme === 'system') {
-        applyTheme('system')
+        applyTheme('system', forceTheme)
       }
     }
     
     mediaQuery.addEventListener('change', handleChange)
     return () => mediaQuery.removeEventListener('change', handleChange)
-  }, [theme, applyTheme])
+  }, [theme, forceTheme, applyTheme])
 
   useEffect(() => {
     const handleSync = (e) => {
@@ -78,7 +80,7 @@ export function ThemeProvider({ children }) {
 
   const setTheme = useCallback((newTheme) => {
     const execute = () => {
-      applyTheme(newTheme)
+      applyTheme(newTheme, forceTheme)
       setThemeState(newTheme)
     }
 
@@ -99,7 +101,7 @@ export function ThemeProvider({ children }) {
       : (theme === 'dark' ? 'light' : 'dark')
 
     const execute = () => {
-      applyTheme(newTheme)
+      applyTheme(newTheme, forceTheme)
       setThemeState(newTheme)
     }
 
@@ -118,6 +120,7 @@ export function ThemeProvider({ children }) {
     setTheme,
     isDark,
     toggleTheme,
+    setForceTheme,
   }
 
   return (
